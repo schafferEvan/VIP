@@ -8,6 +8,7 @@
 # Created Jan 3 2019
 
 
+import sys
 import numpy as np
 from scipy import sparse, optimize, io
 from skimage.restoration import denoise_tv_chambolle
@@ -56,12 +57,13 @@ class smoothData:
 
 
 if __name__ == '__main__':
-    import numpy as np
-    from scipy import sparse, optimize, io
-    from skimage.restoration import denoise_tv_chambolle
-    import h5py
-
-    baseFolder = '/Users/evan/Dropbox/_sandbox/sourceExtraction/0824_f3r1/'
+    mynargs = sys.argv
+    if (len(mynargs)>1):
+        print('processing folder:' + mynargs[1])
+        baseFolder = mynargs[1]
+    else:
+        baseFolder = '/Users/evan/Dropbox/_sandbox/sourceExtraction/0824_f3r1/'
+    
     obj = smoothData(baseFolder)
     obj.getSmoothBeh()
     

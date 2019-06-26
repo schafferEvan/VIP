@@ -685,8 +685,8 @@ if __name__ == '__main__':
     import smoothBehavior as beh
 
     baseFolder = '/Users/evan/Dropbox/_sandbox/sourceExtraction/good/_runAndFeed/190424_f3/' #feeding/190319_Trh_f1/' #_runAndFeed/190422_f1/' #
-    behobj = beh.smoothData(baseFolder)
-    behobj.getSmoothBeh()
+    # behobj = beh.smoothData(baseFolder)
+    # behobj.getSmoothBeh()
 
     obj = scape(baseFolder)
     obj.postProcess('F.mat', 'post_fromYcc.mat')

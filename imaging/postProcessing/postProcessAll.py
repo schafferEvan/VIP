@@ -28,8 +28,9 @@ def postProcessAll(rootFolder):
 
 if __name__ == '__main__':
     mynargs = sys.argv
-    if (len(x)>1):
-        print('processing folder:' + x[1])
+    if (len(mynargs)>1):
+        print('processing folder:' + mynargs[1])
+        rootFolder = mynargs[1]
     else:
         rootFolder = "/Users/evan/Dropbox/_sandbox/sourceExtraction/good/"
     

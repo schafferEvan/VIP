@@ -1,21 +1,13 @@
 
-function alignImagingAndBehaviorMultiTrial
-
+function alignImagingAndBehaviorMultiTrial(codePath, traceFolder)
 % In 'experiment' folder, expects to find concatenated imaging file F.mat.
 % Also expects a folder called 'behavior' containing each of the mat files
 % ouput from extractBehaviorManual.m, named flyX_runY.mat, and a similarly
 % populated folder called info
 
-% -------------------------------------------------------------------------
-% CHOOSE A DATASET
-% -------------------------------------------------------------------------
-addpath(genpath('~/Dropbox/_code/'))
+addpath(genpath(codePath))
 
-experiment = '190514_CrzDh44_f4/';%'190319_Trh_f2/';%'190424_f3/'; %'2018_08_24_odor';
-baseFolder = '/Users/evan/Dropbox/_sandbox/sourceExtraction/good/_runAndFeed/'; %feeding/';%'/Volumes/dataFast2/';%,'/fly3run1/'];
-
-% -------------------------------------------------------------------------
-traceFolder = [baseFolder,experiment];%[baseFolder,'rustyOut/',experiment];
+%traceFolder = [baseFolder,experiment];%[baseFolder,'rustyOut/',experiment];
 imagingFile = [traceFolder,'F.mat']; %[traceFolder,'all.mat'];
 load(imagingFile,'trialFlag');
 behaviorDirectory = dir([traceFolder,'behavior/fly*']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
