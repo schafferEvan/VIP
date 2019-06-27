@@ -17,13 +17,14 @@ $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_
 
 # copy behavior traces into subdirectory of imaging to aggregate final output
 traceFolder="$imagingDataDir"/Yproj/""
+cp -r info $traceFolder
 behavTraceFolder="$traceFolder"/behavior/""
 mkdir $behavTraceFolder
 cp "$behaviorDataDir"*.mat"" $behavTraceFolder
 
 
 # matlab realigns behavior traces to match imaging
-$matlabPath -nodisplay -nodesktop -r "cd('../imaging/compilation/'); alignImagingAndBehaviorMultiTrial $parentdir $imagingDataDir; exit"
+$matlabPath -nodisplay -nodesktop -r "cd('../imaging/compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $imagingDataDir; exit"
 
 
 # python smooths imaging, behavior, computes dFF and clustering
