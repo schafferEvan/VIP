@@ -3,9 +3,8 @@ clear
 %pause(60*120)
 
 if ismac
-    addpath(genpath('~/Dropbox/_AxelLab/matlab/calcium-signal-extraction/'))
-    addpath(genpath( '~/Dropbox/_code/pipeline/'))
-    experimentFolder = '/Volumes/DATAFAST/2019_04_25/';%'/Volumes/SCAPEdata1/finalData/2019_03_12_Nsyb_NLS6s_Su/fly2/';%'/Volumes/dataFast/habaRegistered/2019_02_14_Nsyb_NLS6s_Su/';
+    addpath(genpath( '~/Dropbox/_code/VIP/'))
+    experimentFolder = '/Volumes/SCAPEdata1/finalData/2019_06_26_Nsyb_NLS6s_walk/fly2/';%'/Volumes/SCAPEdata1/finalData/2019_03_12_Nsyb_NLS6s_Su/fly2/';%'/Volumes/dataFast/habaRegistered/2019_02_14_Nsyb_NLS6s_Su/';
     infoFile = dir([experimentFolder,'info/*.mat']);%'/Volumes/dataFast/habaRegistered/2018_08_24_odor/mats/new/fly3run2/'; %'/Users/evan/Desktop/hungerRaw/';%'/Volumes/SCAPEdata1/scratchData/2018_08_01_IRtest/matfiles/registered/';%'/Volumes/data/_scape/data/_outMats/'; %
     if length(infoFile)>1; infoFile=infoFile(end); end
     savePath = '~/Dropbox/_AxelLab/_data/_scape/movies/';

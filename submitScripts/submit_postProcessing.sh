@@ -2,8 +2,8 @@
 
 # --- these are the only lines to edit ------------------------------
 # -------------------------------------------------------------------
-imagingDataDir="/Volumes/SCAPEdata1/finalData/2019_06_21_Nsyb_NLS6s_walk/fly2/"
-behaviorDataDir="/Volumes/SCAPEdata1/scapeBehavior/2019_06_21_Nsyb_NLS6s_walk/"
+imagingDataDir="/Volumes/SCAPEdata1/finalData/2019_06_26_Nsyb_NLS6s_walk/fly2/"
+behaviorDataDir="/Volumes/SCAPEdata1/scapeBehavior/2019_06_26_Nsyb_NLS6s_walk/"
 matlabPath="/Applications/MATLAB_R2018a.app/bin/matlab"
 # -------------------------------------------------------------------
 # -------------------------------------------------------------------
