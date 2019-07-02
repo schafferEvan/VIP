@@ -1,0 +1,6 @@
+sdk3setenumerated("AuxiliaryOutSource", 0)
+
+load("C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\RUN_TRIAL.pgm")
+
+load("C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\SET_PARAMETERS.pgm")
+
