@@ -2,9 +2,9 @@
 
 # --- these are the only lines to edit ------------------------------
 # -------------------------------------------------------------------
-imagingDataDir="/Volumes/SCAPEdata1/finalData/2019_06_26_Nsyb_NLS6s_walk/fly2/"
-behaviorDataDir="/Volumes/SCAPEdata1/scapeBehavior/2019_06_26_Nsyb_NLS6s_walk/"
-matlabPath="/Applications/MATLAB_R2018a.app/bin/matlab"
+imagingDataDir="/Volumes/SCAPEdata1/finalData/2019_06_28_Nsyb_NLS6s_walk/fly3/"
+behaviorDataDir="/Volumes/SCAPEdata1/scapeBehavior/2019_06_28_Nsyb_NLS6s_walk/"
+matlabPath="/Applications/MATLAB_R2018b.app/bin/matlab"
 # -------------------------------------------------------------------
 # -------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ cp "$behaviorDataDir"*.mat"" $behavTraceFolder
 
 
 # matlab realigns behavior traces to match imaging
-$matlabPath -nodisplay -nodesktop -r "cd('../imaging/compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $imagingDataDir; exit"
+$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $imagingDataDir; exit"
 
 
 # python smooths imaging, behavior, computes dFF and clustering
