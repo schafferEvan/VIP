@@ -1,4 +1,4 @@
-function [trialOrder, runNum, runNumConvert, frameNum] = sortExperimentDirectory(experimentFolder)
+function [trials, trialOrder, runNum, runNumConvert, frameNum] = sortExperimentDirectory(experimentFolder)
 % File sorting in experimental directory.
 
 trials = dir([experimentFolder,'*.mat']); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%dir([experimentFolder,'*.h5']);
@@ -14,19 +14,23 @@ for j=1:length(trials)
         regLoc = strfind(trials(j).name,'.');
     end
     if ~isempty(runLoc)
-        runNum(j) = trials(j).name(runLoc+3:underscoreLoc(end)-1);
+        runNum{j} = trials(j).name(runLoc+3:underscoreLoc(end)-1);
     else
-        runNum(j) = 1;
+        runNum{j} = '1';
     end
     frameNum(j) = str2double(trials(j).name(underscoreLoc(end)+1:regLoc(1)-1));
-    uLocTemp = strfind(runNum(j),'_');
-    numTemp = runNum(j);
-    numTemp(uLocTemp(1)) = '.';
-    numTemp(uLocTemp(2:end)) = '';
-    runNumConvert = str2double(numTemp);
+    uLocTemp = strfind(runNum{j},'_');
+    numTemp = runNum{j};
+    if length(uLocTemp) > 0
+        numTemp(uLocTemp(1)) = '.';
+    end    
+    if length(uLocTemp) > 1    
+        numTemp(uLocTemp(2:end)) = '';
+    end
+    runNumConvert(j) = str2double(numTemp);
     
 end
 
 [~,trialOrder] = sort( runNumConvert*10^(1+ceil(log10(max(frameNum)))) + frameNum, 'ascend' );
-
+end
 
