@@ -28,6 +28,16 @@ if sum(isnan(tmp))>0; error('Invalid File Order'); end
 
 alignedBehaviorTot = struct;
 
+
+
+behaviorFilename = [behaviorDirectory(fileOrder(1)).folder,'/',behaviorDirectory(fileOrder(1)).name];
+beh = load(behaviorFilename);
+parseStruct = getBehParsing(isImagingOn);
+
+
+
+
+
 for i=1:length(behaviorDirectory)
     
     % point to behavior file (load below)
@@ -62,6 +72,26 @@ bmat = matfile([traceFolder,'alignedBehavAndStim.mat'],'Writable',true);
 bmat.alignedBehavior = alignedBehaviorTot;
 bmat.time = alignedBehaviorTot.timeTot;
 
+
+
+function parseStruct = getBehParsing(isImagingOn)
+imSm = TVL1denoise(double(isImagingOn), 0.1, 100);
+GMModel = fitgmdist(imSm,2);
+P = posterior(GMModel,imSm);
+[~,onIdx] = max(GMModel.mu);
+[~,offIdx] = min(GMModel.mu);
+gOn=TVL1denoise(P(:,onIdx), 0.1, 100); 
+gOff=TVL1denoise(P(:,offIdx), 0.1, 100);
+parseVec = gOn>gOff; % where posterior is higher for "on" distribution
+dP = diff(parseVec);
+starts = find(dP>0);
+stops = find(dP<0);
+if (min(diff(starts))<100) || (min(diff(stops))<100)
+    error('INDICATOR MEASURE IS FLICKERING. PARSING FAILURE');
+elseif length(starts)~=length(stops)
+    error('NUMBER OF STARTS AND STOPS DO NOT MATCH. PARSING FAILURE');
+end
+parseStruct = struct('starts',starts,'stops',stops);
 
 
 function behAligned = formatBehaviorData(behaviorFilename,behaviorOpts)
