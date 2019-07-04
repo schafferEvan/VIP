@@ -25,31 +25,8 @@ end
 % end
 scaling = [];
 
-trials = dir([experimentFolder,'*.mat']); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%dir([experimentFolder,'*.h5']);
-frameNum = zeros(size(trials));
-runNum = zeros(size(trials));
-for j=1:length(trials)
-    m = matfile([experimentFolder,trials(j).name]); % this is to check if any file is corrupted
-    runLoc = strfind(trials(j).name,'run');
-    underscoreLoc = strfind(trials(j).name,'_');
-    regLoc = strfind(trials(j).name,'reg');
-    if isempty(regLoc)
-        regLoc = strfind(trials(j).name,'.');
-    end
-    if ~isempty(runLoc)
-        uRel = find(underscoreLoc>runLoc,1,'first');
-        runNum(j) = str2double(trials(j).name(runLoc+3:underscoreLoc(uRel)-1));
-    else
-        runNum(j) = 1;
-    end
-    %frameNum(j) = str2double(trials(j).name(underscoreLoc(end)+1:(end-7))); %%%%%%%%%%%%str2double(trials(j).name(underscoreLoc(end)+1:(end-3)));
-    %runNum(j) = str2double(trials(j).name(runLoc+3:underscoreLoc(end)-1));
-    %uRel = find(underscoreLoc>runLoc,1,'first');
-    frameNum(j) = str2double(trials(j).name(underscoreLoc(end)+1:regLoc(1)-1)); 
-    %runNum(j) = str2double(trials(j).name(runLoc+3:underscoreLoc(uRel)-1));
-end
-[~,trialOrder] = sort( runNum*10^ceil(log10(max(frameNum))) + frameNum, 'ascend' );
-params.trialName = [trials(end).name(1:underscoreLoc(end)),'all.avi']; %[trials(end).name(1:runLoc-1),'all.avi'];
+[trials, trialOrder] = sortExperimentDirectory(experimentFolder);
+params.trialName = [trials(end).name(1:end-4),'all.avi']; %[trials(end).name(1:runLoc-1),'all.avi'];
 params.savePath = savePath;
 params.concatenate = true;
 load([experimentFolder,'info/',infoFile.name]);
