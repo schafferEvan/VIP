@@ -1,17 +1,15 @@
 
-function extractBehaviorAuto(date,behaviorFolder)
+function extractBehaviorAuto(videoFolder)
 % loops through videos, checks ROI location, and extracts light/shock timeseries
-global videoFolder files isavi
-
 
 addpath(genpath('..'))
 
-if ~exist('date','var')
-    date = '0828_f2r3/';%'2019_02_14_Nsyb_NLS6s_Su/'; %'2018_10_24_MCFO_IRtest/';%'2018_11_1_looming/';%'2018_08_24_odorAndRun/';
-    behaviorFolder = '/Users/evan/Dropbox/_sandbox/sourceExtraction/good/'; %'/Users/evan/Dropbox/_sandbox/behavTest/';%'/Volumes/dataFast2/scapeBehavior/';
-end
-parentFolder = [behaviorFolder,date]; %behaviorFolder; %
-videoFolder = parentFolder; %[parentFolder,'UncompressedAVI/'];
+% if ~exist('date','var')
+%     date = '0828_f2r3/';%'2019_02_14_Nsyb_NLS6s_Su/'; %'2018_10_24_MCFO_IRtest/';%'2018_11_1_looming/';%'2018_08_24_odorAndRun/';
+%     behaviorFolder = '/Users/evan/Dropbox/_sandbox/sourceExtraction/good/'; %'/Users/evan/Dropbox/_sandbox/behavTest/';%'/Volumes/dataFast2/scapeBehavior/';
+% end
+% parentFolder = [behaviorFolder,date]; %behaviorFolder; %
+% videoFolder = parentFolder; %[parentFolder,'UncompressedAVI/'];
 
 % parameters ------------------------------------------------------------
 ballthresh = 0.6;       % pixel threshold for ball vs not ball (quantile of blurred image)
@@ -19,17 +17,24 @@ nframes = 1000;         % num frames from which to estimate ball roi
 indicatorHeight = 10;   % number of rows at top of image from which to measure indicator signal
 % ------------------------------------------------------------------------
 
-isavi = true;
-if isavi
-    files = dir([videoFolder,'f*.avi']);
+avifiles = dir([videoFolder,'f*.avi']);
+mp4files = dir([videoFolder,'f*.mp4']);
+
+if ~isempty(avifiles) 
+    if ~isempty(mp4files)
+        error('directory contains both avi and mp4 files')
+    else
+        files = avifiles;
+    end
 else
-    files = dir([videoFolder,'f*.mp4']);
+    files = mp4files;
 end
 
-movfile = [videoFolder,files(1).name];
-ballROI = getBallROI(movfile, ballthresh, nframes); % find ROI of ball
-extract(movfile, ballROI, indicatorHeight)          % extract ball motion energy and indicator signal (1st PC of top of image)
-
+for j=1:length(files)
+    movfile = [videoFolder,files(j).name];
+    ballROI = getBallROI(movfile, ballthresh, nframes); % find ROI of ball
+    extract(movfile, ballROI, indicatorHeight)          % extract ball motion energy and indicator signal (1st PC of top of image)
+end
 
 
 function ballROI = getBallROI(movfile, ballthresh, nframes)
