@@ -51,8 +51,8 @@ function extract_F_from_conComp(codePath, experimentFolder)
 addpath(genpath(codePath))
 [trials, trialOrder, runNum, runNumConvert] = sortExperimentDirectory(experimentFolder);
 
-save([experimentFolder,'Yproj/Ysum.mat'],'Ysum','Rsum')
-save([experimentFolder,'Yproj/cc.mat'],'Ycc','Rcc')
+load([experimentFolder,'Yproj/Ysum.mat'],'Ysum','Rsum')
+load([experimentFolder,'Yproj/cc.mat'],'Ycc','Rcc')
 
 %% extract F for all cells, all files
 trialPath = [experimentFolder,trials(trialOrder(1)).name];
