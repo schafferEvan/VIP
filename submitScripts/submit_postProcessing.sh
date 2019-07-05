@@ -13,6 +13,8 @@ parentdir="$(dirname "$cwd")"
 # matlab parses ROIs using watershed, then extracts timeseries
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_sumImage $parentdir $imagingDataDir; exit"
 
+# make behavior traces
+$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extractBehaviorAuto $behaviorDataDir; exit"
 
 # copy behavior traces into subdirectory of imaging to aggregate final output
 traceFolder="$imagingDataDir"/Yproj/""
