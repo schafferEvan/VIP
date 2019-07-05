@@ -33,5 +33,5 @@ $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBeha
 
 # python smooths imaging, behavior, computes dFF and clustering
 python ../behavior/smoothBehavior.py $traceFolder
-python ../imaging/postProcessing/postProcessAll.py $traceFolder
+python ../imaging/postProcessing/postProcessOne.py $traceFolder
 
