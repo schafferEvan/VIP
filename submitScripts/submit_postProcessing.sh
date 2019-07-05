@@ -10,8 +10,11 @@ echo $matlabPath
 cwd=$(pwd)
 parentdir="$(dirname "$cwd")"
 
-# matlab parses ROIs using watershed, then extracts timeseries
+# matlab parses ROIs using watershed
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_sumImage $parentdir $imagingDataDir; exit"
+
+# matlab extracts time series
+$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extract_F_from_conComp $parentdir $imagingDataDir; exit"
 
 # make behavior traces
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extractBehaviorAuto $behaviorDataDir; exit"
