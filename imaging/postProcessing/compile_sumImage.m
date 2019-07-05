@@ -72,4 +72,3 @@ else
     Rcc = [];
 end
 save([experimentFolder,'Yproj/cc.mat'],'Ycc','Rcc')
-extract_F_from_conComp;
