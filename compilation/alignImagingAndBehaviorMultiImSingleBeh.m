@@ -140,6 +140,7 @@ function parseStruct = getBehParsing(isImagingOn)
 % behavior video into a binary vector by denoising, fitting a gaussian
 % mixture model, then further smoothing the posterior to prevent flicker
 imSm = TVL1denoise(double(isImagingOn), 0.1, 100);
+if size(imSm,1)==1; imSm=imSm'; end
 GMModel = fitgmdist(imSm,2);
 P = posterior(GMModel,imSm);
 [~,onIdx] = max(GMModel.mu);
