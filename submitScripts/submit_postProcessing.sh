@@ -20,6 +20,7 @@ $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extract_
 # make behavior traces
 #$matlabPath -nodisplay -nodesktop -r "cd('../behavior/'); extractBehaviorAuto $behaviorDataDir; exit"
 
+
 # copy behavior traces into subdirectory of imaging to aggregate final output
 traceFolder="$imagingDataDir"Yproj/""
 cp -r "$imagingDataDir"info"" $traceFolder
