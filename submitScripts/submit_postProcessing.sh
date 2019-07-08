@@ -2,6 +2,7 @@
 imagingDataDir=$1
 behaviorDataDir=$2
 matlabPath=$3
+flyNum=$4
 
 echo $imagingDataDir
 echo $behaviorDataDir
@@ -17,18 +18,18 @@ $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extract_F_from_conComp $parentdir $imagingDataDir; exit"
 
 # make behavior traces
-$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extractBehaviorAuto $behaviorDataDir; exit"
+#$matlabPath -nodisplay -nodesktop -r "cd('../behavior/'); extractBehaviorAuto $behaviorDataDir; exit"
 
 # copy behavior traces into subdirectory of imaging to aggregate final output
 traceFolder="$imagingDataDir"Yproj/""
-cp -r info $traceFolder
-behavTraceFolder="$traceFolder"/behavior/""
+cp -r "$imagingDataDir"info"" $traceFolder
+behavTraceFolder="$traceFolder"behavior/""
 mkdir $behavTraceFolder
-cp "$behaviorDataDir"*.mat"" $behavTraceFolder
+cp "$behaviorDataDir$flyNum"*"" $behavTraceFolder
 
 
 # matlab realigns behavior traces to match imaging
-$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $imagingDataDir; exit"
+$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder; exit"
 
 
 # python smooths imaging, behavior, computes dFF and clustering
