@@ -26,7 +26,7 @@ traceFolder="$imagingDataDir"Yproj/""
 cp -r "$imagingDataDir"info"" $traceFolder
 behavTraceFolder="$traceFolder"behavior/""
 mkdir $behavTraceFolder
-cp "$behaviorDataDir$flyNum"*"" $behavTraceFolder
+cp "$behaviorDataDir$flyNum"*.mat"" $behavTraceFolder
 
 
 # matlab realigns behavior traces to match imaging
