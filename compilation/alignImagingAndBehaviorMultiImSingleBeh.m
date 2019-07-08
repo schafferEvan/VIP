@@ -19,14 +19,15 @@ behaviorDirectory = dir([traceFolder,'behavior/fly*']); %dir([baseFolder,'scapeB
 infoDirectory = dir([traceFolder,'info/fly*']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
     
 % get file order
-tmp = zeros(size(infoDirectory));
-for j=1:length(infoDirectory)
-    u = strfind(infoDirectory(j).name,'_');
-    r = strfind(infoDirectory(j).name,'run');
-    tmp(j)=str2double(infoDirectory(j).name(r+3:u(end)-1));
-end
-if sum(isnan(tmp))>0; error('Invalid File Order'); end
-[runIds,fileOrder] = sort(tmp,'ascend');
+% tmp = zeros(size(infoDirectory));
+% for j=1:length(infoDirectory)
+%     u = strfind(infoDirectory(j).name,'_');
+%     r = strfind(infoDirectory(j).name,'run');
+%     tmp(j)=str2double(infoDirectory(j).name(r+3:u(end)-1));
+% end
+[~, fileOrder, ~, runIds] = sortExperimentDirectory([traceFolder,'info/']);
+if sum(isnan(runIds))>0; error('Invalid File Order'); end
+% [runIds,fileOrder] = sort(tmp,'ascend');
 
 alignedBehaviorTot = struct;
 
