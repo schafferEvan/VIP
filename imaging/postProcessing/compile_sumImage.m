@@ -31,15 +31,21 @@ addpath(genpath(codePath))
 % more extensive check of whether files are corrupt
 for ii=1:length(trials)    
     trialPath = [experimentFolder,trials(trialOrder(ii)).name];
-
+    lastwarn('') % Clear last warning message    
     try
         m = matfile(trialPath);
         sy = size(m,'Y');
         sr = size(m,'R');
         m.Y(sy(1),sy(2),sy(3),sy(4));
         m.R(sr(1),sr(2),sr(3),sr(4));
+        m.Y(sy(1),sy(2),sy(3),1);
+        m.R(sr(1),sr(2),sr(3),1);
     catch 
-        disp([trials(trialOrder(ii)).name,' is corrupted']);
+        error([trials(trialOrder(ii)).name,' is corrupted']);
+    end
+    [~, warnId] = lastwarn;
+    if strcmp(warnId,'MATLAB:whos:UnableToRead')
+        disp([trials(trialOrder(ii)).name,' is PARTIALLY corrupted']);
     end
 end
 
