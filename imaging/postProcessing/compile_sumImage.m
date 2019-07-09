@@ -26,7 +26,7 @@ addpath(genpath(codePath))
 %     savePath = 'D:\SCAPEdataworkingfolder\movies\';
 % end
 
-[trials, trialOrder] = sortExperimentDirectory(experimentFolder);
+[trials, trialOrder] = sortExperimentDirectory(experimentFolder,'reg');
 
 
 %% sum image calc
