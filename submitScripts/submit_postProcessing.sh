@@ -18,14 +18,15 @@ $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extract_F_from_conComp $parentdir $imagingDataDir; exit"
 
 # make behavior traces
-$matlabPath -nodisplay -nodesktop -r "cd('../behavior/'); extractBehaviorAuto $behaviorDataDir; exit"
+#$matlabPath -nodisplay -nodesktop -r "cd('../behavior/'); extractBehaviorAuto $behaviorDataDir; exit"
+
 
 # copy behavior traces into subdirectory of imaging to aggregate final output
 traceFolder="$imagingDataDir"Yproj/""
 cp -r "$imagingDataDir"info"" $traceFolder
 behavTraceFolder="$traceFolder"behavior/""
 mkdir $behavTraceFolder
-cp "$behaviorDataDir$flyNum"*"" $behavTraceFolder
+cp "$behaviorDataDir$flyNum"*.mat"" $behavTraceFolder
 
 
 # matlab realigns behavior traces to match imaging

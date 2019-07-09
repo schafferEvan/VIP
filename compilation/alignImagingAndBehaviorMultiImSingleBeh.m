@@ -26,6 +26,7 @@ infoDirectory = dir([traceFolder,'info/fly*']); %dir([baseFolder,'scapeBehavior/
 %     tmp(j)=str2double(infoDirectory(j).name(r+3:u(end)-1));
 % end
 [~, fileOrder, ~, runIds] = sortExperimentDirectory([traceFolder,'info/'],'_info');
+
 if sum(isnan(runIds))>0; error('Invalid File Order'); end
 % [runIds,fileOrder] = sort(tmp,'ascend');
 
