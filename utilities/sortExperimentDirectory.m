@@ -1,4 +1,4 @@
-function [trials, trialOrder, runNum, runNumConvert, frameNum] = sortExperimentDirectory(experimentFolder, typeFile)
+function [trials, trialOrder, runNum, runNumConvert, frameNum] = sortExperimentDirectory(experimentFolder, typeFile, sortOutput)
 % File sorting in experimental directory.
 
 trials = dir([experimentFolder,'*.mat']); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%dir([experimentFolder,'*.h5']);
@@ -39,4 +39,13 @@ if strcmp(typeFile, '_info') == 1
 else    
     [~,trialOrder] = sort( runNumConvert*10^(1+ceil(log10(max(frameNum)))) + frameNum, 'ascend' );
 end
+
+if nargin<3
+    sortOutput = true;
+end
+
+if sortOutput
+    trials = trials(trialOrder);
+    runNumConvert = runNumConvert(trialOrder); 
+end       
 
