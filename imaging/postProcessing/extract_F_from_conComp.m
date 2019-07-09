@@ -49,16 +49,18 @@ function extract_F_from_conComp(codePath, experimentFolder)
 % 
 
 addpath(genpath(codePath))
-[trials, trialOrder, runNum, runNumConvert] = sortExperimentDirectory(experimentFolder);
+[trials, trialOrder, ~, runNumConvert] = sortExperimentDirectory(experimentFolder,'reg');
+trials = trials(trialOrder);
+runNumConvert = runNumConvert(trialOrder);
 
 load([experimentFolder,'Yproj/Ysum.mat'],'Ysum','Rsum')
 load([experimentFolder,'Yproj/cc.mat'],'Ycc','Rcc')
 
 %% extract F for all cells, all files
-trialPath = [experimentFolder,trials(trialOrder(1)).name];
+trialPath = [experimentFolder,trials(1).name];
 m = matfile(trialPath);
 tStepsReg = size(m,'Y',4);
-trialPath = [experimentFolder,trials(trialOrder(end)).name];
+trialPath = [experimentFolder,trials(end).name];
 m = matfile(trialPath);
 %tStepsEnd = size(m,'Y',4);
 
@@ -66,8 +68,9 @@ m = matfile(trialPath);
 runListTmp = unique(runNumConvert);
 tStepsEnd = 0;
 for j=1:length(runListTmp)
-    tmp = find(runNumConvert==runListTmp(j),1,'last');
-    trialPath = [experimentFolder,trials(trialOrder(tmp)).name];
+    tmpIds = find(runNumConvert==runListTmp(j));
+    tmp = tmpIds(end);
+    trialPath = [experimentFolder,trials(tmp).name];
     m = matfile(trialPath);
     tStepsEnd = tStepsEnd + size(m,'Y',4);
 end
@@ -105,8 +108,8 @@ t=0;
 
 for ii=1:length(trials)
     
-    trialPath = [experimentFolder,trials(trialOrder(ii)).name];
-    display(['file ',num2str(ii),': ',trials(trialOrder(ii)).name])
+    trialPath = [experimentFolder,trials(ii).name];
+    display(['file ',num2str(ii),': ',trials(ii).name])
     m = matfile(trialPath);
     Y = m.Y;
     
@@ -116,7 +119,7 @@ for ii=1:length(trials)
     if ~isempty(Ar)
         Fr(:,t+(1:T)) = Ar'*Y;
     end
-    trialFlag(t+(1:T))=runNumConvert(trialOrder(ii));
+    trialFlag(t+(1:T))=runNumConvert(ii);
     clear Y
     
     if ~isempty(Ar)
