@@ -19,20 +19,19 @@ behaviorDirectory = dir([traceFolder,'behavior/fly*']); %dir([baseFolder,'scapeB
 infoDirectory = dir([traceFolder,'info/fly*']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
     
 % get file order
-tmp = zeros(size(infoDirectory));
-for j=1:length(infoDirectory)
-    u = strfind(infoDirectory(j).name,'_');
-    r = strfind(infoDirectory(j).name,'run');
-    tmp(j)=str2double(infoDirectory(j).name(r+3:u(end)-1));
-end
-if sum(isnan(tmp))>0; error('Invalid File Order'); end
-[runIds,fileOrder] = sort(tmp,'ascend');
+% tmp = zeros(size(infoDirectory));
+% for j=1:length(infoDirectory)
+%     u = strfind(infoDirectory(j).name,'_');
+%     r = strfind(infoDirectory(j).name,'run');
+%     tmp(j)=str2double(infoDirectory(j).name(r+3:u(end)-1));
+% end
+[~, fileOrder, ~, runIds] = sortExperimentDirectory([traceFolder,'info/'],'_info');
+if sum(isnan(runIds))>0; error('Invalid File Order'); end
+% [runIds,fileOrder] = sort(tmp,'ascend');
 
 alignedBehaviorTot = struct;
 
-
-
-behaviorFilename = [behaviorDirectory(fileOrder(1)).folder,'/',behaviorDirectory(fileOrder(1)).name];
+behaviorFilename = [behaviorDirectory(1).folder,'/',behaviorDirectory(1).name];
 behRaw = load(behaviorFilename);
 
 % get list of imaging start and stop times from LED in behavior video
@@ -45,12 +44,13 @@ behaviorOpts.parseStruct = parseStruct;
 
 for j=1:length(infoDirectory)
     
+    index = fileOrder(j);
     % load info file
-    infoFile = [infoDirectory(j).folder,'/',infoDirectory(j).name];
+    infoFile = [infoDirectory(index).folder,'/',infoDirectory(index).name];
     load(infoFile,'info');
-    
+   
     % grab length of correct piece of imaging data
-    imRunLength = sum(trialFlag==runIds(j));
+    imRunLength = sum(trialFlag==runIds(index));
     
     % ignore first 30s of beginning of experiment, but not subsequent runs
     if j==1; bleachBuffer = 30*round(info.daq.scanRate);
@@ -79,7 +79,8 @@ for j=1:length(infoDirectory)
     %time = timeTot(bleachBuffer+1:end);
     
     
-    beh = formatBehaviorData(behRaw, behaviorOpts, j);
+    beh = formatBehaviorData(behRaw, behaviorOpts, index);
+    disp(['Behavior file added: ', index]);
     alignedBehaviorTot = concatenateBehaviorFiles(alignedBehaviorTot, beh, timeTmp); % ********** this needs to change
 
 end
@@ -140,6 +141,7 @@ function parseStruct = getBehParsing(isImagingOn)
 % behavior video into a binary vector by denoising, fitting a gaussian
 % mixture model, then further smoothing the posterior to prevent flicker
 imSm = TVL1denoise(double(isImagingOn), 0.1, 100);
+if size(imSm,1)==1; imSm=imSm'; end
 GMModel = fitgmdist(imSm,2);
 P = posterior(GMModel,imSm);
 [~,onIdx] = max(GMModel.mu);
