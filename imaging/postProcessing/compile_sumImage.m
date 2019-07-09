@@ -28,6 +28,20 @@ addpath(genpath(codePath))
 
 [trials, trialOrder] = sortExperimentDirectory(experimentFolder);
 
+% more extensive check of whether files are corrupt
+for ii=1:length(trials)    
+    trialPath = [experimentFolder,trials(trialOrder(ii)).name];
+
+    try
+        m = matfile(trialPath);
+        sy = size(m,'Y');
+        sr = size(m,'R');
+        m.Y(sy(1),sy(2),sy(3),sy(4));
+        m.R(sr(1),sr(2),sr(3),sr(4));
+    catch 
+        disp([trials(trialOrder(ii)).name,' is corrupted']);
+    end
+end
 
 %% sum image calc
 
