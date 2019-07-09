@@ -26,7 +26,7 @@ addpath(genpath(codePath))
 %     savePath = 'D:\SCAPEdataworkingfolder\movies\';
 % end
 
-[trials, trialOrder] = sortExperimentDirectory(experimentFolder,'reg');
+[trials, trialOrder] = sortExperimentDirectory(experimentFolder,'reg',false);
 
 % more extensive check of whether files are corrupt
 for ii=1:length(trials)    
