@@ -50,8 +50,6 @@ function extract_F_from_conComp(codePath, experimentFolder)
 
 addpath(genpath(codePath))
 [trials, trialOrder, ~, runNumConvert] = sortExperimentDirectory(experimentFolder,'reg');
-trials = trials(trialOrder);
-runNumConvert = runNumConvert(trialOrder);
 
 load([experimentFolder,'Yproj/Ysum.mat'],'Ysum','Rsum')
 load([experimentFolder,'Yproj/cc.mat'],'Ycc','Rcc')
