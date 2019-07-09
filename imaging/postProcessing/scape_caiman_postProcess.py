@@ -543,10 +543,8 @@ class scape:
         bnds = ((0, 1), (0.2, 2))
         self.Rpopt = []
         self.Ypopt = []
-        print('**********')
-        print(np.int(1+np.round(self.trialFlagMax)))
-        print('**********')
-        for i in range(1, np.int(1+np.round(self.trialFlagMax))):
+        self.trialFlagUnique = np.unique(self.trialFlag)
+        for i in self.trialFlagUnique:
             rdata = self.Rscaled[:,np.flatnonzero(self.trialFlag==(i))]
             ydata = self.Yscaled[:,np.flatnonzero(self.trialFlag==(i))]
 
@@ -580,7 +578,7 @@ class scape:
             self.rescaleData(R0, self.Rmin, self.Rmax)
             R0sc = self.rescaled
 
-            if (i==1):
+            if (i==self.trialFlagUnique[0]):
                 self.RsmoothData = RsmoothData
                 self.YsmoothData = YsmoothData
                 self.R0 = R0
