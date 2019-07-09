@@ -16,7 +16,7 @@ addpath(genpath(codePath))
 imagingFile = [traceFolder,'F.mat']; %[traceFolder,'all.mat'];
 load(imagingFile,'trialFlag');
 behaviorDirectory = dir([traceFolder,'behavior/fly*']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
-infoDirectory = dir([traceFolder,'info/fly*']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
+%infoDirectory = dir([traceFolder,'info/fly*']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
     
 % get file order
 % tmp = zeros(size(infoDirectory));
@@ -25,7 +25,7 @@ infoDirectory = dir([traceFolder,'info/fly*']); %dir([baseFolder,'scapeBehavior/
 %     r = strfind(infoDirectory(j).name,'run');
 %     tmp(j)=str2double(infoDirectory(j).name(r+3:u(end)-1));
 % end
-[~, fileOrder, ~, runIds] = sortExperimentDirectory([traceFolder,'info/'],'_info');
+[trials, ~, ~, runIds] = sortExperimentDirectory([traceFolder,'info/'],'_info');
 
 if sum(isnan(runIds))>0; error('Invalid File Order'); end
 % [runIds,fileOrder] = sort(tmp,'ascend');
@@ -37,21 +37,20 @@ behRaw = load(behaviorFilename);
 
 % get list of imaging start and stop times from LED in behavior video
 parseStruct = getBehParsing(double(behRaw.traces.isImagingOn));
-if (length(parseStruct.starts)~=length(infoDirectory)) || (length(parseStruct.stops)~=length(infoDirectory))
+if (length(parseStruct.starts)~=length(trials)) || (length(parseStruct.stops)~=length(trials))
     error('parse struct does not match info directory')
 end
 behaviorOpts.parseStruct = parseStruct;
 
 
-for j=1:length(infoDirectory)
+for j=1:length(trials)
     
-    index = fileOrder(j);
     % load info file
-    infoFile = [infoDirectory(index).folder,'/',infoDirectory(index).name];
+    infoFile = [trials(j).folder,'/',trials(j).name];
     load(infoFile,'info');
    
     % grab length of correct piece of imaging data
-    imRunLength = sum(trialFlag==runIds(index));
+    imRunLength = sum(trialFlag==runIds(j));
     
     % ignore first 30s of beginning of experiment, but not subsequent runs
     if j==1; bleachBuffer = 30*round(info.daq.scanRate);
@@ -80,8 +79,8 @@ for j=1:length(infoDirectory)
     %time = timeTot(bleachBuffer+1:end);
     
     
-    beh = formatBehaviorData(behRaw, behaviorOpts, index);
-    disp(['Behavior file added: ', index]);
+    beh = formatBehaviorData(behRaw, behaviorOpts, j);
+    disp(['Behavior file added: ', j]);
     alignedBehaviorTot = concatenateBehaviorFiles(alignedBehaviorTot, beh, timeTmp); % ********** this needs to change
 
 end
