@@ -10,6 +10,7 @@
 
 import sys
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import sparse, optimize, io
 from skimage.restoration import denoise_tv_chambolle
 import h5py
@@ -49,6 +50,7 @@ class smoothData:
         outputFile = 'alignedBehavSmooth.mat'
         self.loadMat7p3(inputFile, '/alignedBehavior', 'legVar')
         print(np.shape(self.matVar))
+        self.matVar[:,np.flatnonzero(np.isnan(self.matVar))]=0
         self.normalizeRawF(self.matVar)
         self.totVarSmoothData(self.scaled, 1.0)
         self.behSmooth = self.smoothData
