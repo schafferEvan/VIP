@@ -1,35 +1,39 @@
 
-clear
-%pause(60*120)
+function make_rawScaled_movies(codePath, experimentFolder, savePath)
+% skips frames to quickly make movie containing sample frames from entire
+% experiment (primarily to check motion correction)
 
-if ismac
-    addpath(genpath( '~/Dropbox/_code/VIP/'))
-    experimentFolder = '/Volumes/SCAPEdata1/finalData/2019_06_26_Nsyb_NLS6s_walk/fly2/';%'/Volumes/SCAPEdata1/finalData/2019_03_12_Nsyb_NLS6s_Su/fly2/';%'/Volumes/dataFast/habaRegistered/2019_02_14_Nsyb_NLS6s_Su/';
-    infoFile = dir([experimentFolder,'info/*.mat']);%'/Volumes/dataFast/habaRegistered/2018_08_24_odor/mats/new/fly3run2/'; %'/Users/evan/Desktop/hungerRaw/';%'/Volumes/SCAPEdata1/scratchData/2018_08_01_IRtest/matfiles/registered/';%'/Volumes/data/_scape/data/_outMats/'; %
-    if length(infoFile)>1; infoFile=infoFile(end); end
-    savePath = '~/Dropbox/_AxelLab/_data/_scape/movies/';
-elseif isunix
-    addpath(genpath('/home/analysis-pc/00_Analysis/motion_correction/'))
-    addpath(genpath('/home/analysis-pc/00_Analysis/calcium-signal-extraction/'))
-    experimentFolder = '/home/analysis-pc/rawData/20171025_nSyb_fly2_reg/registered/reregistered/';
-    savePath = '/home/analysis-pc/rawData/movies/';
-else
-    addpath(genpath('E:\Dropbox\GitHub\calcium-signal-extraction'))
-    addpath(genpath('E:\Dropbox\GitHub\eftyMotionCorr'))
-    experimentFolder = 'D:\SCAPEdataworkingfolder\_outMats\';
-    savePath = 'D:\SCAPEdataworkingfolder\movies\';
-end
+addpath(genpath(codePath))
+infoFile = dir([experimentFolder,'info/*.mat']);
+
+% if ismac
+%     addpath(genpath( '~/Dropbox/_code/VIP/'))
+%     experimentFolder = '/Volumes/SCAPEdata1/finalData/2019_06_26_Nsyb_NLS6s_walk/fly2/';%'/Volumes/SCAPEdata1/finalData/2019_03_12_Nsyb_NLS6s_Su/fly2/';%'/Volumes/dataFast/habaRegistered/2019_02_14_Nsyb_NLS6s_Su/';
+%     infoFile = dir([experimentFolder,'info/*.mat']);%'/Volumes/dataFast/habaRegistered/2018_08_24_odor/mats/new/fly3run2/'; %'/Users/evan/Desktop/hungerRaw/';%'/Volumes/SCAPEdata1/scratchData/2018_08_01_IRtest/matfiles/registered/';%'/Volumes/data/_scape/data/_outMats/'; %
+%     if length(infoFile)>1; infoFile=infoFile(end); end
+%     savePath = '~/Dropbox/_AxelLab/_data/_scape/movies/';
+% elseif isunix
+%     addpath(genpath('/home/analysis-pc/00_Analysis/motion_correction/'))
+%     addpath(genpath('/home/analysis-pc/00_Analysis/calcium-signal-extraction/'))
+%     experimentFolder = '/home/analysis-pc/rawData/20171025_nSyb_fly2_reg/registered/reregistered/';
+%     savePath = '/home/analysis-pc/rawData/movies/';
+% else
+%     addpath(genpath('E:\Dropbox\GitHub\calcium-signal-extraction'))
+%     addpath(genpath('E:\Dropbox\GitHub\eftyMotionCorr'))
+%     experimentFolder = 'D:\SCAPEdataworkingfolder\_outMats\';
+%     savePath = 'D:\SCAPEdataworkingfolder\movies\';
+% end
 
 % if isfolder([experimentFolder,'Yproj/']); load([experimentFolder,'Yproj/YprojFit.mat'],'YprojFit');scaling=YprojFit/max(YprojFit);
 % else; scaling = [];
 % end
 scaling = [];
 
-[trials, trialOrder] = sortExperimentDirectory(experimentFolder);
-params.trialName = [trials(end).name(1:end-4),'all.avi']; %[trials(end).name(1:runLoc-1),'all.avi'];
+trials = sortExperimentDirectory(experimentFolder,'reg');
+params.trialName = [trials(end).name(1:end-4),'_all.avi']; %[trials(end).name(1:runLoc-1),'all.avi'];
 params.savePath = savePath;
 params.concatenate = true;
-load([experimentFolder,'info/',infoFile.name]);
+load([experimentFolder,'info/',infoFile(1).name]);
 params.Ttot = 0;
 params.acqRate = round(info.daq.scanRate); %10; % volumes per second
 chunkSize = 101;

@@ -15,3 +15,9 @@ parentdir="$(dirname "$cwd")"
 
 # make quick temporally downsampled movie
 $matlabPath -nodisplay -nodesktop -r "cd('../visualization/'); make_quickMovie $parentdir $dataDir $saveDir; exit"
+
+# make full movie (all frames)
+# $matlabPath -nodisplay -nodesktop -r "cd('../visualization/'); make_rawScaled_movies $parentdir $dataDir $saveDir; exit"
+
+# make component movie
+# (work in progress)
