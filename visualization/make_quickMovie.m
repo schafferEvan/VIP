@@ -50,6 +50,7 @@ for i=1:length(trials)
         sz = size(m,'Y');
     end
     pts = 1:stepSize:sz(end);
+    if length(pts)<2; pts=[1,2]; end
     Y = single( m.Y(:,:,:,pts) );
     szy = size(Y);
     Y = Y/params.maxY;
