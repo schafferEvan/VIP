@@ -35,6 +35,15 @@ alignedBehaviorTot = struct;
 behaviorFilename = [behaviorDirectory(1).folder,'/',behaviorDirectory(1).name];
 behRaw = load(behaviorFilename);
 
+% check for deeplabcut output and load if available
+dlcname = dir([expDir,'/*DeepCut*.csv']);
+if ~isempty(dlcname)
+    npts = 8; disp('update dlcRead to allow for variable number of points')
+    dlcData = dlcRead([expDir,dlcname],npts);
+else
+    dlcData = [];
+end
+
 % get list of imaging start and stop times from LED in behavior video
 parseStruct = getBehParsing(double(behRaw.traces.isImagingOn));
 if (length(parseStruct.starts)~=length(trials)) || (length(parseStruct.stops)~=length(trials))

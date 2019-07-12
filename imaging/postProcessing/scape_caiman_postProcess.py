@@ -680,9 +680,9 @@ if __name__ == '__main__':
     import numpy as np
     import pickle
     from scipy import io
-    import smoothBehavior as beh
+    # import smoothBehavior as beh
 
-    baseFolder = '/Users/evan/Dropbox/_sandbox/sourceExtraction/good/_runAndFeed/190424_f3/' #feeding/190319_Trh_f1/' #_runAndFeed/190422_f1/' #
+    baseFolder = '/Users/evan/Dropbox/_sandbox/sourceExtraction/good/running/old/180824_f3r1/' #feeding/190319_Trh_f1/' #_runAndFeed/190422_f1/' #
     # behobj = beh.smoothData(baseFolder)
     # behobj.getSmoothBeh()
 
