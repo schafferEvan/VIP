@@ -455,7 +455,7 @@ class scape:
         self.magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
         oIsGood = np.array(self.oIsGood>0)
         self.oIsGood = oIsGood.flatten()
-        self.goodIds = self.ampIsGood & self.oIsGood & self.minIsGood & self.maxIsGood & self.magIsGood & self.rgccIsGood & self.oMoreGreen & self.redIsGood
+        self.goodIds = self.ampIsGood & self.minIsGood & self.maxIsGood & self.magIsGood & self.rgccIsGood & self.oMoreGreen & self.redIsGood
 
 
 
