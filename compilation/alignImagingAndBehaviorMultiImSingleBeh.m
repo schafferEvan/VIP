@@ -1,5 +1,5 @@
 
-function alignImagingAndBehaviorMultiImSingleBeh(codePath, traceFolder)
+function alignImagingAndBehaviorMultiImSingleBeh(codePath, traceFolder, repeatedBleachBuffer)
 % this is similar to alignImagingAndBehaviorMultiTrial.m, but whereas
 % alignImagingAndBehaviorMultiTrial expects a directory of behavior files,
 % this function expects a single behavior file containing multiple imaging
@@ -11,6 +11,10 @@ function alignImagingAndBehaviorMultiImSingleBeh(codePath, traceFolder)
 % populated folder called info
 
 addpath(genpath(codePath))
+
+if nargin<3
+    repeatedBleachBuffer = 4; % default is that 4 sec of runs 2-end are ignored
+end
 
 %traceFolder = [baseFolder,experiment];%[baseFolder,'rustyOut/',experiment];
 imagingFile = [traceFolder,'F.mat']; %[traceFolder,'all.mat'];
@@ -63,7 +67,7 @@ for j=1:length(trials)
     
     % ignore first 30s of beginning of experiment, but not subsequent runs
     if j==1; bleachBuffer = 30*round(info.daq.scanRate);
-    else;    bleachBuffer = 0;
+    else;    bleachBuffer = repeatedBleachBuffer*round(info.daq.scanRate);
     end
     
     % check that extracted imaging data has correct number of frames
