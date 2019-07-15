@@ -6,7 +6,7 @@ from scipy import sparse, optimize
 import numpy as np
 import pickle
 from scipy import io
-import smoothBehavior as beh
+# import smoothBehavior as beh
 import scape_caiman_postProcess as sc
 
 def postProcessAll(rootFolder):
@@ -17,8 +17,8 @@ def postProcessAll(rootFolder):
         print('processing ' + j)
         try:
             baseFolder = rootFolder+j+'/'
-            behobj = beh.smoothData(baseFolder)
-            behobj.getSmoothBeh()
+            # behobj = beh.smoothData(baseFolder)
+            # behobj.getSmoothBeh()
             obj = sc.scape(baseFolder)
             obj.postProcess('F.mat', 'post_fromYcc.mat')
             obj = sc.scape(baseFolder)

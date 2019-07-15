@@ -36,7 +36,7 @@ behaviorFilename = [behaviorDirectory(1).folder,'/',behaviorDirectory(1).name];
 behRaw = load(behaviorFilename);
 
 % check for deeplabcut output and load if available
-dlcname = dir([expDir,'/*DeepCut*.csv']);
+dlcname = dir([traceFolder,'*DeepCut*.csv']);
 if ~isempty(dlcname)
     npts = 8; disp('update dlcRead to allow for variable number of points')
     dlcData = dlcRead([expDir,dlcname],npts);
@@ -67,6 +67,9 @@ for j=1:length(trials)
     end
     
     % check that extracted imaging data has correct number of frames
+    disp({'# scans: ',num2str(info.daq.numberOfScans);...
+        'bleachBuffer: ',num2str(bleachBuffer);...
+        'imRunLength: ',num2str(imRunLength)})
     if info.daq.numberOfScans-bleachBuffer~=imRunLength; error('length of traces does not match expected'); end
     
     % populate imaging time vector
@@ -89,7 +92,7 @@ for j=1:length(trials)
     
     
     beh = formatBehaviorData(behRaw, behaviorOpts, j);
-    disp(['Behavior file added: ', j]);
+    disp('Behavior file added')
     alignedBehaviorTot = concatenateBehaviorFiles(alignedBehaviorTot, beh, timeTmp); % ********** this needs to change
 
 end

@@ -7,6 +7,8 @@ saveDir=$2
 matlabPath=$3
 expID=$4
 
+traceDir="$dataDir"Yproj/""
+
 
 echo $dataDir
 echo $saveDir
@@ -28,7 +30,7 @@ $matlabPath -nodisplay -nodesktop -r "cd('../visualization/'); make_quickMovie $
 # showBallVar=1
 # showDrink=0
 # showDLC=1
-# $matlabPath -nodisplay -nodesktop -r "cd('../visualization/'); plotActiveNeurons $parentdir $dataDir $expID $saveDir $fromGreenCC $showBallVar $showDrink $showDLC; exit"
+# $matlabPath -nodisplay -nodesktop -r "cd('../visualization/'); plotActiveNeurons $parentdir $traceDir $expID $saveDir $fromGreenCC $showBallVar $showDrink $showDLC; exit"
 
 
 # make full movie (all frames)

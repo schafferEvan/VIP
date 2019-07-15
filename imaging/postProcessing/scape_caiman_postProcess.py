@@ -428,12 +428,12 @@ class scape:
 
     def getGoodComponentsFull(self):
         isGood = np.zeros((np.shape(self.Y)[0],1))
-        ampTh = 1500 #2000 # discard if max of trace is below this
-        redTh = 200 #2000 # discard if max of trace is below this
-        magTh = 2 #1  #discard if mean of dOO is greater than this (motion)
+        ampTh = 500 #1500 #2000 # discard if max of trace is below this
+        redTh = 100 #200 #2000 # discard if max of trace is below this
+        magTh = 50 #2 #1  #discard if mean of dOO is greater than this (motion)
         minTh = 1 # discard if min is greater than this
         maxTh = 0.2 #0.3 # discard if max is smaller than this
-        rgccTh = 0.9 # discard units in which red and green are very correlated
+        rgccTh = 0.98 #0.9 # discard units in which red and green are very correlated
         
         My = np.max(self.Y, axis=1)
         Mr = np.max(self.R, axis=1)
@@ -444,18 +444,18 @@ class scape:
         self.getDatacorr(self.dOO, self.R)
         orCorr = self.dataCorr
         oMoreGreen = np.array(orCorr<ogCorr)
-        oMoreGreen = oMoreGreen.flatten()
+        self.oMoreGreen = oMoreGreen.flatten()
 
-        ampIsGood = np.array(My>ampTh)
-        redIsGood = np.array(Mr>redTh)
+        self.ampIsGood = np.array(My>ampTh)
+        self.redIsGood = np.array(Mr>redTh)
         rgccIsGood = np.array(self.rgCorr<rgccTh)
-        rgccIsGood = rgccIsGood.flatten()
-        minIsGood = np.array(np.min(self.dOO, axis=1)<minTh)
-        maxIsGood = np.array(np.max(self.dOO, axis=1)>maxTh)
-        magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
+        self.rgccIsGood = rgccIsGood.flatten()
+        self.minIsGood = np.array(np.min(self.dOO, axis=1)<minTh)
+        self.maxIsGood = np.array(np.max(self.dOO, axis=1)>maxTh)
+        self.magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
         oIsGood = np.array(self.oIsGood>0)
-        oIsGood = oIsGood.flatten()
-        self.goodIds = ampIsGood & oIsGood & minIsGood & maxIsGood & magIsGood & rgccIsGood & oMoreGreen & redIsGood
+        self.oIsGood = oIsGood.flatten()
+        self.goodIds = self.ampIsGood & self.oIsGood & self.minIsGood & self.maxIsGood & self.magIsGood & self.rgccIsGood & self.oMoreGreen & self.redIsGood
 
 
 
@@ -490,6 +490,7 @@ class scape:
             'Y0sc':self.Y0sc,'R0sc':self.R0sc,
             'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
             'snr':self.snr,'isGood':self.isGood,'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
+            'ampIsGood':self.ampIsGood,'minIsGood':self.minIsGood,'maxIsGood':self.maxIsGood,'magIsGood':self.magIsGood,'rgccIsGood':self.rgccIsGood,'oMoreGreen':self.oMoreGreen,'redIsGood':self.redIsGood,
             'Ypopt':self.Ypopt,'Rpopt':self.Rpopt,'rgCorr':self.rgCorr,
             'I':self.I,'icflipped':self.icflipped,'sigIc':self.sigIc,
             'cc':self.cc,'clustInd':self.clustInd,'clustData':self.clustData,'ICA':self.S_})
