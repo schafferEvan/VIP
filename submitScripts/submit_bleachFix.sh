@@ -15,7 +15,7 @@ traceFolder="$imagingDataDir"Yproj/""
 newBleachBuffer=4
 
 # # trim imaging data as if bleachBuffer in runs 2-end were nonzero
-# $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); retroactivelyAddBleachBuffer $traceFolder $newBleachBuffer; exit"
+$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); retroactivelyAddBleachBuffer $traceFolder $newBleachBuffer; exit"
 
 # matlab realigns behavior traces to match imaging
 $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder $newBleachBuffer; exit"
