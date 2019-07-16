@@ -12,9 +12,17 @@ if ~nargin
     showDLC = true;         % show output of deeplabcut
 end
 
-addpath(genpath(codePath))
+if ischar(fromGreenCC); fromGreenCC = str2double(fromGreenCC); end % this can happen if called from bash script
+if ischar(showBallVar); showBallVar = str2double(showBallVar); end % this can happen if called from bash script
+if ischar(showDrink); showDrink = str2double(showDrink); end % this can happen if called from bash script
+if ischar(showDLC); showDLC = str2double(showDLC); end % this can happen if called from bash script
 
-disp([fromGreenCC, showBallVar, showDrink, showDLC])
+fd.fromGreenCC = fromGreenCC;
+fd.showBallVar = showBallVar;
+fd.showDrink = showDrink;
+fd.showDLC = showDLC;
+
+addpath(genpath(codePath))
 
 if fromGreenCC
     load([expDir,'/post_fromYcc.mat'])
@@ -32,30 +40,32 @@ end
 load([expDir,'/Ysum.mat'])
 load([expDir,'/alignedBehavAndStim.mat'])
 load([expDir,'/alignedBehavSmooth.mat'])
-% if showDLC
-%     dlcname = dir([expDir,'/*DeepCut*.csv']);
-%     fd.dlcData = loaddata([expDir,dlcname]);
-% else
-%     fd.dlcData = [];
-% end
+if showDLC
+    dlcname = dir([expDir,'/*DeepCut*.csv']);
+    fd.dlcData = dlcRead([expDir,dlcname.name],behRaw.nDLCpts);
+else
+    fd.dlcData = [];
+end
 
 fd = struct('expID',expID,'savePath',savePath,'time',time,'alignedBehavior',alignedBehavior,...
     'ccFlag',ccFlag,'A',A,'Ysum',Ysum,'showBallVar',showBallVar,'showDrink',showDrink,'showDLC',showDLC);
 [fd.d1,fd.d2,fd.d3] = size(Ysum);
 
-
 beh = behSmooth; %alignedBehavior.legVar; %
-behNorm = zeros(size(beh));
-trialTmp = unique(trialFlag);
-for j=1:length(trialTmp)
-    behPiece = beh(trialFlag==trialTmp(j));
-    cmax = quantile(behPiece,.999); %quantile(beh,.95); %max(beh);
-    cmin = quantile(behPiece,.1); %quantile(beh,.05); %min(beh);
-    behNormPiece = (behPiece-cmin)/(cmax-cmin);
-    behNormPiece(behNormPiece>1)=1;
-    behNormPiece(behNormPiece<0)=0;
-    behNorm(trialFlag==trialTmp(j)) = behNormPiece;
+
+normalizeInPieces = false; % set to true for run/flail/run experiments
+if normalizeInPieces
+    behNorm = zeros(size(beh));
+    trialTmp = unique(trialFlag);
+    for j=1:length(trialTmp)
+        behPiece = beh(trialFlag==trialTmp(j));
+        behNormPiece = normalizeBehavior(behPiece);
+        behNorm(trialFlag==trialTmp(j)) = behNormPiece;
+    end
+else
+    behNorm = normalizeBehavior(beh);
 end
+
 fd.behNorm = behNorm;
 
 dYYfull = dYY; %zeros(size(F));
@@ -113,4 +123,13 @@ for flist = 1:3
     makeRasterFig(fd);
 end
 makeFootprintFig(fd);
+
+
+
+function behNorm = normalizeBehavior(beh)
+cmax = quantile(beh,.999); %quantile(beh,.95); %max(beh);
+cmin = quantile(beh,.1); %quantile(beh,.05); %min(beh);
+behNorm = (beh-cmin)/(cmax-cmin);
+behNorm(behNorm>1)=1;
+behNorm(behNorm<0)=0;
 
