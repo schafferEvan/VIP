@@ -545,61 +545,53 @@ class scape:
         self.Rpopt = []
         self.Ypopt = []
         self.trialFlagUnique = np.unique(self.trialFlag)
-        for i in self.trialFlagUnique:
-            rdata = self.Rscaled[:,np.flatnonzero(self.trialFlag==(i))]
-            ydata = self.Yscaled[:,np.flatnonzero(self.trialFlag==(i))]
 
-            # do smoothing on data scaled from 0 to 1
-            self.totVarSmoothData(rdata, 1.0)
-            RsmoothData = self.smoothData
-            # self.RmaxSm = self.maxSm
-            # self.RminSm = self.minSm
-            self.totVarSmoothData(ydata, 1.0)
-            YsmoothData = self.smoothData
-            # self.YmaxSm = self.maxSm
-            # self.YminSm = self.minSm
-            
-            # compute exponential fit on smoothed data
-            self.makeQuantileDF0(RsmoothData, bnds, self.Rpopt)
-            R0 = self.F0
-            self.Rpopt = self.popt
-            self.makeQuantileDF0(YsmoothData, bnds, self.Ypopt)
-            Y0 = self.F0
-            self.Ypopt = self.popt
+        rdata = self.Rscaled
+        ydata = self.Yscaled
 
-            # rescale smooth data to match scale of original data
-            self.rescaleData(YsmoothData, self.Ymin, self.Ymax)
-            Ygoodsc = self.rescaled
-            self.rescaleData(RsmoothData, self.Rmin, self.Rmax)
-            Rgoodsc = self.rescaled
+        # do smoothing on data scaled from 0 to 1
+        self.totVarSmoothData(rdata, 1.0)
+        RsmoothData = self.smoothData
+        # self.RmaxSm = self.maxSm
+        # self.RminSm = self.minSm
+        self.totVarSmoothData(ydata, 1.0)
+        YsmoothData = self.smoothData
+        # self.YmaxSm = self.maxSm
+        # self.YminSm = self.minSm
+        
+        # compute exponential fit on smoothed data
+        self.makeQuantileDF0(RsmoothData, bnds, self.Rpopt)
+        R0 = self.F0
+        self.Rpopt = self.popt
+        self.makeQuantileDF0(YsmoothData, bnds, self.Ypopt)
+        Y0 = self.F0
+        self.Ypopt = self.popt
 
-            # rescale exponential fits to match scale of original data
-            self.rescaleData(Y0, self.Ymin, self.Ymax)
-            Y0sc = self.rescaled
-            self.rescaleData(R0, self.Rmin, self.Rmax)
-            R0sc = self.rescaled
+        # rescale smooth data to match scale of original data
+        self.rescaleData(YsmoothData, self.Ymin, self.Ymax)
+        Ygoodsc = self.rescaled
+        self.rescaleData(RsmoothData, self.Rmin, self.Rmax)
+        Rgoodsc = self.rescaled
 
-            if (i==self.trialFlagUnique[0]):
-                self.RsmoothData = RsmoothData
-                self.YsmoothData = YsmoothData
-                self.R0 = R0
-                self.Y0 = Y0
-                self.Rgoodsc = Rgoodsc
-                self.Ygoodsc = Ygoodsc
-                self.R0sc = R0sc
-                self.Y0sc = Y0sc
-            else:
-                self.RsmoothData = np.concatenate((self.RsmoothData, RsmoothData), axis=1)
-                self.YsmoothData = np.concatenate((self.YsmoothData, YsmoothData), axis=1)
-                self.R0 = np.concatenate((self.R0, R0), axis=1)
-                self.Y0 = np.concatenate((self.Y0, Y0), axis=1)
-                self.Rgoodsc = np.concatenate((self.Rgoodsc, Rgoodsc), axis=1)
-                self.Ygoodsc = np.concatenate((self.Ygoodsc, Ygoodsc), axis=1)
-                self.R0sc = np.concatenate((self.R0sc, R0sc), axis=1)
-                self.Y0sc = np.concatenate((self.Y0sc, Y0sc), axis=1)
+        # rescale exponential fits to match scale of original data
+        self.rescaleData(Y0, self.Ymin, self.Ymax)
+        Y0sc = self.rescaled
+        self.rescaleData(R0, self.Rmin, self.Rmax)
+        R0sc = self.rescaled
 
-            print(np.shape(self.Yscaled))
-            print(np.shape(self.YsmoothData))
+
+        self.RsmoothData = RsmoothData
+        self.YsmoothData = YsmoothData
+        self.R0 = R0
+        self.Y0 = Y0
+        self.Rgoodsc = Rgoodsc
+        self.Ygoodsc = Ygoodsc
+        self.R0sc = R0sc
+        self.Y0sc = Y0sc
+        
+
+        print(np.shape(self.Yscaled))
+        print(np.shape(self.YsmoothData))
         
         self.getSNR(self.Yscaled, self.YsmoothData)
         self.getGoodComponents(snrTh, expFitTh, self.YsmoothData) # deprecated
