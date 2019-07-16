@@ -15,6 +15,7 @@ addpath(genpath(codePath))
 if nargin<3
     repeatedBleachBuffer = 4; % default is that 4 sec of runs 2-end are ignored
 end
+if ischar(repeatedBleachBuffer); repeatedBleachBuffer = str2double(repeatedBleachBuffer); end % this can happen if called from bash script
 
 %traceFolder = [baseFolder,experiment];%[baseFolder,'rustyOut/',experiment];
 imagingFile = [traceFolder,'F.mat']; %[traceFolder,'all.mat'];
@@ -42,10 +43,11 @@ behRaw = load(behaviorFilename);
 % check for deeplabcut output and load if available
 dlcname = dir([traceFolder,'*DeepCut*.csv']);
 if ~isempty(dlcname)
-    npts = 8; disp('update dlcRead to allow for variable number of points')
-    dlcData = dlcRead([expDir,dlcname],npts);
+    behRaw.nDLCpts = 8; disp('update dlcRead to allow for variable number of points')
+    behRaw.dlcData = dlcRead([traceFolder,dlcname.name],behRaw.nDLCpts);
 else
-    dlcData = [];
+    behRaw.nDLCpts = 0; 
+    behRaw.dlcData = [];
 end
 
 % get list of imaging start and stop times from LED in behavior video
@@ -88,7 +90,7 @@ for j=1:length(trials)
     
     
     % parse behavior
-    behaviorOpts.basicBehav = true; %false; % true => old defaults, ok if behav is const 30fps
+    behaviorOpts.basicBehav = true; %legacy. ok if behav vid is const fps
     behaviorOpts.timeTot = timeTot;
     behaviorOpts.info = info;
     behaviorOpts.bleachBuffer = bleachBuffer;
@@ -97,7 +99,7 @@ for j=1:length(trials)
     
     beh = formatBehaviorData(behRaw, behaviorOpts, j);
     disp('Behavior file added')
-    alignedBehaviorTot = concatenateBehaviorFiles(alignedBehaviorTot, beh, timeTmp); % ********** this needs to change
+    alignedBehaviorTot = concatenateBehaviorFiles(alignedBehaviorTot, beh, timeTmp);
 
 end
 
@@ -119,6 +121,7 @@ beh.time.imOff = behaviorOpts.parseStruct.stops(iter);
 beh.smoothing = max(round( ((beh.time.imOff-beh.time.imOn)/behaviorOpts.info.daq.scanLength)/behaviorOpts.info.daq.scanRate ),1);    % smooth by behavior frames per imaging frame
 beh.time.trueTime = (1:(beh.time.imOff-beh.time.imOn+1))/(beh.time.imOff-beh.time.imOn+1)*behaviorOpts.info.daq.scanLength;            % fixed?
 
+% smooth, align, and trim traces from simple behavior extraction
 beh.traces.legVarSmooth = smooth(beh.traces.legVar(beh.time.imOn:beh.time.imOff), beh.smoothing)';
 beh.traces.stimSmooth = beh.traces.isStimOn(beh.time.imOn:beh.time.imOff);
 beh.traces.drinkSmooth = beh.traces.isDrinking(beh.time.imOn:beh.time.imOff);
@@ -132,6 +135,21 @@ behAligned.stim = beh.traces.stimSmoothAligned(behaviorOpts.bleachBuffer+1:end);
 behAligned.drink = beh.traces.drinkSmoothAligned(behaviorOpts.bleachBuffer+1:end);
 
 
+% smooth, align, and trim traces from deeplabcut behavior extraction
+beh.dlcAligned.tmp.smooth = zeros(length(beh.time.trueTime), beh.nDLCpts*3);
+beh.dlcAligned.tmp.aligned = zeros(length(behaviorOpts.timeTot), beh.nDLCpts*3);
+beh.dlcAligned.data = zeros(length(behaviorOpts.timeTot)-behaviorOpts.bleachBuffer, beh.nDLCpts*3);
+nms = beh.dlcData.Properties.VariableNames;
+
+for j=1:beh.nDLCpts*3 % factor of 3 for x, y, and likelihood   
+    dataChunk = beh.dlcData.(nms{j})(beh.time.imOn:beh.time.imOff);
+    beh.dlcAligned.tmp.smooth(:,j) = smooth(dataChunk, beh.smoothing)';
+    beh.dlcAligned.tmp.aligned(:,j) = interp1(beh.time.trueTime, beh.dlcAligned.tmp.smooth(:,j), behaviorOpts.timeTot);    % interpolate to align time
+    beh.dlcAligned.data(:,j) = beh.dlcAligned.tmp.aligned(behaviorOpts.bleachBuffer+1:end,j);
+end
+behAligned.dlcAligned.data = beh.dlcAligned.data;
+
+
 
 function alignedBehaviorTot = concatenateBehaviorFiles(alignedBehaviorTot, alignedBehavior, time)
 
@@ -143,11 +161,13 @@ if ~isfield(alignedBehaviorTot,'legVar')
     alignedBehaviorTot.stim = alignedBehavior.stim;
     alignedBehaviorTot.drink = alignedBehavior.drink;
     alignedBehaviorTot.timeTot = time;
+    alignedBehaviorTot.dlcData = alignedBehavior.dlcAligned.data;
 else
     alignedBehaviorTot.legVar = [alignedBehaviorTot.legVar,alignedBehavior.legVar]; %behSmooth; %
     alignedBehaviorTot.stim = [alignedBehaviorTot.stim,alignedBehavior.stim];
     alignedBehaviorTot.drink = [alignedBehaviorTot.drink,alignedBehavior.drink];
     alignedBehaviorTot.timeTot = [alignedBehaviorTot.timeTot,alignedBehaviorTot.timeTot(end)+time];
+    alignedBehaviorTot.dlcData = [alignedBehaviorTot.dlcData; alignedBehavior.dlcAligned.data];
 end
 
 
