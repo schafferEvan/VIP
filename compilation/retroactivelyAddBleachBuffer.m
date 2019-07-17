@@ -21,7 +21,7 @@ mkdir([traceFolder,'untrimmedTraces/'])
 file = 'F.mat';
 disp(['Trimming ',file])
 
-copyfile([traceFolder,file],[traceFolder,'old/',file])
+copyfile([traceFolder,file],[traceFolder,'untrimmedTraces/',file])
 load([traceFolder,file]);
 [trials, ~, ~, runIds] = sortExperimentDirectory([traceFolder,'info/'],'_info');
 load([traceFolder,'info/',trials(1).name]);
@@ -52,7 +52,7 @@ save([traceFolder,file],'A','F','FR','traceFolder','trialFlag' );
 file = 'F_fromRed.mat';
 disp(['Trimming ',file])
 
-copyfile([traceFolder,file],[traceFolder,'old/',file])
+copyfile([traceFolder,file],[traceFolder,'untrimmedTraces/',file])
 load([traceFolder,file]);
 
 F = F(:,toKeep);
