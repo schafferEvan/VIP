@@ -1,15 +1,20 @@
 
 function retroactivelyAddBleachBuffer(traceFolder, trimSecs)
-% this is not part of the default pipeline, but allows for a bleach buffer
-% to be added to F, FR, and behavior after the source extraction steps have
-% been run.
+% allows for a bleach buffer to be added to F, FR, and behavior 
+% after the source extraction steps have been run.
 
 if ischar(trimSecs); trimSecs = str2double(trimSecs); end % this can happen if called from bash script
 disp(['Trimming an additional ',num2str(trimSecs), 'sec for bleaching'])
 
 addpath(genpath('../..'))
 
-mkdir([traceFolder,'old/'])
+if isfolder([traceFolder,'untrimmedTraces/'])
+    if exist([traceFolder,'untrimmedTraces/F.mat'],'file')
+        disp(' Trimming already happened.  Skipping.')
+        return
+    end
+end
+mkdir([traceFolder,'untrimmedTraces/'])
 
 
 % -------- from green ----------------
