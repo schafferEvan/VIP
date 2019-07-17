@@ -19,20 +19,21 @@ A=fd.A;
 goodIds=fd.goodIds;
 idx=fd.idx;
 
-Ysum=fd.Ysum;
-
 
 
 % generate xticks and labels
 tks = floor(time(1)/60):floor(time(end)/60);
 tkLoc = zeros(size(tks));
 tkLab = cell(size(tks));
+labelFlagVal = round(length(tks)/5); % only label 5 ticks total
 for j=1:length(tks)
-    if mod(tks(j),2); tkLab{j}='';
+    if mod(tks(j),labelFlagVal); tkLab{j}='';
     else; tkLab{j}=num2str(j);
     end
     [~,tkLoc(j)] = min(abs(time-60*tks(j)));
 end
+tkLab{length(tks)}=num2str(length(tks));
+tkLab{1}='';
 
 f2 = figure;
 set(gcf,'color','w')
@@ -44,49 +45,78 @@ f2.InvertHardcopy = 'off';
 f2.PaperUnits = 'points';
 f2.PaperSize = 1.1*[pos(3) pos(4)];
 
-subplot(5,1,2:5); imagesc(pData(pOrdFull,:)); xlim([1 size(pData,2)]); caxis([0.1 0.9])
+a1=subplot(5,1,2:5); imagesc(pData(pOrdFull,:)); xlim([1 size(pData,2)]); caxis([0.1 0.9])
 ylabel('Cell Number','fontsize',12); xlabel('Time (min)','fontsize',12);
 set(gca,'XTick',tkLoc); set(gca,'XTickLabel',tkLab);
+box off
 colormap hot
 setFigColors;
 tmpA=get(gca,'Position');
 
-subplot(20,1,2); plot(behNorm,'color',[.9,.9,.9],'linewidth',1); xlim([1 size(pData,2)]); ylim([min(behNorm) max(behNorm)]); axis off
-tmpB=get(gca,'Position');
-set(gca,'Position',[tmpB(1),tmpB(2)-.4*(tmpB(2)-tmpA(2)-tmpA(4)),tmpB(3),tmpB(4)+.4*(tmpB(2)-tmpA(2)-tmpA(4))]);
-
-subplot(20,1,1); plot(alignedBehavior.stim,'linewidth',1); hold all; plot(alignedBehavior.drink,'linewidth',1); xlim([1 size(pData,2)]); ylim([0 1]); axis off
-tmpC=get(gca,'Position');
-set(gca,'Position',[tmpC(1),tmpC(2)-.4*(tmpC(2)-tmpB(2)-tmpB(4)),tmpC(3),tmpC(4)+.4*(tmpC(2)-tmpB(2)-tmpB(4))]);
+totNheaderPlots = fd.showBallVar+fd.showDrink+fd.showDLC*size(fd.dlcData,2)/3;
+headerBottom = 1.05*(a1.Position(2)+a1.Position(4));
+headerTotHeight = 0.92 - headerBottom;
+headerFigHeight = headerTotHeight/totNheaderPlots;
+nhPlotted = 0;
 expTitle=strrep(expID,'_','\_');
-title([expTitle,dFlag,ccFlag],'color',[.9,.9,.9]);%,'interpreter','none')
+headerLabelXoffset = -0.09*size(pData,2);
 
-% make map of footprints --------------------------------------------------
-bkTh = 0.1;
-groupColors = flipud(jet(K));
-R = zeros(d1,d2);
-G = zeros(d1,d2);
-B = zeros(d1,d2);
-Agood = A(:,goodIds);
-cIdx = zeros(size(idx));
-tmpIdx = 0;
+disp([num2str(totNheaderPlots),' header plots'])
 
-for k=1:K
-    kIds = idx==pOrd(k); %goodIds(idx==pOrd(k));
-    cIdx(tmpIdx+(1:sum(kIds)))=k; tmpIdx=tmpIdx+sum(kIds);
-    Ar = reshape( max(full(Agood(:,kIds)),[],2), d1,d2,d3);
-    Ar1 = max(Ar,[],3);
-    R = R + Ar1*groupColors(k,1);
-    G = G + Ar1*groupColors(k,2);
-    B = B + Ar1*groupColors(k,3);
+if fd.showDrink
+    axes('position',[a1.Position(1), headerBottom+headerFigHeight*(totNheaderPlots-1), a1.Position(3), headerFigHeight])
+    plot(alignedBehavior.stim,'linewidth',1); hold all; plot(alignedBehavior.drink,'linewidth',1); 
+    xlim([1 size(pData,2)]); ylim([0 1]); 
+    axis off
+    %tmpC=get(gca,'Position');
+    %set(gca,'Position',[tmpC(1),tmpC(2)-.4*(tmpC(2)-tmpB(2)-tmpB(4)),tmpC(3),tmpC(4)+.4*(tmpC(2)-tmpB(2)-tmpB(4))]);
+    nhPlotted = nhPlotted + 1;
+    title([expTitle,dFlag,ccFlag],'color',[.9,.9,.9]);%,'interpreter','none')
+    text(headerLabelXoffset, 0.5, 'drink', 'Fontsize',8, 'color',[.9,.9,.9])
 end
-%mx = max([max(R(:)),max(G(:)),max(B(:))]);
-%R = R/mx; G = G/mx; B = B/mx;
-RGB = cat(3,R,G,B);
+if fd.showBallVar
+    axes('position',[a1.Position(1), headerBottom+headerFigHeight*(totNheaderPlots-1-nhPlotted), a1.Position(3), headerFigHeight]); 
+    plot(behNorm,'color',[.9,.9,.9],'linewidth',1); 
+    xlim([1 size(pData,2)]); ylim([min(behNorm) max(behNorm)]); 
+    axis off
+    %tmpB=get(gca,'Position');
+    %set(gca,'Position',[tmpB(1),tmpB(2)-.4*(tmpB(2)-tmpA(2)-tmpA(4)),tmpB(3),tmpB(4)+.4*(tmpB(2)-tmpA(2)-tmpA(4))]);
+    if ~nhPlotted
+        title([expTitle,dFlag,ccFlag],'color',[.9,.9,.9]);%,'interpreter','none')
+    end
+    nhPlotted = nhPlotted + 1;
+    text(headerLabelXoffset, .5*(max(behNorm)-min(behNorm)), 'ball', 'Fontsize',8, 'color',[.9,.9,.9])
+end
+
+dlcColor = jet(size(fd.dlcData,2)/3);
+for j=1:totNheaderPlots-nhPlotted
+    axes('position',[a1.Position(1), headerBottom+headerFigHeight*(totNheaderPlots-1-nhPlotted), a1.Position(3), headerFigHeight]); 
+    xdataChunk = diff(fd.dlcData(:,1+(j-1)*3)); %.(['x',num2str(j)]);
+    ydataChunk = diff(fd.dlcData(:,2+(j-1)*3)); %.(['y',num2str(j)]);
+    legEnergy = xdataChunk.^2 + ydataChunk.^2;
+    legEnergy = TVL1denoise(legEnergy, 0.1, 100); 
+    hold on; plot(legEnergy,'color',dlcColor(j,:),'linewidth',1);
+    xlim([1 size(pData,2)]); %ylim([min(behNorm) max(behNorm)]); 
+    axis off
+    if ~nhPlotted
+        title([expTitle,dFlag,ccFlag],'color',[.9,.9,.9]);%,'interpreter','none')
+    end
+    nhPlotted = nhPlotted + 1;
+    text(headerLabelXoffset, mean(legEnergy), ['joint ',num2str(j)], 'Fontsize',8, 'color',dlcColor(j,:))
+end
+
 
 
 
 % make colorbar to relate footprints to traces ----------------------------
+cIdx = zeros(size(idx));
+tmpIdx = 0;
+for k=1:K
+    kIds = idx==pOrd(k); %goodIds(idx==pOrd(k));
+    cIdx(tmpIdx+(1:sum(kIds)))=k; tmpIdx=tmpIdx+sum(kIds);
+end
+groupColors = flipud(jet(K));
+
 atmp = tmpA;%get(gca,'position');
 axes('position',[atmp(1)+atmp(3)+.015,atmp(2),.02,atmp(4)])
 %[~,idl] = sort(idx);

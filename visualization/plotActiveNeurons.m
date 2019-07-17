@@ -17,7 +17,6 @@ if ischar(showBallVar); showBallVar = str2double(showBallVar); end % this can ha
 if ischar(showDrink); showDrink = str2double(showDrink); end % this can happen if called from bash script
 if ischar(showDLC); showDLC = str2double(showDLC); end % this can happen if called from bash script
 
-fd.fromGreenCC = fromGreenCC;
 fd.showBallVar = showBallVar;
 fd.showDrink = showDrink;
 fd.showDLC = showDLC;
@@ -40,12 +39,6 @@ end
 load([expDir,'/Ysum.mat'])
 load([expDir,'/alignedBehavAndStim.mat'])
 load([expDir,'/alignedBehavSmooth.mat'])
-if showDLC
-    dlcname = dir([expDir,'/*DeepCut*.csv']);
-    fd.dlcData = dlcRead([expDir,dlcname.name],behRaw.nDLCpts);
-else
-    fd.dlcData = [];
-end
 
 fd = struct('expID',expID,'savePath',savePath,'time',time,'alignedBehavior',alignedBehavior,...
     'ccFlag',ccFlag,'A',A,'Ysum',Ysum,'showBallVar',showBallVar,'showDrink',showDrink,'showDLC',showDLC);
@@ -67,6 +60,7 @@ else
 end
 
 fd.behNorm = behNorm;
+fd.dlcData = alignedBehavior.dlcData;
 
 dYYfull = dYY; %zeros(size(F));
 dRRfull = dRR; %zeros(size(F));
@@ -127,8 +121,8 @@ makeFootprintFig(fd);
 
 
 function behNorm = normalizeBehavior(beh)
-cmax = quantile(beh,.999); %quantile(beh,.95); %max(beh);
-cmin = quantile(beh,.1); %quantile(beh,.05); %min(beh);
+cmax = quantile(beh,.9); %quantile(beh,.999); %max(beh);
+cmin = quantile(beh,.1); %quantile(beh,.1); %min(beh);
 behNorm = (beh-cmin)/(cmax-cmin);
 behNorm(behNorm>1)=1;
 behNorm(behNorm<0)=0;
