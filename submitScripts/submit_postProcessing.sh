@@ -10,6 +10,8 @@ echo $matlabPath
 
 cwd=$(pwd)
 parentdir="$(dirname "$cwd")"
+traceFolder="$imagingDataDir"Yproj/""
+
 
 # matlab parses ROIs using watershed
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_sumImage $parentdir $imagingDataDir; exit"
@@ -22,15 +24,19 @@ $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extract_
 
 
 # copy behavior traces into subdirectory of imaging to aggregate final output
-traceFolder="$imagingDataDir"Yproj/""
 cp -r "$imagingDataDir"info"" $traceFolder
 behavTraceFolder="$traceFolder"behavior/""
 mkdir $behavTraceFolder
 cp "$behaviorDataDir$flyNum"*.mat"" $behavTraceFolder
 
 
+
+# # trim imaging data as if bleachBuffer in runs 2-end were nonzero
+newBleachBuffer=7
+$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); retroactivelyAddBleachBuffer $traceFolder $newBleachBuffer; exit"
+
 # matlab realigns behavior traces to match imaging
-$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder; exit"
+$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder $newBleachBuffer; exit"
 
 
 # python smooths imaging, behavior, computes dFF and clustering
