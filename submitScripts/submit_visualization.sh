@@ -31,6 +31,8 @@ $matlabPath -nodisplay -nodesktop -r "cd('../visualization/'); make_quickMovie $
 # showDrink=0
 # showDLC=1
 # $matlabPath -nodisplay -nodesktop -r "cd('../visualization/'); plotActiveNeurons $parentdir $traceDir $expID $saveDir $fromGreenCC $showBallVar $showDrink $showDLC; exit"
+# fromGreenCC=1
+# $matlabPath -nodisplay -nodesktop -r "cd('../visualization/'); plotActiveNeurons $parentdir $traceDir $expID $saveDir $fromGreenCC $showBallVar $showDrink $showDLC; exit"
 
 
 # make full movie (all frames)
