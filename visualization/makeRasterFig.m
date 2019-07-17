@@ -142,7 +142,7 @@ setFigColors;
 axis off
 
 f2.InvertHardcopy = 'off';
-if ~isfolder([savePath,'_plots/']); mkdir([savePath,'_plots/',fnm]); end
+%if ~isfolder([savePath,'_plots/']); mkdir([savePath,'_plots/',fnm]); end
 expNameHandle=strrep(expID,'/','_');
 saveas(f2, [savePath,'_plots/',expNameHandle,'_',fnm,'_from',ccFlag(end-2:end),'.png'])
 
