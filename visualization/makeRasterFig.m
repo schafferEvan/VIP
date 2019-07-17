@@ -25,15 +25,18 @@ idx=fd.idx;
 tks = floor(time(1)/60):floor(time(end)/60);
 tkLoc = zeros(size(tks));
 tkLab = cell(size(tks));
-labelFlagVal = round(length(tks)/5); % only label 5 ticks total
+labelFlagVal = round(length(tks)/4); % only label 4 ticks total
 for j=1:length(tks)
-    if mod(tks(j),labelFlagVal); tkLab{j}='';
-    else; tkLab{j}=num2str(j);
-    end
     [~,tkLoc(j)] = min(abs(time-60*tks(j)));
+    tkLab{j}=num2str(tks(j));
 end
-tkLab{length(tks)}=num2str(length(tks));
-tkLab{1}='';
+for j=1:length(tks)
+    if mod(j-1,labelFlagVal)
+        tkLab{length(tks)-j+1}='';
+    end
+end
+%tkLab{length(tks)}=num2str(length(tks));
+% tkLab{1}='';
 
 f2 = figure;
 set(gcf,'color','w')
@@ -102,7 +105,7 @@ for j=1:totNheaderPlots-nhPlotted
         title([expTitle,dFlag,ccFlag],'color',[.9,.9,.9]);%,'interpreter','none')
     end
     nhPlotted = nhPlotted + 1;
-    text(headerLabelXoffset, mean(legEnergy), ['joint ',num2str(j)], 'Fontsize',8, 'color',dlcColor(j,:))
+    text(headerLabelXoffset, mean(legEnergy), ['point ',num2str(j)], 'Fontsize',8, 'color',dlcColor(j,:))
 end
 
 
