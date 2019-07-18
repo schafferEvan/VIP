@@ -7,3 +7,6 @@ submitScripts/evan_temp.sh
 submitScripts/evan_temp.sh
 submitScripts/submit_visualization_evanTemp.sh
 submitScripts/temp.sh
+compilation/compileFinalSummary.py
+compilation/tempCompileFinalSummary.m
+submitScripts/evan_temp.sh
