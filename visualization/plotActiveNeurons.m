@@ -3,9 +3,9 @@ function plotActiveNeurons(codePath, expDir, expID, savePath, fromGreenCC, showB
 
 if ~nargin
     codePath = '..';
-    expDir = '/Volumes/SCAPEdata1/finalData/2019_07_01_Nsyb_NLS6s_walk/fly2/Yproj/';
-    expID = '2019_07_01_Nsyb_NLS6s_walk/fly2';
-    savePath = '/Volumes/SCAPEdata1/figsAndMovies/2019_07_01_Nsyb_NLS6s_walk/fly2/';
+    expDir = '/Volumes/SCAPEdata1/finalData/2019_06_30_Nsyb_NLS6s_walk/fly1/Yproj/';
+    expID = '2019_06_30_Nsyb_NLS6s_walk/fly2';
+    savePath = '/Volumes/SCAPEdata1/figsAndMovies/2019_06_30_Nsyb_NLS6s_walk/fly1/';
     fromGreenCC = false;    % use ROIs parsed from green image (false -> use red)
     showBallVar = true;     % show motion energy of ball extracted as pix var
     showDrink = false;      % show trace of bubble and drinking
