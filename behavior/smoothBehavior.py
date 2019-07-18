@@ -26,6 +26,9 @@ class smoothData:
         self.matVar = f[structname].__getitem__(structname).__getitem__(varname)
         self.matVar = np.transpose(self.matVar)
 
+    def loadMat(self, file, structname, varname):
+        self.mat=io.loadmat(self.baseFolder+'alignedBehavAndStim.mat') 
+        self.matVar=self.mat[structname].__getitem__(varname)[0][0]
 
     def totVarSmoothData(self, data, weight):
         self.smoothData = np.zeros(np.shape(data))
@@ -48,7 +51,10 @@ class smoothData:
     def getSmoothBeh(self):
         inputFile = 'alignedBehavAndStim.mat'
         outputFile = 'alignedBehavSmooth.mat'
-        self.loadMat7p3(inputFile, '/alignedBehavior', 'legVar')
+        try:
+            self.loadMat7p3(inputFile, '/alignedBehavior', 'legVar')
+        except:
+            self.loadMat(inputFile, 'alignedBehavior', 'legVar')
         print(np.shape(self.matVar))
         self.matVar[:,np.flatnonzero(np.isnan(self.matVar))]=0
         self.normalizeRawF(self.matVar)
