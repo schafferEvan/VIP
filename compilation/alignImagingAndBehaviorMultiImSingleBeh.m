@@ -126,9 +126,9 @@ beh.traces.legVarSmooth = smooth(beh.traces.legVar(beh.time.imOn:beh.time.imOff)
 beh.traces.stimSmooth = beh.traces.isStimOn(beh.time.imOn:beh.time.imOff);
 beh.traces.drinkSmooth = beh.traces.isDrinking(beh.time.imOn:beh.time.imOff);
 
-beh.traces.legVarSmoothAligned = interp1(beh.time.trueTime, beh.traces.legVarSmooth, behaviorOpts.timeTot);    % interpolate to align time
-beh.traces.stimSmoothAligned = interp1(beh.time.trueTime, beh.traces.stimSmooth, behaviorOpts.timeTot);    % interpolate to align time
-beh.traces.drinkSmoothAligned = interp1(beh.time.trueTime, beh.traces.drinkSmooth, behaviorOpts.timeTot);    % interpolate to align time
+beh.traces.legVarSmoothAligned = interp1(beh.time.trueTime, beh.traces.legVarSmooth, behaviorOpts.timeTot,'nearest','extrap');    % interpolate to align time
+beh.traces.stimSmoothAligned = interp1(beh.time.trueTime, beh.traces.stimSmooth, behaviorOpts.timeTot,'nearest','extrap');    % interpolate to align time
+beh.traces.drinkSmoothAligned = interp1(beh.time.trueTime, beh.traces.drinkSmooth, behaviorOpts.timeTot,'nearest','extrap');    % interpolate to align time
 
 behAligned.legVar = beh.traces.legVarSmoothAligned(behaviorOpts.bleachBuffer+1:end);
 behAligned.stim = beh.traces.stimSmoothAligned(behaviorOpts.bleachBuffer+1:end);
@@ -144,7 +144,7 @@ nms = beh.dlcData.Properties.VariableNames;
 for j=1:beh.nDLCpts*3 % factor of 3 for x, y, and likelihood   
     dataChunk = beh.dlcData.(nms{j})(beh.time.imOn:beh.time.imOff);
     beh.dlcAligned.tmp.smooth(:,j) = smooth(dataChunk, beh.smoothing)';
-    beh.dlcAligned.tmp.aligned(:,j) = interp1(beh.time.trueTime, beh.dlcAligned.tmp.smooth(:,j), behaviorOpts.timeTot);    % interpolate to align time
+    beh.dlcAligned.tmp.aligned(:,j) = interp1(beh.time.trueTime, beh.dlcAligned.tmp.smooth(:,j), behaviorOpts.timeTot,'nearest','extrap');    % interpolate to align time
     beh.dlcAligned.data(:,j) = beh.dlcAligned.tmp.aligned(behaviorOpts.bleachBuffer+1:end,j);
 end
 behAligned.dlcAligned.data = beh.dlcAligned.data;
