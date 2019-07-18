@@ -8,4 +8,4 @@ behaviorDataDir="/Volumes/SCAPEdata1/scapeBehavior/2019_06_28_Nsyb_NLS6s_walk/"
 matlabPath="/Applications/MATLAB_R2018b.app/bin/matlab"
 # -------------------------------------------------------------------
 # -------------------------------------------------------------------
-bash submit_postProcessing.sh $imagingDataDir $behaviorDataDir $matlabPath $flyNum
+bash submit_postProcessing_tmp.sh $imagingDataDir $behaviorDataDir $matlabPath $flyNum
