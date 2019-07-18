@@ -105,7 +105,7 @@ for j=1:totNheaderPlots-nhPlotted
         title([expTitle,dFlag,ccFlag],'color',[.9,.9,.9]);%,'interpreter','none')
     end
     nhPlotted = nhPlotted + 1;
-    text(headerLabelXoffset, mean(legEnergy), ['point ',num2str(j)], 'Fontsize',8, 'color',dlcColor(j,:))
+    text(headerLabelXoffset, nanmean(legEnergy), ['point ',num2str(j)], 'Fontsize',8, 'color',dlcColor(j,:))
 end
 
 
@@ -145,7 +145,7 @@ setFigColors;
 axis off
 
 f2.InvertHardcopy = 'off';
-%if ~isfolder([savePath,'_plots/']); mkdir([savePath,'_plots/',fnm]); end
+if ~isfolder([savePath,'_plots/']); mkdir([savePath,'_plots/']); end
 expNameHandle=strrep(expID,'/','_');
 saveas(f2, [savePath,'_plots/',expNameHandle,'_',fnm,'_from',ccFlag(end-2:end),'.png'])
 
