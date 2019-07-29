@@ -3,6 +3,7 @@ imagingDataDir=$1
 behaviorDataDir=$2
 matlabPath=$3
 flyNum=$4
+expID=$5
 
 echo $imagingDataDir
 echo $behaviorDataDir
@@ -43,3 +44,7 @@ $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBeha
 python ../behavior/smoothBehavior.py $traceFolder
 python ../imaging/postProcessing/postProcessOne.py $traceFolder
 
+
+# generate aggregated npz files to share with collaborators
+fromGreen='False'
+python ../compilation/compileFinalSummary.py $traceFolder $expID $traceFolder $fromGreen
