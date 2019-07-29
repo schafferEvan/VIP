@@ -14,12 +14,21 @@ import numpy as np
 from scipy import sparse, io
 
 
-# ----------------------------------------------
-expDir = '/Volumes/SCAPEdata1/finalData/2019_07_01_Nsyb_NLS6s_walk/fly2/Yproj/'
-expID = '2019_07_01_Nsyb_NLS6s_walk/fly2'
-savePath = expDir #'/Users/evan/Downloads/' #'/Users/evan/Dropbox/_AxelLab/_flygenvectors_dataShare/'
-fromGreenCC = False    # use ROIs parsed from green image (false -> use red)
-# ----------------------------------------------
+mynargs = sys.argv
+if (len(mynargs)>1):
+    expDir = mynargs[1]
+    expID = mynargs[2]
+    savePath = mynargs[3]
+    fromGreenCC = mynargs[4]=='True'
+
+else:
+    expDir = '/Volumes/SCAPEdata1/finalData/2019_07_01_Nsyb_NLS6s_walk/fly2/Yproj/'
+    expID = '2019_07_01_Nsyb_NLS6s_walk/fly2'
+    savePath = expDir #'/Users/evan/Downloads/' #'/Users/evan/Dropbox/_AxelLab/_flygenvectors_dataShare/'
+    fromGreenCC = False    # use ROIs parsed from green image (false -> use red)
+
+
+# load stuff --------------------------------------
 
 if fromGreenCC:
     matPost=io.loadmat(expDir+'/post_fromYcc.mat') 
@@ -55,7 +64,7 @@ im = np.uint16(2**16*(Ysum-m)/(M-m))
 
 
 
-# save stuff
+# save stuff --------------------------------------
 
 expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
