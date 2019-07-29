@@ -11,3 +11,6 @@ compilation/old
 compilation/tempCompileFinalSummary.m
 submitScripts/evan_temp.sh
 compilation/convertYsum.py
+sandbox/test.sh
+sandbox/bleachCorrect_demo.py
+sandbox/bleachCorrect_demo.ipynb
