@@ -39,6 +39,10 @@ $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); retroactivelyAddBle
 # matlab realigns behavior traces to match imaging
 $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder $newBleachBuffer; exit"
 
+# generate aggregated RAW mat files to share with collaborators
+fromGreen='False'
+python ../compilation/compileRaw.py $traceFolder $expID $traceFolder $fromGreen
+
 
 # python smooths imaging, behavior, computes dFF and clustering
 python ../behavior/smoothBehavior.py $traceFolder
