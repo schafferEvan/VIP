@@ -236,6 +236,30 @@ class scape:
         #     except:
         #         print('unable to calculate dII on unit')
             
+    def makeQuantileF0_multiExp(self, data, bnds, poptPrev):
+        # explicitly passing in data rather than referencing attribute, so data can be 'Y' or 'C'
+        # self.tFit = np.linspace(0, np.shape(data)[1]-1, np.shape(data)[1])
+        nobs = np.shape(data)[1]
+        self.tFit = np.linspace(0, 1, nobs)
+        time = np.arange(0,nobs,1)
+        self.popt = np.zeros((np.shape(data)[0],len(bnds)))
+        self.F0 = np.zeros(np.shape(data))
+        self.Y0rescaled = np.zeros(np.shape(data))
+        self.rsq = np.zeros((np.shape(data)[0],1))
+        bnds = np.array(bnds)
+        ics = np.ones((1,len(bnds)))
+
+        for i in range(0, np.shape(data)[0]):
+            print(i)
+            res = minimize(multi_FobjFun, ics, [time,data[i,:],self.trList], method='SLSQP', bounds=bnds,
+              options={'maxiter': 1000, 'ftol': 1e-8})
+            self.popt[i,:] = res.x
+            self.F0[i,:] = multiExpFun(time, res.x[:-2], res.x[-2], self.trList, res.x[-1])
+            self.Y0rescaled[i,:] = np.multiply( self.F0[i,:], self.max[i]-self.min[i] ) + self.min[i]
+            c = np.cov(self.F0[i,:], data[i,:])
+            self.rsq[i] = (c[0,1]/np.sqrt(c[0,0]*c[1,1]))**2
+
+
 
     def makeQuantileDF0(self, data, bnds, poptPrev):
         # explicitly passing in data rather than referencing attribute, so data can be 'Y' or 'C'
@@ -479,6 +503,14 @@ class scape:
         plt.legend()
         plt.show()
 
+    def getIdxList(self, longList, shortList):
+        #self.trialFlag, self.trialFlagUnique
+        idx = np.zeros(np.shape(shortList))
+        for j in range(len(shortList)):
+            idx[j] = np.where(longList==shortList[j])[0][0]
+        return idx.astype(int)
+
+
     def saveSummary(self, filename):
         np.save(self.baseFolder+filename+'.npy',self.dOO)
         io.savemat(self.baseFolder+filename,{'Fsc':self.Yscaled,'Rsc':self.Rscaled,
@@ -541,10 +573,11 @@ class scape:
         
         snrTh = -10**8 #15
         expFitTh = 1 #0.99
-        bnds = ((0, 1), (0.2, 2))
+
         self.Rpopt = []
         self.Ypopt = []
         self.trialFlagUnique = np.unique(self.trialFlag)
+        self.trList = self.getIdxList(self.trialFlag, self.trialFlagUnique)
 
         rdata = self.Rscaled
         ydata = self.Yscaled
@@ -560,10 +593,15 @@ class scape:
         # self.YminSm = self.minSm
         
         # compute exponential fit on smoothed data
-        self.makeQuantileDF0(RsmoothData, bnds, self.Rpopt)
+        al = (0, 200)
+        # bnds = ((0, 1), (0.2, 2))
+        bnds = np.array( np.tile(al,(len(self.trList)+2,1)) )
+
+        # self.makeQuantileDF0(RsmoothData, bnds, self.Rpopt)
+        self.makeQuantileF0_multiExp(RsmoothData, bnds, self.Rpopt)
         R0 = self.F0
         self.Rpopt = self.popt
-        self.makeQuantileDF0(YsmoothData, bnds, self.Ypopt)
+        self.makeQuantileF0_multiExp(YsmoothData, bnds, self.Ypopt)
         Y0 = self.F0
         self.Ypopt = self.popt
 
@@ -643,6 +681,13 @@ def expFun(t, a, b, tau):
 def dExpFun(t, a, tau):
     return  - a/tau*np.exp(- t/tau)
 
+def multiExpFun(time, a, b, idx, tau):
+    x = b + np.zeros(len(time))
+    for i in range(len(idx)):
+        T = idx[i]
+        x[T:] = a[i]*np.exp(- (time[T:]-T)/tau)
+    return x
+
 def dFobjFun(params, data):
     # this is the objective function to optimize in quantile regression, with 100*q the quantile in %
     q = 0.5
@@ -665,6 +710,21 @@ def FobjFun(params, data):
     hp = np.flatnonzero(h)
     return (q-1)*np.sum( Y[hp] - Yhat[hp] ) + q*np.sum( Y[hn] - Yhat[hn] )
 
+def multi_FobjFun(params, data):
+    # this is the objective function to optimize in quantile regression, with 100*q the quantile in %
+    q = 0.5
+    a = params[:-2]
+    b = params[-2]
+    tau = params[-1]
+    [X,Y,trList] = data
+    
+    Yhat = multiExpFun(X, a, b, trList, tau)
+    h = (Yhat>Y)
+    hn = np.flatnonzero(np.logical_not(h))
+    hp = np.flatnonzero(h)
+    objOut = (q-1)*np.sum( Y[hp] - Yhat[hp] ) + q*np.sum( Y[hn] - Yhat[hn] )
+    return objOut
+
 
 
 if __name__ == '__main__':
@@ -675,7 +735,7 @@ if __name__ == '__main__':
     from scipy import io
     # import smoothBehavior as beh
 
-    baseFolder = '/Users/evan/Dropbox/_sandbox/sourceExtraction/good/running/old/180824_f3r1/' #feeding/190319_Trh_f1/' #_runAndFeed/190422_f1/' #
+    baseFolder = '/Volumes/SCAPEdata1/finalData/2019_07_01_Nsyb_NLS6s_walk/fly2/Yproj/' #feeding/190319_Trh_f1/' #_runAndFeed/190422_f1/' #
     # behobj = beh.smoothData(baseFolder)
     # behobj.getSmoothBeh()
 
