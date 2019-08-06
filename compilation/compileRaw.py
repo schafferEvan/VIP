@@ -67,6 +67,11 @@ m = np.min(Ysum)
 im = np.uint16(2**16*(Ysum-m)/(M-m))
 
 
+# get scanrate
+infodir = expDir+'info/'
+infols=os.listdir(infodir)
+info = io.loadmat(infodir+infols[0])
+scanRate = info['info']['daq'][0][0]['scanRate'][0][0][0][0]
 
 
 # save stuff --------------------------------------
@@ -74,7 +79,7 @@ im = np.uint16(2**16*(Ysum-m)/(M-m))
 expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
 
-np.savez( saveHandle+'_raw.npz', time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, dims=dims, im=im) #dims=dims, A=A, 
+np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, dims=dims, im=im) #dims=dims, A=A, 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
 
 # io.savemat(saveHandle+'_raw.mat',{
