@@ -26,26 +26,44 @@ from numpy.polynomial.polynomial import Polynomial as poly
 from scipy.ndimage.filters import gaussian_filter1d as gsm
 
 
+class dataObj:
+    def __init__(self):
+        self.Y = np.ndarray(shape=(1,1))
+        self.R = np.ndarray(shape=(1,1))
+        self.trialFlag = np.ndarray(shape=(1,1))  
+        self.time = np.ndarray(shape=(1,1))    
+        self.ball = np.ndarray(shape=(1,1))     
+        self.dlc = np.ndarray(shape=(1,1))     
+        self.dims = np.ndarray(shape=(1,1))    
+        self.im = np.ndarray(shape=(1,1))   
+        self.A = np.ndarray(shape=(1,1))      
+
+
 
 class scape:
 
     def __init__(self, baseFolder):
         self.baseFolder = baseFolder
-        self.A_tot = sparse.csc_matrix((1,1))
-        self.C_tot = np.ndarray(shape=(1,1))
-        self.YrA_tot = np.ndarray(shape=(1,1))
-        self.b_tot = np.ndarray(shape=(1,1))
-        self.f_tot = np.ndarray(shape=(1,1))
-        self.Y = np.ndarray(shape=(1,1))
-        self.Y0 = np.ndarray(shape=(1,1))
-        self.Af = np.ndarray(shape=(1,1))
-        self.b = np.ndarray(shape=(1,1))
-        self.f = np.ndarray(shape=(1,1))
-        self.tFit = np.ndarray(shape=(1,1))
-        self.popt = np.ndarray(shape=(1,1))
-        self.min = np.ndarray(shape=(1,1))
-        self.max = np.ndarray(shape=(1,1))
-        self.Yscaled = np.ndarray(shape=(1,1))
+        self.raw = dataObj()
+        self.good = dataObj()
+        # self.A_tot = sparse.csc_matrix((1,1))
+        # self.C_tot = np.ndarray(shape=(1,1))
+        # self.YrA_tot = np.ndarray(shape=(1,1))
+        # self.b_tot = np.ndarray(shape=(1,1))
+        # self.f_tot = np.ndarray(shape=(1,1))
+        # # self.raw.Y = np.ndarray(shape=(1,1))
+        # # self.raw.R = np.ndarray(shape=(1,1))
+        # # self.good.Y = np.ndarray(shape=(1,1))
+        # # self.good.R = np.ndarray(shape=(1,1))
+        # self.Y0 = np.ndarray(shape=(1,1))
+        # self.Af = np.ndarray(shape=(1,1))
+        # self.b = np.ndarray(shape=(1,1))
+        # self.f = np.ndarray(shape=(1,1))
+        # self.tFit = np.ndarray(shape=(1,1))
+        # self.popt = np.ndarray(shape=(1,1))
+        # self.min = np.ndarray(shape=(1,1))
+        # self.max = np.ndarray(shape=(1,1))
+        # self.Yscaled = np.ndarray(shape=(1,1))
         self.fitCutPt = 0
 
     def loadMat(self, file, varname):
@@ -270,7 +288,6 @@ class scape:
         self.cc = np.matmul(X, np.transpose(X))/np.shape(X)[1]
 
     def getGoodComponentsFull(self):
-        # isGood = np.zeros((np.shape(self.Y)[0],1))
         ampTh = 500 #1500 #2000 # discard if max of trace is below this
         redTh = 100 #200 #2000 # discard if max of trace is below this
         magTh = 50 #2 #1  #discard if mean of dOO is greater than this (motion)
@@ -278,13 +295,13 @@ class scape:
         maxTh = 0.2 #0.3 # discard if max is smaller than this
         rgccTh = 0.98 #0.9 # discard units in which red and green are very correlated
         
-        My = np.max(self.Y, axis=1)
-        Mr = np.max(self.R, axis=1)
+        My = np.max(self.good.Y, axis=1)
+        Mr = np.max(self.good.R, axis=1)
         Mo = np.max(self.dOO, axis=1)
 
-        self.getDatacorr(self.dOO, self.Y)
+        self.getDatacorr(self.dOO, self.good.Y)
         ogCorr = self.dataCorr
-        self.getDatacorr(self.dOO, self.R)
+        self.getDatacorr(self.dOO, self.good.R)
         orCorr = self.dataCorr
         oMoreGreen = np.array(orCorr<ogCorr)
         self.oMoreGreen = oMoreGreen.flatten()
@@ -314,77 +331,97 @@ class scape:
             sys.stdout.flush()
 
 
-    def saveSummary(self, filename):
-        np.save(self.baseFolder+filename+'.npy',self.dOO)
-        io.savemat(self.baseFolder+filename,{'Fsc':self.Yscaled,'Rsc':self.Rscaled,
-            'F_max':self.Ymax,'F_min':self.Ymin,'R_max':self.Rmax,'R_min':self.Rmin,
-            'Fsm':self.YsmoothData,'Rsm':self.RsmoothData,
-            'dYY':self.dYY,'dRR':self.dRR,'dOO':self.dOO,
-            'Ybl':self.Ybl,'Rbl':self.Rbl,
-            'Ygoodsc':self.Ygoodsc,'Rgoodsc':self.Rgoodsc,
-            'Y0sc':self.Y0sc,'R0sc':self.R0sc,
-            'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
-            'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
-            'ampIsGood':self.ampIsGood,'minIsGood':self.minIsGood,'maxIsGood':self.maxIsGood,'magIsGood':self.magIsGood,'rgccIsGood':self.rgccIsGood,'oMoreGreen':self.oMoreGreen,'redIsGood':self.redIsGood,
-            'Ypopt':self.Ypopt,'Rpopt':self.Rpopt,
-            })
+    def trimTrialStart(self,secsToTrim):
+        # self.good.Y = self.raw.Y
+        # self.good.R = self.raw.R
+        # self.good.trialFlag = self.raw.trialFlag
+        # self.good.time = self.raw.time
+        # self.good.ball = self.raw.ball
+        # self.good.dlc = self.raw.dlc
+        # self.good.dims = self.raw.dims
+        # self.good.im = self.raw.im
+        # self.good.A = self.raw.A
+        self.good = self.raw
+
+
+    def saveSummary(self, filename, savematfile):
+        if savematfile:
+            io.savemat(self.baseFolder+filename+'.mat',{'Fsc':self.Yscaled,'Rsc':self.Rscaled,
+                'F_max':self.Ymax,'F_min':self.Ymin,'R_max':self.Rmax,'R_min':self.Rmin,
+                'Fsm':self.YsmoothData,'Rsm':self.RsmoothData,
+                'dYY':self.dYY,'dRR':self.dRR,'dOO':self.dOO,'Ybl':self.Ybl,'Rbl':self.Rbl,
+                'Ygoodsc':self.Ygoodsc,'Rgoodsc':self.Rgoodsc,
+                'Y0sc':self.Y0sc,'R0sc':self.R0sc,'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
+                'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
+                'ampIsGood':self.ampIsGood,'minIsGood':self.minIsGood,'maxIsGood':self.maxIsGood,
+                'magIsGood':self.magIsGood,'rgccIsGood':self.rgccIsGood,'oMoreGreen':self.oMoreGreen,
+                'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt,
+                })
+        np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
+                dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, dims=self.good.dims, im=self.good.im) 
+        sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
 
     def importdata(self, inputFile):
         if inputFile.endswith('.mat'):
             self.loadMat(inputFile, 'FR')
-            self.R = self.matVar
+            self.raw.R = self.matVar
             self.loadMat(inputFile, 'F') 
-            self.Y = self.matVar
+            self.raw.Y = self.matVar
             
             try:
                 self.loadMat(inputFile, 'trialFlag')
-                self.trialFlag = self.matVar
+                self.raw.trialFlag = self.matVar
             except:
                 # in old data with one trial, trialFlag is undefined
-                self.trialFlag = np.ones(np.shape(self.Y)[1])
+                self.raw.trialFlag = np.ones(np.shape(self.raw.Y)[1])
+            self.raw.trialFlagMax = np.amax(self.raw.trialFlag)
+
         elif inputFile.endswith('.npz'):
             d = np.load( inputFile )
-            self.Y=d['Y']
-            self.R=d['R']
-            self.trialFlag = d['trialFlag']
+            self.raw.Y=d['Y']
+            self.raw.R=d['R']
+            self.raw.trialFlag = d['trialFlag']
+            self.raw.time=d['time']
+            self.raw.ball=d['ball']
+            self.raw.dlc=d['dlc']
+            self.raw.dims=d['dims']
+            self.raw.im=d['im']
+            self.raw.A = sparse.load_npz( inputFile[:-7]+'A_raw.npz' )
+
 
 
 
   
-    def postProcess(self, inputFile, outputFile):
+    def postProcess(self, inputFile, outputFile, savematfile=False, secsToTrim=10.):
         self.importdata(self.baseFolder+inputFile)
+        self.trimTrialStart(secsToTrim)
 
         print('\n normalizing red')
-        self.normalizeRawF(self.R)
+        self.normalizeRawF(self.good.R)
         self.Rscaled = self.scaled
         self.Rmax = self.max
         self.Rmin = self.min
 
         print('\n normalizing green')
-        self.normalizeRawF(self.Y)
+        self.normalizeRawF(self.good.Y)
         self.Yscaled = self.scaled
         self.Ymax = self.max
         self.Ymin = self.min
 
-        self.getDatacorr(self.R, self.Y)
+        self.getDatacorr(self.good.R, self.good.Y)
         self.rgCorr = self.dataCorr
 
-        try:
-            self.loadMat(inputFile, 'trialFlag')
-            self.trialFlag = self.matVar
-        except:
-            self.trialFlag = np.ones(np.shape(self.Y)[1])
 
-        self.trialFlagMax = np.amax(self.trialFlag)
+        
 
         # snrTh = -10**8 #15
         # expFitTh = 1 #0.99
 
         self.Rpopt = []
         self.Ypopt = []
-        self.trialFlagUnique = np.unique(self.trialFlag)
-        self.trList = self.getIdxList(self.trialFlag, self.trialFlagUnique)
+        self.trialFlagUnique = np.unique(self.raw.trialFlag)
+        self.trList = self.getIdxList(self.raw.trialFlag, self.trialFlagUnique)
 
         rdata = self.Rscaled
         ydata = self.Yscaled
@@ -457,7 +494,7 @@ class scape:
         # self.computeCorr(dataToCluster)
         
         print('\n saving')
-        self.saveSummary(outputFile)
+        self.saveSummary(outputFile, savematfile)
         
 
 
@@ -518,11 +555,12 @@ if __name__ == '__main__':
 
     baseFolder = '/Volumes/SCAPEdata1/finalData/2019_06_26_Nsyb_NLS6s_walk/fly2/Yproj/' #'/Volumes/dataFast/sample/2019_06_26_Nsyb_NLS6s_walk/fly2/Yproj/'
 
+    savematfile = False #True
     # obj = scape(baseFolder)
     # obj.postProcess('F.mat', 'post_fromYcc.mat')
     obj = scape(baseFolder)
     # obj.postProcess('F_fromRed.mat', 'post_fromRcc.mat')
-    obj.postProcess('2019_06_26_Nsyb_NLS6s_walk_fly2_raw.npz', 'post_fromRcc.mat')
+    obj.postProcess('2019_06_26_Nsyb_NLS6s_walk_fly2_raw.npz', 'post_fromRcc', savematfile)
 
 
 
