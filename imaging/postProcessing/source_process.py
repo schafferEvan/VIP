@@ -36,6 +36,7 @@ class dataObj:
         self.dlc = np.ndarray(shape=(1,1))     
         self.dims = np.ndarray(shape=(1,1))    
         self.im = np.ndarray(shape=(1,1))   
+        self.scanRate = np.ndarray(shape=(1,1))
         self.A = np.ndarray(shape=(1,1))      
 
 
@@ -46,25 +47,6 @@ class scape:
         self.baseFolder = baseFolder
         self.raw = dataObj()
         self.good = dataObj()
-        # self.A_tot = sparse.csc_matrix((1,1))
-        # self.C_tot = np.ndarray(shape=(1,1))
-        # self.YrA_tot = np.ndarray(shape=(1,1))
-        # self.b_tot = np.ndarray(shape=(1,1))
-        # self.f_tot = np.ndarray(shape=(1,1))
-        # # self.raw.Y = np.ndarray(shape=(1,1))
-        # # self.raw.R = np.ndarray(shape=(1,1))
-        # # self.good.Y = np.ndarray(shape=(1,1))
-        # # self.good.R = np.ndarray(shape=(1,1))
-        # self.Y0 = np.ndarray(shape=(1,1))
-        # self.Af = np.ndarray(shape=(1,1))
-        # self.b = np.ndarray(shape=(1,1))
-        # self.f = np.ndarray(shape=(1,1))
-        # self.tFit = np.ndarray(shape=(1,1))
-        # self.popt = np.ndarray(shape=(1,1))
-        # self.min = np.ndarray(shape=(1,1))
-        # self.max = np.ndarray(shape=(1,1))
-        # self.Yscaled = np.ndarray(shape=(1,1))
-        self.fitCutPt = 0
 
     def loadMat(self, file, varname):
         self.mat=io.loadmat(self.baseFolder+file) 
@@ -220,22 +202,6 @@ class scape:
 
 
 
-    def makePolyF0(self, data, ord):
-        # explicitly passing in data rather than referencing attribute, so data can be 'Y' or 'C'
-        self.tFit = np.linspace(0, np.shape(data)[1]-1, np.shape(data)[1])
-        # self.popt = np.zeros((np.shape(data)[0],4))
-        T = np.shape(data)[1]
-        self.F0 = np.zeros(np.shape(data))
-        self.rsq = np.zeros((np.shape(data)[0],1))
-
-        for i in range(0, np.shape(data)[0]):
-            print(i)
-            f = poly.fit(self.tFit, data[i,:], ord)
-            xx, self.F0[i,:] = f.linspace(T)
-            c = np.cov(self.F0[i,:], data[i,:])
-            self.rsq[i] = (c[0,1]/np.sqrt(c[0,0]*c[1,1]))**2
-
-
     def makeExpF0(self, data, bnds):
         # explicitly passing in data rather than referencing attribute, so data can be 'Y' or 'C'
         self.tFit = np.linspace(0, np.shape(data)[1]-1, np.shape(data)[1])
@@ -278,6 +244,7 @@ class scape:
             except:
                 print("failed to fit unit "+str(i))
 
+
     def computeCorr(self, data):
         print('computing correlation matrix')
         m = np.mean(data,1)
@@ -287,13 +254,16 @@ class scape:
         X = np.matmul( s, (data - m) )
         self.cc = np.matmul(X, np.transpose(X))/np.shape(X)[1]
 
+
     def getGoodComponentsFull(self):
+        
         ampTh = 500 #1500 #2000 # discard if max of trace is below this
         redTh = 100 #200 #2000 # discard if max of trace is below this
         magTh = 50 #2 #1  #discard if mean of dOO is greater than this (motion)
         minTh = 1 # discard if min is greater than this
         maxTh = 0.2 #0.3 # discard if max is smaller than this
         rgccTh = 0.98 #0.9 # discard units in which red and green are very correlated
+        motionTh = 10 # signal this large is probably artifact
         
         My = np.max(self.good.Y, axis=1)
         Mr = np.max(self.good.R, axis=1)
@@ -306,6 +276,7 @@ class scape:
         oMoreGreen = np.array(orCorr<ogCorr)
         self.oMoreGreen = oMoreGreen.flatten()
 
+        self.isNotMotion = np.array(Mo<motionTh)
         self.ampIsGood = np.array(My>ampTh)
         self.redIsGood = np.array(Mr>redTh)
         rgccIsGood = np.array(self.rgCorr<rgccTh)
@@ -315,7 +286,12 @@ class scape:
         self.magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
         oIsGood = np.array(self.oIsGood>0)
         self.oIsGood = oIsGood.flatten()
-        self.goodIds = self.ampIsGood & self.minIsGood & self.maxIsGood & self.magIsGood & self.rgccIsGood & self.oMoreGreen & self.redIsGood
+        self.goodIds = self.isNotMotion & self.ampIsGood & self.minIsGood & self.maxIsGood & self.magIsGood & self.rgccIsGood & self.oMoreGreen & self.redIsGood
+
+        self.dOO = self.dOO[self.goodIds,:]
+        self.dYY = self.dYY[self.goodIds,:]
+        self.dRR = self.dRR[self.goodIds,:]
+        self.good.A  = self.good.A[:,self.goodIds]
 
 
     def getIdxList(self, longList, shortList):
@@ -332,16 +308,24 @@ class scape:
 
 
     def trimTrialStart(self,secsToTrim):
-        # self.good.Y = self.raw.Y
-        # self.good.R = self.raw.R
-        # self.good.trialFlag = self.raw.trialFlag
-        # self.good.time = self.raw.time
-        # self.good.ball = self.raw.ball
-        # self.good.dlc = self.raw.dlc
-        # self.good.dims = self.raw.dims
-        # self.good.im = self.raw.im
-        # self.good.A = self.raw.A
+        
+        # trim frames from beginning of each run
+        extra_buffer = int(np.round( secsToTrim*self.raw.scanRate )) # number of frames to trim
         self.good = self.raw
+
+        isAkeeper = np.ones(np.shape( self.raw.trialFlag ))
+        for j in range(len( self.trialFlagUnique )):
+            jbeg = np.where(self.raw.trialFlag ==self.trialFlagUnique[j])[0][0]
+            isAkeeper[jbeg:(jbeg+extra_buffer)] = 0
+
+        self.good.Y = self.good.Y[:,isAkeeper[:,0]>0]
+        self.good.R = self.good.R[:,isAkeeper[:,0]>0]
+        self.good.trialFlag = self.good.trialFlag[isAkeeper[:,0]>0]
+        self.good.time = self.good.time[isAkeeper[:,0]>0]
+        self.good.ball = self.good.ball[isAkeeper[:,0]>0]
+        self.good.dlc = self.good.dlc[:,isAkeeper[:,0]>0]
+
+
 
 
     def saveSummary(self, filename, savematfile):
@@ -358,7 +342,8 @@ class scape:
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt,
                 })
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
-                dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, dims=self.good.dims, im=self.good.im) 
+                dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, dims=self.good.dims, im=self.good.im, 
+                scanRate=self.good.scanRate) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
 
@@ -387,7 +372,11 @@ class scape:
             self.raw.dlc=d['dlc']
             self.raw.dims=d['dims']
             self.raw.im=d['im']
+            self.scanRate=d['scanRate']
             self.raw.A = sparse.load_npz( inputFile[:-7]+'A_raw.npz' )
+
+        self.trialFlagUnique = np.unique(self.raw.trialFlag)
+        self.trList = self.getIdxList(self.raw.trialFlag, self.trialFlagUnique)
 
 
 
@@ -412,29 +401,17 @@ class scape:
         self.getDatacorr(self.good.R, self.good.Y)
         self.rgCorr = self.dataCorr
 
-
-        
-
-        # snrTh = -10**8 #15
-        # expFitTh = 1 #0.99
-
-        self.Rpopt = []
-        self.Ypopt = []
-        self.trialFlagUnique = np.unique(self.raw.trialFlag)
-        self.trList = self.getIdxList(self.raw.trialFlag, self.trialFlagUnique)
-
-        rdata = self.Rscaled
-        ydata = self.Yscaled
-
         # do smoothing on data scaled from 0 to 1
         print('\n smoothing red data')
-        self.totVarSmoothData(rdata, 1.0)
+        self.totVarSmoothData(self.Rscaled, 1.0)
         self.RsmoothData = self.smoothData
         
         print('\n smoothing green data')
-        self.totVarSmoothData(ydata, 1.0)
+        self.totVarSmoothData(self.Yscaled, 1.0)
         self.YsmoothData = self.smoothData
         
+        self.Rpopt = []
+        self.Ypopt = []
         al = (0, 200)
         bnds = ((0, 1), (0.2, 2))
         # bnds = np.array( np.tile(al,(len(self.trList)+2,1)) )
@@ -488,6 +465,8 @@ class scape:
         #self.dOO = np.divide(self.Ogoodsc-self.O0sc, self.O0sc)
         print('\n calculate O and dOO')
         self.make_O_and_dOO()
+
+        print('\n find and remove bad units')
         self.getGoodComponentsFull()
 
         # dataToCluster = self.dOO[np.flatnonzero(self.goodIds),:]
