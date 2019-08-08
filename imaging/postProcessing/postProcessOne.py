@@ -14,7 +14,7 @@ def postProcessOne(baseFolder, expNameHandle, savematfile):
     # obj = sc.scape(baseFolder)
     # obj.postProcess('F.mat', 'post_fromYcc', savematfile)
     obj = sc.scape(baseFolder)
-    obj.postProcess(expNameHandle+'_raw.npz', expNameHandle, savematfile)
+    obj.process(expNameHandle+'_raw.npz', expNameHandle, savematfile)
        
 
 if __name__ == '__main__':
