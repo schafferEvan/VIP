@@ -8,7 +8,7 @@ function retroactivelyIgnoreTrials(traceFolder, trimTrials)
 % ALIGNING IMAGING AND BEHAVIOR DATA, THIS SCRIPT IS MEANT TO RUN AFTER
 % (BUT STILL BEFORE POSTPROCESSING.PY)
 
-%if ischar(trimSecs); trimSecs = str2double(trimSecs); end % this can happen if called from bash script
+if ischar(trimSecs); trimSecs = eval(trimSecs); end % this can happen if called from bash script
 disp(['Removing runs ',num2str(trimTrials)])
 
 addpath(genpath('../..'))

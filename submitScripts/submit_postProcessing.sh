@@ -35,6 +35,11 @@ cp "$behaviorDataDir$flyNum"*.mat"" $behavTraceFolder
 # matlab realigns behavior traces to match imaging
 $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder; exit"
 
+# # IF NECESSARY, throw away trials from processed files (i.e. if early data from a fly is good but late isn't)
+# trialsToSkip = '4:8' # use matlab array syntax but pass as string
+# $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); retroactivelyIgnoreTrials $traceFolder $trialsToSkip; exit"
+
+
 # generate aggregated RAW mat files to share with collaborators
 fromGreen='False'
 python ../compilation/compileRaw.py $traceFolder $expID $traceFolder $fromGreen
