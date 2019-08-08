@@ -540,7 +540,7 @@ if __name__ == '__main__':
     # obj.postProcess('F.mat', 'post_fromYcc.mat')
     obj = scape(baseFolder)
     # obj.postProcess('F_fromRed.mat', 'post_fromRcc.mat')
-    obj.postProcess('2019_06_26_Nsyb_NLS6s_walk_fly2_raw.npz', 'post_fromRcc', savematfile)
+    obj.postProcess('2019_06_26_Nsyb_NLS6s_walk_fly2_raw.npz', '2019_06_26_Nsyb_NLS6s_walk_fly2.npz', savematfile)
 
 
 
