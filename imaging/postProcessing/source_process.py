@@ -313,7 +313,8 @@ class scape:
         # self.good = self.raw
 
         isAkeeper = np.ones(np.shape( self.raw.trialFlag ))
-        for j in range(len( self.trialFlagUnique )):
+        print('not trimming from first trial')
+        for j in range(1,len( self.trialFlagUnique )):
             jbeg = np.where(self.raw.trialFlag ==self.trialFlagUnique[j])[0][0]
             isAkeeper[jbeg:(jbeg+extra_buffer)] = 0
 

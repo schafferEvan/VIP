@@ -50,12 +50,13 @@ dims=np.shape(Ysum)
 
 # pdb.set_trace()
 try:
+    print('v7')
     matbeh = io.loadmat(expDir+'alignedBehavAndStim.mat')
-    time = matbeh['time']
-    ball = matbeh['alignedBehavior']['legVar'][0][0] 
-    dlc = matbeh['alignedBehavior']['dlcData'][0][0] 
+    time = matbeh['time'].T
+    ball = matbeh['alignedBehavior']['legVar'][0][0].T
+    dlc = matbeh['alignedBehavior']['dlcData'][0][0].T
 except:
-    # ver 7.3
+    print('v7.3')
     matbeh = h5py.File(expDir+'alignedBehavAndStim.mat')
     time = matbeh['time']
     ball = matbeh['alignedBehavior']['legVar']
