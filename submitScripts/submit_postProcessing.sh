@@ -32,23 +32,13 @@ cp "$behaviorDataDir$flyNum"*.mat"" $behavTraceFolder
 
 
 
-# # trim imaging data as if bleachBuffer in runs 2-end were nonzero
-newBleachBuffer=7
-$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); retroactivelyAddBleachBuffer $traceFolder $newBleachBuffer; exit"
-
 # matlab realigns behavior traces to match imaging
-$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder $newBleachBuffer; exit"
+$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder; exit"
 
 # generate aggregated RAW mat files to share with collaborators
 fromGreen='False'
 python ../compilation/compileRaw.py $traceFolder $expID $traceFolder $fromGreen
 
+# # python smooths imaging, behavior, computes dFF and clustering
+python ../imaging/postProcessing/postProcessOne.py $traceFolder $expID 
 
-# python smooths imaging, behavior, computes dFF and clustering
-python ../behavior/smoothBehavior.py $traceFolder
-python ../imaging/postProcessing/postProcessOne.py $traceFolder
-
-
-# # generate aggregated npz files to share with collaborators
-# fromGreen='False'
-# python ../compilation/compileFinalSummary.py $traceFolder $expID $traceFolder $fromGreen
