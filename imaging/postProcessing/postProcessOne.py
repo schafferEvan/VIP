@@ -7,14 +7,14 @@ import numpy as np
 import pickle
 from scipy import io
 # import smoothBehavior as beh
-import scape_caiman_postProcess as sc
+import source_process as sc
 
-def postProcessOne(baseFolder):
+def postProcessOne(baseFolder, expNameHandle, savematfile):
     
+    # obj = sc.scape(baseFolder)
+    # obj.postProcess('F.mat', 'post_fromYcc', savematfile)
     obj = sc.scape(baseFolder)
-    obj.postProcess('F.mat', 'post_fromYcc.mat')
-    obj = sc.scape(baseFolder)
-    obj.postProcess('F_fromRed.mat', 'post_fromRcc.mat')
+    obj.postProcess(expNameHandle+'_raw.npz', expNameHandle, savematfile)
        
 
 if __name__ == '__main__':
@@ -22,7 +22,11 @@ if __name__ == '__main__':
     if (len(mynargs)>1):
         print('processing folder:' + mynargs[1])
         rootFolder = mynargs[1]
+        expID = mynargs[2]
     else:
         rootFolder = "/Users/evan/Dropbox/_sandbox/sourceExtraction/good/"
+        expID = 'F_fromRed.mat'
     
-    postProcessOne(rootFolder)
+    expNameHandle=expID.replace('/','_')
+    savematfile=True
+    postProcessOne(rootFolder, expNameHandle, savematfile)

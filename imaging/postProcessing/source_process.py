@@ -291,7 +291,7 @@ class scape:
         self.dOO = self.dOO[self.goodIds,:]
         self.dYY = self.dYY[self.goodIds,:]
         self.dRR = self.dRR[self.goodIds,:]
-        self.good.A  = self.good.A[:,self.goodIds]
+        self.good.A  = self.raw.A[:,self.goodIds]
 
 
     def getIdxList(self, longList, shortList):
@@ -308,23 +308,23 @@ class scape:
 
 
     def trimTrialStart(self,secsToTrim):
-        
         # trim frames from beginning of each run
         extra_buffer = int(np.round( secsToTrim*self.raw.scanRate )) # number of frames to trim
-        self.good = self.raw
+        # self.good = self.raw
 
         isAkeeper = np.ones(np.shape( self.raw.trialFlag ))
         for j in range(len( self.trialFlagUnique )):
             jbeg = np.where(self.raw.trialFlag ==self.trialFlagUnique[j])[0][0]
             isAkeeper[jbeg:(jbeg+extra_buffer)] = 0
 
-        self.good.Y = self.good.Y[:,isAkeeper[:,0]>0]
-        self.good.R = self.good.R[:,isAkeeper[:,0]>0]
-        self.good.trialFlag = self.good.trialFlag[isAkeeper[:,0]>0]
-        self.good.time = self.good.time[isAkeeper[:,0]>0]
-        self.good.ball = self.good.ball[isAkeeper[:,0]>0]
-        self.good.dlc = self.good.dlc[:,isAkeeper[:,0]>0]
-
+        self.good.Y = self.raw.Y[:,isAkeeper[:,0]>0]
+        self.good.R = self.raw.R[:,isAkeeper[:,0]>0]
+        self.good.trialFlag = self.raw.trialFlag[isAkeeper[:,0]>0]
+        self.good.time = self.raw.time[isAkeeper[:,0]>0]
+        self.good.ball = self.raw.ball[isAkeeper[:,0]>0]
+        self.good.dlc = self.raw.dlc[:,isAkeeper[:,0]>0]
+        self.good.dlc = self.good.dlc.T
+        
 
 
 
@@ -372,7 +372,7 @@ class scape:
             self.raw.dlc=d['dlc']
             self.raw.dims=d['dims']
             self.raw.im=d['im']
-            self.scanRate=d['scanRate']
+            self.raw.scanRate=d['scanRate']
             self.raw.A = sparse.load_npz( inputFile[:-7]+'A_raw.npz' )
 
         self.trialFlagUnique = np.unique(self.raw.trialFlag)
