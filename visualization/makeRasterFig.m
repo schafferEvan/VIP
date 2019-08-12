@@ -16,7 +16,7 @@ time = fd.time;
 alignedBehavior=fd.alignedBehavior;
 K=fd.K;
 A=fd.A;
-goodIds=fd.goodIds;
+% goodIds=fd.goodIds;
 idx=fd.idx;
 
 

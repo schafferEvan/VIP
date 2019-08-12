@@ -3,9 +3,9 @@ function plotActiveNeurons(codePath, expDir, expID, savePath, fromGreenCC, showB
 
 if ~nargin
     codePath = '..';
-    expDir = '/Volumes/SCAPEdata1/finalData/2019_06_30_Nsyb_NLS6s_walk/fly1/Yproj/';
-    expID = '2019_06_30_Nsyb_NLS6s_walk/fly2';
-    savePath = '/Volumes/SCAPEdata1/figsAndMovies/2019_06_30_Nsyb_NLS6s_walk/fly1/';
+    expID = '2019_06_26_Nsyb_NLS6s_walk/fly2';
+    expDir = ['/Volumes/SCAPEdata1/finalData/',expID,'/Yproj/'];
+    savePath = ['/Volumes/SCAPEdata1/figsAndMovies/',expID,'/'];
     fromGreenCC = false;    % use ROIs parsed from green image (false -> use red)
     showBallVar = true;     % show motion energy of ball extracted as pix var
     showDrink = false;      % show trace of bubble and drinking
@@ -26,14 +26,17 @@ addpath(genpath(codePath))
 if fromGreenCC
     load([expDir,'/post_fromYcc.mat'])
     load([expDir,'/F.mat'])
-    matfileRaw = matfile([expDir,'/F.mat']);
-    matfilePost = matfile([expDir,'/post_fromYcc.mat']);
+    %matfileRaw = matfile([expDir,'/F.mat']);
+    %matfilePost = matfile([expDir,'/post_fromYcc.mat']);
     ccFlag = ' from Ycc';
 else
-    load([expDir,'/post_fromRcc.mat'])
+    filename = expID;
+    filename(filename=='/')='_';
+    load([expDir,filename,'.mat'])
+    %load([expDir,'/post_fromRcc.mat'])
     load([expDir,'/F_fromRed.mat'])
-    matfileRaw = matfile([expDir,'/F_fromRed.mat']);
-    matfilePost = matfile([expDir,'/post_fromRcc.mat']);
+    %matfileRaw = matfile([expDir,'/F_fromRed.mat']);
+    %matfilePost = matfile([expDir,'/post_fromRcc.mat']);
     ccFlag = ' from Rcc';
 end
 load([expDir,'/Ysum.mat'])
@@ -65,21 +68,23 @@ fd.dlcData = alignedBehavior.dlcData;
 dYYfull = dYY; %zeros(size(F));
 dRRfull = dRR; %zeros(size(F));
 dOOfull = dOO; %zeros(size(F));
-fd.goodIds = find(matfilePost.goodIds); %ones(size(matfilePost.goodIds)); %
+%fd.goodIds = find(goodIds); %ones(size(matfilePost.goodIds)); %
 
-oData = dOOfull(fd.goodIds,:); %Fsc(goodIds,:) - F0full(goodIds,:);
-yData = dYYfull(fd.goodIds,:);
-rData = dRRfull(fd.goodIds,:);
+oData = dOOfull;%(fd.goodIds,:); %Fsc(goodIds,:) - F0full(goodIds,:);
+yData = dYYfull;%(fd.goodIds,:);
+rData = dRRfull;%(fd.goodIds,:);
 
-fd.idx = clustInd; %(find(isGreenDominant)); %clustInd
+fd.idx = cluster_labels+1; %clustInd; %(find(isGreenDominant)); %clustInd
 fd.K=length(unique(fd.idx)); %size(clustData,1);
-m=clustData;
-
-m(isnan(m))=0;
-maxdevs = movmad( smoothdata(m,2,'movmean',20), 100,2);
+clustData = zeros(fd.K,size(dOO,2));
+for j=1:fd.K
+    clustData(j,:)=nanmedian(dOO(fd.idx==j,:));
+end
+clustData(isnan(clustData))=0;
+maxdevs = movmad( smoothdata(clustData,2,'movmean',20), 100,2);
 
 [~,seed] = max( max(maxdevs,[],2));
-mc = corrcoef(m');
+mc = corrcoef(clustData');
 
 fd.pOrd = zeros(1,fd.K);
 fd.pOrd(1)=seed;

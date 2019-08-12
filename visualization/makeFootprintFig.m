@@ -11,7 +11,7 @@ d3=fd.d3;
 
 K=fd.K;
 A=fd.A;
-goodIds=fd.goodIds;
+% goodIds=fd.goodIds;
 idx=fd.idx;
 
 Ysum=fd.Ysum;
@@ -35,7 +35,7 @@ groupColors = flipud(jet(K));
 R = zeros(d1,d2);
 G = zeros(d1,d2);
 B = zeros(d1,d2);
-Agood = A(:,goodIds);
+Agood = A;%(:,goodIds);
 cIdx = zeros(size(idx));
 tmpIdx = 0;
 

@@ -9,12 +9,12 @@ from scipy import io
 # import smoothBehavior as beh
 import source_process as sc
 
-def postProcessOne(baseFolder, expNameHandle, savematfile):
+def postProcessOne(baseFolder, expNameHandle, secsToTrim, savematfile):
     
     # obj = sc.scape(baseFolder)
     # obj.postProcess('F.mat', 'post_fromYcc', savematfile)
     obj = sc.scape(baseFolder)
-    obj.process(expNameHandle+'_raw.npz', expNameHandle, savematfile)
+    obj.process(expNameHandle+'_raw.npz', expNameHandle, secsToTrim, savematfile)
        
 
 if __name__ == '__main__':
@@ -29,4 +29,5 @@ if __name__ == '__main__':
     
     expNameHandle=expID.replace('/','_')
     savematfile=True
-    postProcessOne(rootFolder, expNameHandle, savematfile)
+    secsToTrim=20.
+    postProcessOne(rootFolder, expNameHandle, secsToTrim, savematfile)

@@ -21,6 +21,7 @@ from matplotlib.cm import get_cmap
 from skimage.restoration import denoise_tv_chambolle
 from time import time
 import scipy.cluster.hierarchy as sch
+from sklearn.cluster import AgglomerativeClustering
 import colorsys
 from sklearn.decomposition import FastICA
 from numpy.polynomial.polynomial import Polynomial as poly
@@ -294,6 +295,22 @@ class scape:
         self.dRR = self.dRR[self.goodIds,:]
         self.good.A  = self.raw.A[:,self.goodIds]
 
+    def hierCluster(self, nClust):
+        # version with prespecified cluster number
+        cluster = AgglomerativeClustering(n_clusters=nClust, affinity='euclidean', linkage='ward')  
+
+        # version with specified cluster metric but not cluster number
+        # d = sch.distance.pdist(corrData)   # vector of ('55' choose 2) pairwise distances
+        # L = sch.linkage(d, method='weighted') #'complete' #average
+        # # self.clustInd = sch.fcluster(L, 0.1*d.max(), 'distance')
+        # # self.clustInd = sch.fcluster(L, 0.5, 'inconsistent')
+        # self.clustInd = sch.fcluster(L, 3.0, 'distance')
+
+        cluster.fit_predict(self.dOO)  
+        self.cluster_labels = cluster.labels_
+        # self.clustInd = np.argsort(cluster.labels_)
+        #io.savemat(fig_folder + exp_date + '_' + fly_num + '_clust.mat',{'clust':cluster.labels_,'idx':idx})
+
 
     def getIdxList(self, longList, shortList):
         #self.trialFlag, self.trialFlagUnique
@@ -340,7 +357,7 @@ class scape:
                 'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
                 'ampIsGood':self.ampIsGood,'minIsGood':self.minIsGood,'maxIsGood':self.maxIsGood,
                 'magIsGood':self.magIsGood,'rgccIsGood':self.rgccIsGood,'oMoreGreen':self.oMoreGreen,
-                'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt,
+                'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
                 })
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
                 dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, dims=self.good.dims, im=self.good.im, 
@@ -464,6 +481,9 @@ class scape:
 
         # dataToCluster = self.dOO[np.flatnonzero(self.goodIds),:]
         # self.computeCorr(dataToCluster)
+        if savematfile:
+            print('clustering')
+            self.hierCluster(20)
         
         print('\n saving')
         self.saveSummary(outputFile, savematfile)
