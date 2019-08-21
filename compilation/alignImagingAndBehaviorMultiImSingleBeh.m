@@ -1,5 +1,5 @@
 
-function alignImagingAndBehaviorMultiImSingleBeh(codePath, traceFolder, repeatedBleachBuffer)
+function alignImagingAndBehaviorMultiImSingleBeh(codePath, traceFolder) %, repeatedBleachBuffer)
 % this is similar to alignImagingAndBehaviorMultiTrial.m, but whereas
 % alignImagingAndBehaviorMultiTrial expects a directory of behavior files,
 % this function expects a single behavior file containing multiple imaging
@@ -12,10 +12,11 @@ function alignImagingAndBehaviorMultiImSingleBeh(codePath, traceFolder, repeated
 
 addpath(genpath(codePath))
 
-if nargin<3
-    repeatedBleachBuffer = 4; % default is that 4 sec of runs 2-end are ignored
-end
-if ischar(repeatedBleachBuffer); repeatedBleachBuffer = str2double(repeatedBleachBuffer); end % this can happen if called from bash script
+repeatedBleachBuffer = 0; % this is now handled in postprocessing
+% if nargin<3
+%     repeatedBleachBuffer = 4; % default is that 4 sec of runs 2-end are ignored
+% end
+% if ischar(repeatedBleachBuffer); repeatedBleachBuffer = str2double(repeatedBleachBuffer); end % this can happen if called from bash script
 
 %traceFolder = [baseFolder,experiment];%[baseFolder,'rustyOut/',experiment];
 imagingFile = [traceFolder,'F.mat']; %[traceFolder,'all.mat'];
