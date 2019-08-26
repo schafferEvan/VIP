@@ -86,7 +86,8 @@ m.indicatorHeight = indicatorHeight;
 
 legMean = zeros(nframe,1);
 legVar = zeros(nframe,1);
-indicatorMat = zeros(aviobj.Width*indicatorHeight, nframe);
+% indicatorMat = zeros(aviobj.Width*indicatorHeight, nframe);
+indicatorMat = zeros(1, nframe);
 
 legFrame = zeros(length(ballROI),2);
 
@@ -96,7 +97,7 @@ else
     frame = rgb2gray(im2uint16(readFrame(aviobj)));
 end
 legFrame(:,1) = frame(ballROI);
-indicatorMat(:,1) = reshape( frame(1:indicatorHeight,:,1), aviobj.Width*indicatorHeight, 1 );
+indicatorMat(1) = mean(reshape( frame(1:indicatorHeight,:,1), aviobj.Width*indicatorHeight, 1 ));
 
 % to visualize ball ROI:
 % f=frame;
@@ -110,7 +111,7 @@ for t=2:nframe
     else
         frame = rgb2gray(im2uint16(readFrame(aviobj)));
     end
-    indicatorMat(:,t) = reshape( frame(1:indicatorHeight,:,1), aviobj.Width*indicatorHeight, 1 );
+    indicatorMat(t) = mean(reshape( frame(1:indicatorHeight,:,1), aviobj.Width*indicatorHeight, 1 ));
     
     legFrame(:,2) = frame(ballROI);
     legMean(t) = mean(mean(legFrame(:,2))); %mean(mean(frame));
@@ -124,8 +125,8 @@ traces.isStimOn = zeros(size(legMean));
 traces.isDrinking = zeros(size(legMean));
 
 %c = pca(indicatorMat);
-indicatorMat=indicatorMat-mean(indicatorMat(:));
-traces.isImagingOn = mean(indicatorMat,1);
+indicatorMat=indicatorMat-mean(indicatorMat);
+traces.isImagingOn = indicatorMat; %mean(indicatorMat,1);
 m.traces = traces;
 
 
