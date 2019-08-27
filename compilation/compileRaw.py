@@ -13,7 +13,7 @@ import glob
 import numpy as np
 from scipy import sparse, io
 import h5py
-# import pdb
+#import pdb
 
 
 mynargs = sys.argv
@@ -24,8 +24,8 @@ if (len(mynargs)>1):
     fromGreenCC = mynargs[4]=='True'
 
 else:
-    expDir = '/Volumes/SCAPEdata1/finalData/2019_07_01_Nsyb_NLS6s_walk/fly2/Yproj/'
-    expID = '2019_07_01_Nsyb_NLS6s_walk/fly2'
+    expID = '2019_06_30_Nsyb_NLS6s_walk/fly1'
+    expDir = '/Volumes/SCAPEdata1/finalData/'+expID+'/Yproj/'
     savePath = expDir #'/Users/evan/Downloads/' #'/Users/evan/Dropbox/_AxelLab/_flygenvectors_dataShare/'
     fromGreenCC = False    # use ROIs parsed from green image (false -> use red)
 
@@ -48,7 +48,7 @@ A=matRaw['A']
 Ysum=matSum['Ysum']
 dims=np.shape(Ysum)
 
-# pdb.set_trace()
+
 try:
     matbeh = io.loadmat(expDir+'alignedBehavAndStim.mat')
     time = matbeh['time'].T
@@ -73,14 +73,31 @@ infodir = expDir+'info/'
 infols=os.listdir(infodir)
 info = io.loadmat(infodir+infols[0])
 scanRate = info['info']['daq'][0][0]['scanRate'][0][0][0][0]
+#pdb.set_trace()
 
+
+# get true dimensions of image in um
+try:
+    x_umPerPix = info['info']['GUIcalFactors'][0][0]['x_umPerPix'][0][0][0][0]
+    tot_um_x = dims[0]*x_umPerPix
+except:
+    xK_umPerVolt = info['info']['GUIcalFactors'][0][0]['xK_umPerVolt'][0][0][0][0]
+    scanAngle = info['info']['daq'][0][0]['scanAngle'][0][0][0][0]
+    pixelsPerLine = info['info']['daq'][0][0]['pixelsPerLine'][0][0][0][0]
+    tot_um_x = dims[0]*xK_umPerVolt*scanAngle/(pixelsPerLine-1);
+
+y_umPerPix = info['info']['GUIcalFactors'][0][0]['y_umPerPix'][0][0][0][0]
+tot_um_y = dims[1]*y_umPerPix
+z_umPerPix = info['info']['GUIcalFactors'][0][0]['z_umPerPix'][0][0][0][0]
+tot_um_z = dims[2]*z_umPerPix
 
 # save stuff --------------------------------------
 
 expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
 
-np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, dims=dims, im=im) #dims=dims, A=A, 
+np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, 
+            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z) 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
 
 # io.savemat(saveHandle+'_raw.mat',{
