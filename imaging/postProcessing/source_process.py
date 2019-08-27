@@ -36,7 +36,8 @@ class dataObj:
         self.time = np.ndarray(shape=(1,1))    
         self.ball = np.ndarray(shape=(1,1))     
         self.dlc = np.ndarray(shape=(1,1))     
-        self.dims = np.ndarray(shape=(1,1))    
+        self.dims = np.ndarray(shape=(1,1))  
+        self.dims_in_um = np.ndarray(shape=(1,1))  
         self.im = np.ndarray(shape=(1,1))   
         self.scanRate = np.ndarray(shape=(1,1))
         self.A = np.ndarray(shape=(1,1))      
@@ -360,7 +361,7 @@ class scape:
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
                 })
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
-                dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, dims=self.raw.dims, im=self.good.im, 
+                dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
                 scanRate=self.good.scanRate) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
@@ -389,6 +390,7 @@ class scape:
             self.raw.ball=d['ball']
             self.raw.dlc=d['dlc']
             self.raw.dims=d['dims']
+            self.raw.dims_in_um = d['tot_um_x'], d['tot_um_y'], d['tot_um_z']
             self.raw.im=d['im']
             self.raw.scanRate=d['scanRate']
             self.raw.A = sparse.load_npz( inputFile[:-7]+'A_raw.npz' )
