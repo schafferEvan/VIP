@@ -29,7 +29,7 @@ infoFile = dir([experimentFolder,'info/*.mat']);
 % end
 scaling = [];
 
-trials = sortExperimentDirectory(experimentFolder,'reg');
+[trials,~, ~, runNum] = sortExperimentDirectory(experimentFolder,'reg');
 params.trialName = [trials(end).name(1:end-4),'_all.avi']; %[trials(end).name(1:runLoc-1),'all.avi'];
 params.savePath = savePath;
 params.concatenate = true;
@@ -39,7 +39,7 @@ params.acqRate = round(info.daq.scanRate); %10; % volumes per second
 chunkSize = 101;
 
 % select maxY to set color scale
-m = matfile([experimentFolder,trials(trialOrder(2)).name]);
+m = matfile([experimentFolder,trials(1).name]);
 try
     sz = size(m,'Ysmall');
     Y = single( m.Ysmall(:,:,:,sz(4)-50:sz(4) ) );
@@ -79,8 +79,8 @@ params.kTot=0;
 for i=1:length(trials)
     if i>1; if runNum(i)~=runNum(i-1); params.Ttot = 0; end; end
     
-    trialPath = [experimentFolder,trials(trialOrder(i)).name];
-    display(['file ',num2str(i),': ',trials(trialOrder(i)).name])
+    trialPath = [experimentFolder,trials(i).name];
+    display(['file ',num2str(i),': ',trials(i).name])
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %     x = h5info(trialPath,'/mov');
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %     %sz = x.Dataspace.Size;
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %     Y = bigread2(trialPath);
