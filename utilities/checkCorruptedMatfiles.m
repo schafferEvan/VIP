@@ -12,7 +12,8 @@ for i=1:length(trials)
     try
         m = matfile(trialPath);
     catch
-        warning([trials(i).name, ' is a corrupted file.'])
+        %warning([trials(i).name, ' is a corrupted file.'])
+        disp([trials(i).name])
     end    
     
 end
