@@ -20,8 +20,8 @@ $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_
 # matlab extracts time series
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extract_F_from_conComp $parentdir $imagingDataDir; exit"
 
-# make behavior traces
-#$matlabPath -nodisplay -nodesktop -r "cd('../behavior/'); extractBehaviorAuto $behaviorDataDir; exit"
+#make behavior traces
+$matlabPath -nodisplay -nodesktop -r "cd('../behavior/'); extractBehaviorAuto $behaviorDataDir; exit"
 
 
 # copy behavior traces into subdirectory of imaging to aggregate final output
@@ -29,6 +29,8 @@ cp -r "$imagingDataDir"info"" $traceFolder
 behavTraceFolder="$traceFolder"behavior/""
 mkdir $behavTraceFolder
 cp "$behaviorDataDir$flyNum"*.mat"" $behavTraceFolder
+dlcFolder="$behaviorDataDir"dlc/""
+cp "$dlcFolder$flyNum"*.csv"" $behavTraceFolder
 
 
 
@@ -42,8 +44,8 @@ $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBeha
 
 # generate aggregated RAW mat files to share with collaborators
 fromGreen='False'
-python ../compilation/compileRaw.py $traceFolder $expID $traceFolder $fromGreen
+python3 ../compilation/compileRaw.py $traceFolder $expID $traceFolder $fromGreen
 
 # # python smooths imaging, behavior, computes dFF and clustering
-python ../imaging/postProcessing/postProcessOne.py $traceFolder $expID 
+python3 ../imaging/postProcessing/postProcessOne.py $traceFolder $expID 
 
