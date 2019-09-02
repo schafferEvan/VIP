@@ -15,6 +15,7 @@ addpath(genpath('..'))
 ballthresh = 0.6;       % pixel threshold for ball vs not ball (quantile of blurred image)
 nframes = 1000;         % num frames from which to estimate ball roi
 indicatorHeight = 10;   % number of rows at top of image from which to measure indicator signal
+indicatorStart = 1;
 % ------------------------------------------------------------------------
 
 avifiles = dir([videoFolder,'f*.avi']);
@@ -33,7 +34,7 @@ end
 for j=1:length(files)
     movfile = [videoFolder,files(j).name];
     ballROI = getBallROI(movfile, ballthresh, nframes); % find ROI of ball
-    extract(movfile, ballROI, indicatorHeight)          % extract ball motion energy and indicator signal (1st PC of top of image)
+    extract(movfile, ballROI, indicatorHeight, indicatorStart)          % extract ball motion energy and indicator signal (1st PC of top of image)
 end
 
 
@@ -74,7 +75,7 @@ ballROI = find(ballbw);
 
 
 
-function extract(movfile, ballROI, indicatorHeight)
+function extract(movfile, ballROI, indicatorHeight, indicatorStart)
 global isavi m traces
 
 
@@ -83,6 +84,7 @@ aviobj = VideoReader(movfile);
 nframe = floor(aviobj.Duration*aviobj.FrameRate); %aviobj.NumberOfFrames;
 m.ball = ballROI;
 m.indicatorHeight = indicatorHeight;
+m.indicatorStart = indicatorStart;
 
 legMean = zeros(nframe,1);
 legVar = zeros(nframe,1);
@@ -97,7 +99,7 @@ else
     frame = rgb2gray(im2uint16(readFrame(aviobj)));
 end
 legFrame(:,1) = frame(ballROI);
-indicatorMat(1) = mean(reshape( frame(1:indicatorHeight,:,1), aviobj.Width*indicatorHeight, 1 ));
+indicatorMat(1) = mean(reshape( frame(indicatorStart:indicatorHeight+indicatorStart-1,:,1), aviobj.Width*indicatorHeight, 1 ));
 
 % to visualize ball ROI:
 % f=frame;
@@ -111,7 +113,7 @@ for t=2:nframe
     else
         frame = rgb2gray(im2uint16(readFrame(aviobj)));
     end
-    indicatorMat(t) = mean(reshape( frame(1:indicatorHeight,:,1), aviobj.Width*indicatorHeight, 1 ));
+    indicatorMat(t) = mean(reshape( frame(indicatorStart:indicatorHeight+indicatorStart-1,:,1), aviobj.Width*indicatorHeight, 1 ));
     
     legFrame(:,2) = frame(ballROI);
     legMean(t) = mean(mean(legFrame(:,2))); %mean(mean(frame));
