@@ -189,10 +189,14 @@ parseVec = gOn>gOff; % where posterior is higher for "on" distribution
 dP = diff(parseVec);
 starts = find(dP>0);
 stops = find(dP<0);
-if (min(diff(starts))<100) || (min(diff(stops))<100)
-    error('INDICATOR MEASURE IS FLICKERING. PARSING FAILURE');
-elseif length(starts)~=length(stops)
-    error('NUMBER OF STARTS AND STOPS DO NOT MATCH. PARSING FAILURE');
+if (length(starts)>1) && (length(stops)>1)
+    if (min(diff(starts))<100) || (min(diff(stops))<100)
+        error('INDICATOR MEASURE IS FLICKERING. PARSING FAILURE');
+    elseif length(starts)~=length(stops)
+        error('NUMBER OF STARTS AND STOPS DO NOT MATCH. PARSING FAILURE');
+    end
+elseif (length(starts)==0) || (length(stops)==0)
+    error('NO STARTS OR STOPS. PARSING FAILURE');
 end
 parseStruct = struct('starts',starts,'stops',stops);
 
