@@ -341,7 +341,10 @@ class scape:
         self.good.trialFlag = self.raw.trialFlag[isAkeeper[:,0]>0]
         self.good.time = self.raw.time[isAkeeper[:,0]>0]
         self.good.ball = self.raw.ball[isAkeeper[:,0]>0]
-        self.good.dlc = self.raw.dlc[:,isAkeeper[:,0]>0]
+        if(self.raw.dlc.shape[0]>2):
+            self.good.dlc = self.raw.dlc[:,isAkeeper[:,0]>0]
+        else:
+            self.good.dlc = self.raw.dlc
         self.good.dlc = self.good.dlc.T
         
 
@@ -362,7 +365,7 @@ class scape:
                 })
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
                 dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
-                scanRate=self.good.scanRate) 
+                scanRate=self.raw.scanRate) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
 
