@@ -276,7 +276,7 @@ class scape:
         ogCorr = self.dataCorr
         self.getDatacorr(self.dOO, self.good.R)
         orCorr = self.dataCorr
-        oMoreGreen = np.array(orCorr<ogCorr)
+        oMoreGreen = np.array(abs(orCorr)<abs(ogCorr))
         self.oMoreGreen = oMoreGreen.flatten()
 
         self.isNotMotion = np.array(Mo<motionTh)
@@ -322,7 +322,7 @@ class scape:
 
     def showProgress(self, i, printFreq):
         if(not np.mod(i,printFreq)):
-            print(i,end=" ")
+            print(i)
             sys.stdout.flush()
 
     def trimTrialStart(self,secsToTrim):
