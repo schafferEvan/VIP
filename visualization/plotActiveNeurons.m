@@ -24,7 +24,7 @@ fd.showDLC = showDLC;
 addpath(genpath(codePath))
 
 if fromGreenCC
-    load([expDir,'/post_fromYcc.mat'])
+    %load([expDir,'/post_fromYcc.mat'])
     load([expDir,'/F.mat'])
     %matfileRaw = matfile([expDir,'/F.mat']);
     %matfilePost = matfile([expDir,'/post_fromYcc.mat']);
@@ -41,13 +41,13 @@ else
 end
 load([expDir,'/Ysum.mat'])
 load([expDir,'/alignedBehavAndStim.mat'])
-load([expDir,'/alignedBehavSmooth.mat'])
+%load([expDir,'/alignedBehavSmooth.mat'])
 
 fd = struct('expID',expID,'savePath',savePath,'time',time,'alignedBehavior',alignedBehavior,...
     'ccFlag',ccFlag,'A',A,'Ysum',Ysum,'showBallVar',showBallVar,'showDrink',showDrink,'showDLC',showDLC);
 [fd.d1,fd.d2,fd.d3] = size(Ysum);
 
-beh = behSmooth; %alignedBehavior.legVar; %
+beh = alignedBehavior.legVar; %behSmooth; %
 
 normalizeInPieces = false; % set to true for run/flail/run experiments
 if normalizeInPieces
