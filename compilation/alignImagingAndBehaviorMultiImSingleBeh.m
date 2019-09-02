@@ -42,21 +42,30 @@ behaviorFilename = [behaviorDirectory(1).folder,'/',behaviorDirectory(1).name];
 behRaw = load(behaviorFilename);
 
 % check for deeplabcut output and load if available
-dlcname = dir([traceFolder,'*DeepCut*.csv']);
+dlcname = dir([traceFolder,'behavior/*DeepCut*.csv']);
 if ~isempty(dlcname)
     behRaw.nDLCpts = 8; disp('update dlcRead to allow for variable number of points')
-    behRaw.dlcData = dlcRead([traceFolder,dlcname.name],behRaw.nDLCpts);
+    behRaw.dlcData = dlcRead([traceFolder, 'behavior/', dlcname.name],behRaw.nDLCpts);
 else
     behRaw.nDLCpts = 0; 
     behRaw.dlcData = [];
 end
 
 % get list of imaging start and stop times from LED in behavior video
-parseStruct = getBehParsing(double(behRaw.traces.isImagingOn));
-if (length(parseStruct.starts)~=length(trials)) || (length(parseStruct.stops)~=length(trials))
-    error('parse struct does not match info directory')
+% if exists(crashreport) then parseStruct loads file, else runs function
+crashname = dir([traceFolder, 'crashReport/']);
+if ~isempty(crashname)
+    crashFile = [traceFolder, 'crashReport/','parseStruct.mat'];
+    load(crashFile,'parseStruct');
+    behaviorOpts.parseStruct = parseStruct;
+else
+    parseStruct = getBehParsing(double(behRaw.traces.isImagingOn), traceFolder);
+    if (length(parseStruct.starts)~=length(trials)) || (length(parseStruct.stops)~=length(trials))
+        error('parse struct does not match info directory')
+    end
+    behaviorOpts.parseStruct = parseStruct;
 end
-behaviorOpts.parseStruct = parseStruct;
+
 
 
 for j=1:length(trials)
@@ -173,7 +182,7 @@ end
 
 
 
-function parseStruct = getBehParsing(isImagingOn)
+function parseStruct = getBehParsing(isImagingOn, traceFolder)
 % converts a noisy measure of the indicator LED turning on/off in the
 % behavior video into a binary vector by denoising, fitting a gaussian
 % mixture model, then further smoothing the posterior to prevent flicker
@@ -189,10 +198,18 @@ parseVec = gOn>gOff; % where posterior is higher for "on" distribution
 dP = diff(parseVec);
 starts = find(dP>0);
 stops = find(dP<0);
+parseStruct = struct('starts',starts,'stops',stops);
 if (min(diff(starts))<100) || (min(diff(stops))<100)
     error('INDICATOR MEASURE IS FLICKERING. PARSING FAILURE');
 elseif length(starts)~=length(stops)
+    mkdir([traceFolder, 'crashReport']);
+    crashMat = matfile([traceFolder, 'crashReport/','parseStruct.mat'],'Writable',true);
+    crashMat.parseStruct = parseStruct;
+    h = figure; 
+    plot(isImagingOn);
+    savefig(h, [traceFolder, 'crashReport/','isImagingOn.fig']);
+    % save parseStruct and trace as fig
     error('NUMBER OF STARTS AND STOPS DO NOT MATCH. PARSING FAILURE');
 end
-parseStruct = struct('starts',starts,'stops',stops);
+
 
