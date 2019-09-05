@@ -24,7 +24,7 @@ if (len(mynargs)>1):
     fromGreenCC = mynargs[4]=='True'
 
 else:
-    expID = '2019_06_30_Nsyb_NLS6s_walk/fly1'
+    expID = '2019_06_26_Nsyb_NLS6s_walk/fly2'
     expDir = '/Volumes/SCAPEdata1/finalData/'+expID+'/Yproj/'
     savePath = expDir #'/Users/evan/Downloads/' #'/Users/evan/Dropbox/_AxelLab/_flygenvectors_dataShare/'
     fromGreenCC = False    # use ROIs parsed from green image (false -> use red)
@@ -62,6 +62,15 @@ except:
     ball = matbeh['alignedBehavior']['legVar']
     dlc = matbeh['alignedBehavior']['dlcData']
 
+# check if behavior label file exists
+try:
+    label_file = h5py.File(expDir + 'alignedLabels.mat')
+    states = label_file['labelsAligned']
+    print('found behavior labels')
+except:
+    states = []
+    print('no behavior labels')
+
 # compress Ysum
 M = np.max(Ysum)
 m = np.min(Ysum)
@@ -97,7 +106,7 @@ expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
 
 np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, 
-            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z) 
+            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states) 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
 
 # io.savemat(saveHandle+'_raw.mat',{
