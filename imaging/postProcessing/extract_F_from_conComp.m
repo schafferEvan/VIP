@@ -49,6 +49,15 @@ function extract_F_from_conComp(codePath, experimentFolder)
 % 
 
 addpath(genpath(codePath))
+
+itername = dir([experimentFolder, 'Yproj/iterReport/']);
+if ~isempty(itername)
+    iterFile = [experimentFolder, 'Yproj/iterReport/','iter.mat'];
+    load(iterFile,'ii');
+    start = ii+1;
+else
+    start = 1;    
+end    
 [trials, trialOrder, ~, runNumConvert] = sortExperimentDirectory(experimentFolder,'reg');
 
 load([experimentFolder,'Yproj/Ysum.mat'],'Ysum','Rsum')
@@ -104,7 +113,7 @@ trialFlag = zeros((length(trials)-length(runListTmp))*tStepsReg + tStepsEnd, 1);
 % ------------------------------------------------------------------------
 t=0;
 
-for ii=1:length(trials)
+for ii=start:length(trials)
     
     trialPath = [experimentFolder,trials(ii).name];
     display(['file ',num2str(ii),': ',trials(ii).name])
@@ -130,11 +139,12 @@ for ii=1:length(trials)
     
     t = t+T;
     
+    save([experimentFolder,'Yproj/iterReport/iter.mat'],'ii')
+    save([experimentFolder,'Yproj/F.mat'],'F','A','FR','trialFlag')
+    
+    A = Ar;
+    F = Fr;
+    FR = FRr;
+    save([experimentFolder,'Yproj/F_fromRed.mat'],'F','A','FR','trialFlag')
+    
 end
-
-save([experimentFolder,'Yproj/F.mat'],'F','A','FR','trialFlag')
-
-A = Ar;
-F = Fr;
-FR = FRr;
-save([experimentFolder,'Yproj/F_fromRed.mat'],'F','A','FR','trialFlag')

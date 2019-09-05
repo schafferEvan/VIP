@@ -1,11 +1,13 @@
-#!/bin/bash
+ #!/bin/bash
 
 # --- these are the only lines to edit ------------------------------
 # -------------------------------------------------------------------
 flyNum="fly3"
-imagingDataDir="/Volumes/SCAPEdata1/finalData/2018_08_24_NsybNLS_odors/"$flyNum"/"
-behaviorDataDir=""
+expDate="2019_08_20_Nsyb_NLS6s_walk/"
+expID="$expDate$flyNum"
+imagingDataDir="/Volumes/SCAPEdata1/finalData/"$expID"/"
+behaviorDataDir="/Volumes/SCAPEdata1/scapeBehavior/"$expDate""
 matlabPath="/Applications/MATLAB_R2018b.app/bin/matlab"
 # -------------------------------------------------------------------
 # -------------------------------------------------------------------
-bash submit_postProcessing_tmp.sh $imagingDataDir $behaviorDataDir $matlabPath $flyNum
+bash submit_postProcessing.sh $imagingDataDir $behaviorDataDir $matlabPath $flyNum $expID
