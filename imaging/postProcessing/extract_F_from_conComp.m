@@ -49,7 +49,7 @@ function extract_F_from_conComp(codePath, experimentFolder)
 % 
 
 addpath(genpath(codePath))
-
+mkdir([experimentFolder, 'Yproj/iterReport/']);
 itername = dir([experimentFolder, 'Yproj/iterReport/']);
 if ~isempty(itername)
     iterFile = [experimentFolder, 'Yproj/iterReport/','iter.mat'];
