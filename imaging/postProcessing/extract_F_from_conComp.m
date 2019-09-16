@@ -49,9 +49,9 @@ function extract_F_from_conComp(codePath, experimentFolder)
 % 
 
 addpath(genpath(codePath))
-mkdir([experimentFolder, 'Yproj/iterReport/']);
-itername = dir([experimentFolder, 'Yproj/iterReport/']);
-if ~isempty(itername)
+% itername = dir([experimentFolder, 'Yproj/iterReport/']);
+% if ~isempty(itername)
+if exist([experimentFolder, 'Yproj/iterReport/','iter.mat'],'file')
     iterFile = [experimentFolder, 'Yproj/iterReport/','iter.mat'];
     load(iterFile,'ii');
     start = ii+1;
@@ -112,6 +112,8 @@ trialFlag = zeros((length(trials)-length(runListTmp))*tStepsReg + tStepsEnd, 1);
 
 % ------------------------------------------------------------------------
 t=0;
+
+mkdir([experimentFolder, 'Yproj/iterReport/']);
 
 for ii=start:length(trials)
     
