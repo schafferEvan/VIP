@@ -16,7 +16,7 @@ end
 parentFolder = [behaviorFolder,date]; %behaviorFolder; %
 videoFolder = parentFolder; %[parentFolder,'UncompressedAVI/'];
 
-isavi = false; %true;
+isavi = true;
 if isavi
     files = dir([videoFolder,'f*.avi']);
 else
