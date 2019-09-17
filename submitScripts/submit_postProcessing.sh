@@ -34,8 +34,12 @@ cp "$dlcFolder$flyNum"*.csv"" $behavTraceFolder
 
 
 
-# matlab realigns behavior traces to match imaging
+# matlab realigns behavior traces to match imaging (use this version for single behav file and version below for multiple)
 $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder; exit"
+
+# # for experiments with multiple behavior files, align as follows instead of above
+# $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiTrial $parentdir $traceFolder; exit"
+
 
 # # IF NECESSARY, throw away trials from processed files (i.e. if early data from a fly is good but late isn't)
 # trialsToSkip = '4:8' # use matlab array syntax but pass as string
