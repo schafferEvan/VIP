@@ -67,8 +67,10 @@ end
 
 % define ballROI as the convex hull of the largest connected region
 ballbw = zeros(size(ImAvgbw));
-vExtent = floor(blobStats(id).BoundingBox(2))+(0:blobStats(id).BoundingBox(4)-1);
-hExtent = floor(blobStats(id).BoundingBox(1))+(0:blobStats(id).BoundingBox(3)-1);
+% vExtent = floor(blobStats(id).BoundingBox(2))+(0:blobStats(id).BoundingBox(4)-1);
+% hExtent = floor(blobStats(id).BoundingBox(1))+(0:blobStats(id).BoundingBox(3)-1);
+vExtent = floor(blobStats(id).BoundingBox(2))+(1:blobStats(id).BoundingBox(4));
+hExtent = floor(blobStats(id).BoundingBox(1))+(1:blobStats(id).BoundingBox(3));
 ballbw(vExtent, hExtent) = blobStats(id).ConvexImage;
 ballROI = find(ballbw);
 
