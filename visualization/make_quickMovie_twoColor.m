@@ -12,7 +12,14 @@ params.savePath = savePath;
 if ~isfolder(savePath); mkdir(savePath); end
 
 params.concatenate = true;
-load([experimentFolder,'info/',infoFile(1).name]);
+j=1;
+while j<=length(infoFile)
+    try
+        load([experimentFolder,'info/',infoFile(j).name]);
+    catch
+        j=j+1;
+    end
+end
 params.Ttot = 0;
 params.acqRate = round(info.daq.scanRate); %10; % volumes per second
 
