@@ -140,11 +140,13 @@ if ~isfield(alignedBehaviorTot,'legVar')
     alignedBehaviorTot.stim = alignedBehavior.stim;
     alignedBehaviorTot.drink = alignedBehavior.drink;
     alignedBehaviorTot.timeTot = time;
+    alignedBehaviorTot.dlcData = alignedBehavior.dlcAligned.data;
 else
     alignedBehaviorTot.legVar = [alignedBehaviorTot.legVar,alignedBehavior.legVar]; %behSmooth; %
     alignedBehaviorTot.stim = [alignedBehaviorTot.stim,alignedBehavior.stim];
     alignedBehaviorTot.drink = [alignedBehaviorTot.drink,alignedBehavior.drink];
     alignedBehaviorTot.timeTot = [alignedBehaviorTot.timeTot,alignedBehaviorTot.timeTot(end)+time];
+    alignedBehaviorTot.dlcData = [alignedBehaviorTot.dlcData; alignedBehavior.dlcAligned.data];
 end
 
 
