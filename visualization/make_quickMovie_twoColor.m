@@ -16,6 +16,7 @@ j=1;
 while j<=length(infoFile)
     try
         load([experimentFolder,'info/',infoFile(j).name]);
+        break
     catch
         j=j+1;
     end
