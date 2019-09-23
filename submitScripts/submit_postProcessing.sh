@@ -21,7 +21,7 @@ $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extract_F_from_conComp $parentdir $imagingDataDir; exit"
 
 #make behavior traces
-ballthresh=0.7 		# pixel threshold for ball vs not ball (quantile of blurred image)
+ballthresh=0.7      # pixel threshold for ball vs not ball (quantile of blurred image)
 indicatorHeight=10  # number of rows at top of image from which to measure indicator signal
 indicatorStart=1
 $matlabPath -nodisplay -nodesktop -r "cd('../behavior/'); extractBehaviorAuto $behaviorDataDir $ballthresh $indicatorHeight $indicatorStart; exit"
