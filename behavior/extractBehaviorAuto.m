@@ -1,5 +1,5 @@
 
-function extractBehaviorAuto(videoFolder)
+function extractBehaviorAuto(videoFolder, ballthresh, indicatorHeight, indicatorStart)
 % loops through videos, checks ROI location, and extracts light/shock timeseries
 
 addpath(genpath('..'))
@@ -12,10 +12,16 @@ addpath(genpath('..'))
 % videoFolder = parentFolder; %[parentFolder,'UncompressedAVI/'];
 
 % parameters ------------------------------------------------------------
-ballthresh = 0.7; %0.6; % pixel threshold for ball vs not ball (quantile of blurred image)
 nframes = 5000;         % num frames from which to estimate ball roi
-indicatorHeight = 10;   % number of rows at top of image from which to measure indicator signal
-indicatorStart = 1;
+if nargin<2
+    ballthresh = 0.7; %0.6; % pixel threshold for ball vs not ball (quantile of blurred image)
+    indicatorHeight = 10;   % number of rows at top of image from which to measure indicator signal
+    indicatorStart = 1;
+else
+    if ischar(ballthresh); ballthresh = str2double(ballthresh); end % this can happen if called from bash script
+    if ischar(indicatorHeight); indicatorHeight = str2double(indicatorHeight); end % this can happen if called from bash script
+    if ischar(indicatorStart); indicatorStart = str2double(indicatorStart); end % this can happen if called from bash script
+end
 % ------------------------------------------------------------------------
 
 avifiles = dir([videoFolder,'f*.avi']);
@@ -103,11 +109,18 @@ end
 legFrame(:,1) = frame(ballROI);
 indicatorMat(1) = mean(reshape( frame(indicatorStart:indicatorHeight+indicatorStart-1,:,1), aviobj.Width*indicatorHeight, 1 ));
 
-% to visualize ball ROI:
-% f=frame;
-% f(ballROI)=8e4
-% figure; imagesc(f)
 
+% make reference image
+refImB = frame;
+refImB(ballROI) = .9*2^16;
+refImI = frame;
+refImI(indicatorStart:indicatorHeight+indicatorStart-1,:) = .9*2^16;
+refIm = cat(3,refImI,frame,refImB);
+f=figure; imshow(refIm);
+saveas(f, [movfile(1:end-4),'_refIm.png'],'png')
+
+
+% extract ball and indicator timeseries
 for t=2:nframe
     if ~mod(t,50); disp(t/nframe); end
     if isavi
@@ -134,14 +147,6 @@ traces.isImagingOn = indicatorMat; %mean(indicatorMat,1);
 m.traces = traces;
 
 
-% make reference image
-refImB = frame;
-refImB(ballROI) = .9*2^16;
-refImI = frame;
-refImI(indicatorStart:indicatorHeight+indicatorStart-1,:) = .9*2^16;
-refIm = cat(3,refImI,frame,refImB);
-f=figure; imshow(refIm);
-saveas(f, [movfile(1:end-4),'_refIm.png'],'png')
 
 
 
