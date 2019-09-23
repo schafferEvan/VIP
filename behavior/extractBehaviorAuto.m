@@ -12,8 +12,8 @@ addpath(genpath('..'))
 % videoFolder = parentFolder; %[parentFolder,'UncompressedAVI/'];
 
 % parameters ------------------------------------------------------------
-ballthresh = 0.6;       % pixel threshold for ball vs not ball (quantile of blurred image)
-nframes = 1000;         % num frames from which to estimate ball roi
+ballthresh = 0.7; %0.6; % pixel threshold for ball vs not ball (quantile of blurred image)
+nframes = 5000;         % num frames from which to estimate ball roi
 indicatorHeight = 10;   % number of rows at top of image from which to measure indicator signal
 indicatorStart = 1;
 % ------------------------------------------------------------------------
@@ -132,5 +132,17 @@ traces.isDrinking = zeros(size(legMean));
 indicatorMat=indicatorMat-mean(indicatorMat);
 traces.isImagingOn = indicatorMat; %mean(indicatorMat,1);
 m.traces = traces;
+
+
+% make reference image
+refImB = frame;
+refImB(ballROI) = .9*2^16;
+refImI = frame;
+refImI(indicatorStart:indicatorHeight+indicatorStart-1,:) = .9*2^16;
+refIm = cat(3,refImI,frame,refImB);
+f=figure; imshow(refIm);
+saveas(f, [movfile(1:end-4),'_refIm.png'],'png')
+
+
 
 
