@@ -3,7 +3,8 @@ imagingDataDir=$1
 behaviorDataDir=$2
 matlabPath=$3
 flyNum=$4
-expID=$5
+expName=$5
+datasharePath=$6
 
 echo $imagingDataDir
 echo $behaviorDataDir
@@ -13,6 +14,8 @@ cwd=$(pwd)
 parentdir="$(dirname "$cwd")"
 traceFolder="$imagingDataDir"Yproj/""
 
+expID="$expName$flyNum"
+expDate=$(echo $expName | cut -c1-10)
 
 # matlab parses ROIs using watershed
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_sumImage $parentdir $imagingDataDir; exit"
@@ -55,4 +58,9 @@ python3 ../compilation/compileRaw.py $traceFolder $expID $traceFolder $fromGreen
 
 # # python smooths imaging, behavior, computes dFF and clustering
 python3 ../imaging/postProcessing/postProcessOne.py $traceFolder $expID 
+
+fullDatasharePath="$datasharePath"_main/"$expDate"_"$flyNum"/""
+echo $fullDatasharePath
+mkdir $fullDatasharePath
+cp "$traceFolder"*.npz"" $fullDatasharePath
 
