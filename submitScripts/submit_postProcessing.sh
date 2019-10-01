@@ -63,4 +63,7 @@ fullDatasharePath="$datasharePath"_main/"$expDate"_"$flyNum"/""
 echo $fullDatasharePath
 mkdir $fullDatasharePath
 cp "$traceFolder"*.npz"" $fullDatasharePath
+mkdir $fullDatasharePath"raw/"
+mv $fullDatasharePath"*raw.npz" $fullDatasharePath"raw/"
+
 
