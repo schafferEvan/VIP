@@ -29,6 +29,7 @@ addpath(genpath(codePath))
 [trials, trialOrder] = sortExperimentDirectory(experimentFolder,'reg',false);
 
 % more extensive check of whether files are corrupt
+triggerError = false;
 for ii=1:length(trials)    
     trialPath = [experimentFolder,trials(trialOrder(ii)).name];
     lastwarn('') % Clear last warning message    
@@ -40,13 +41,17 @@ for ii=1:length(trials)
         m.R(sr(1),sr(2),sr(3),sr(4));
         m.Y(sy(1),sy(2),sy(3),1);
         m.R(sr(1),sr(2),sr(3),1);
-    catch 
-        error([trials(trialOrder(ii)).name,' is corrupted']);
+    catch
+        triggerError = true;
+        warning([trials(trialOrder(ii)).name,' is corrupted']);
     end
     [~, warnId] = lastwarn;
     if strcmp(warnId,'MATLAB:whos:UnableToRead')
         disp([trials(trialOrder(ii)).name,' is PARTIALLY corrupted']);
     end
+end
+if triggerError
+    error('Aborting due to corrupted files')
 end
 
 %% sum image calc
@@ -85,10 +90,11 @@ end
 mkdir([experimentFolder,'Yproj'])
 save([experimentFolder,'Yproj/Ysum.mat'],'Ysum','Rsum')
 
-[im_bw_out,Ycc,regionProps] = segmentHessian_SCAPE_new(Ysum);
+[~,Ycc] = cell_segment_watershed(Ysum);
+% [im_bw_out,Ycc,regionProps] = segmentHessian_SCAPE_new(Ysum);
 if ~isempty(Rsum)
-    [~,Rcc,~] = segmentHessian_SCAPE_new(Rsum);
+    [~,Rcc,regionProps] = cell_segment_watershed(Rsum);
 else
     Rcc = [];
 end
-save([experimentFolder,'Yproj/cc.mat'],'Ycc','Rcc')
+save([experimentFolder,'Yproj/cc.mat'],'Ycc','Rcc','regionProps')
