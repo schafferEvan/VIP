@@ -296,7 +296,7 @@ class scape:
         
         grnTh = 25  # discard if max of trace is below this (not a cell). By design, this is a weak threshold to allow for inactive cells
         redTh = 200 # discard if max of trace is below this (not a cell). This is the main threshold for accepting ROIs as cells
-        magTh = 50 #2 #1  #discard if mean of dOO is greater than this (motion)
+        # magTh = 50 #2 #1  #discard if mean of dOO is greater than this (motion)
         # minTh = 2 #1 # discard if min is greater than this (motion)
         # maxTh = 0.1 #0.2 # discard if max is smaller than this (just noise)
         rgccTh = 0.95 #0.9 # discard units in which red and green are very correlated
@@ -320,10 +320,10 @@ class scape:
         self.rgccIsGood = rgccIsGood.flatten()
         # self.minIsGood = np.array(np.min(self.dOO, axis=1)<minTh)
         # self.maxIsGood = np.array(np.max(self.dOO, axis=1)>maxTh)
-        self.magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
+        # self.magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
         oIsGood = np.array(self.oIsGood>0)
         self.oIsGood = oIsGood.flatten()
-        self.goodIds = self.isNotMotion & self.ampIsGood & self.magIsGood & self.rgccIsGood & self.oMoreGreen & self.redIsGood
+        self.goodIds = self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.oMoreGreen & self.redIsGood
         # self.activeIds = self.maxIsGood
         #& self.minIsGood
         # pdb.set_trace()
@@ -399,8 +399,7 @@ class scape:
                 'Ygoodsc':self.Ygoodsc,'Rgoodsc':self.Rgoodsc,
                 'Y0sc':self.Y0sc,'R0sc':self.R0sc,'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
                 'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
-                'ampIsGood':self.ampIsGood,
-                'magIsGood':self.magIsGood,'rgccIsGood':self.rgccIsGood,'oMoreGreen':self.oMoreGreen,
+                'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood,'oMoreGreen':self.oMoreGreen,
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
                 })
             io.savemat(self.baseFolder+filename+'_Agood.mat',{'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims})
