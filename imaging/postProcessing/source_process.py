@@ -292,10 +292,10 @@ class scape:
         self.cc = np.matmul(X, np.transpose(X))/np.shape(X)[1]
 
 
-    def getGoodComponentsFull(self):
+    def getGoodComponentsFull(self, redTh=350, grnTh=25):
         
-        grnTh = 25  # discard if max of trace is below this (not a cell). By design, this is a weak threshold to allow for inactive cells
-        redTh = 200 # discard if max of trace is below this (not a cell). This is the main threshold for accepting ROIs as cells
+        # grnTh = 25  # discard if max of trace is below this (not a cell). By design, this is a weak threshold to allow for inactive cells
+        # redTh = 200 # discard if max of trace is below this (not a cell). This is the main threshold for accepting ROIs as cells
         # magTh = 50 #2 #1  #discard if mean of dOO is greater than this (motion)
         # minTh = 2 #1 # discard if min is greater than this (motion)
         # maxTh = 0.1 #0.2 # discard if max is smaller than this (just noise)
@@ -306,12 +306,12 @@ class scape:
         Mr = np.max(self.good.R, axis=1)
         Mo = np.max(self.dOO, axis=1)
 
-        self.getDatacorr(self.dOO, self.good.Y)
-        ogCorr = self.dataCorr
-        self.getDatacorr(self.dOO, self.good.R)
-        orCorr = self.dataCorr
-        oMoreGreen = np.array(abs(orCorr)<abs(ogCorr))
-        self.oMoreGreen = oMoreGreen.flatten()
+        # self.getDatacorr(self.dOO, self.good.Y)
+        # ogCorr = self.dataCorr
+        # self.getDatacorr(self.dOO, self.good.R)
+        # orCorr = self.dataCorr
+        # oMoreGreen = np.array(abs(orCorr)<abs(ogCorr))
+        # self.oMoreGreen = oMoreGreen.flatten()
 
         self.isNotMotion = np.array(Mo<motionTh)
         self.ampIsGood = np.array(My>grnTh)
@@ -323,10 +323,10 @@ class scape:
         # self.magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
         oIsGood = np.array(self.oIsGood>0)
         self.oIsGood = oIsGood.flatten()
-        self.goodIds = self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.oMoreGreen & self.redIsGood
+        self.goodIds = self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.redIsGood
         # self.activeIds = self.maxIsGood
         #& self.minIsGood
-        # pdb.set_trace()
+        pdb.set_trace()
 
         self.dOO = self.dOO[self.goodIds,:]
         self.dYY = self.dYY[self.goodIds,:]
@@ -399,7 +399,7 @@ class scape:
                 'Ygoodsc':self.Ygoodsc,'Rgoodsc':self.Rgoodsc,
                 'Y0sc':self.Y0sc,'R0sc':self.R0sc,'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
                 'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
-                'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood,'oMoreGreen':self.oMoreGreen,
+                'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood,
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
                 })
             io.savemat(self.baseFolder+filename+'_Agood.mat',{'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims})
@@ -454,7 +454,7 @@ class scape:
 
 
   
-    def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False):
+    def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False, redTh=350, grnTh=25):
         self.importdata(self.baseFolder+inputFile)
         self.trimTrialStart(secsToTrim)
 
@@ -533,7 +533,7 @@ class scape:
         self.make_O_and_dOO()
 
         print('\n find and remove bad units')
-        self.getGoodComponentsFull()
+        self.getGoodComponentsFull(redTh, grnTh)
 
         # dataToCluster = self.dOO[np.flatnonzero(self.goodIds),:]
         # self.computeCorr(dataToCluster)
