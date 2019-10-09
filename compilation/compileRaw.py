@@ -13,7 +13,7 @@ import glob
 import numpy as np
 from scipy import sparse, io
 import h5py
-#import pdb
+import pdb
 
 
 mynargs = sys.argv
@@ -47,6 +47,16 @@ A=matRaw['A']
 
 Ysum=matSum['Ysum']
 dims=np.shape(Ysum)
+
+# get regionProps
+matcc = io.loadmat(expDir+'/cc.mat')
+try:
+    rprops = matcc['regionProps']['blobStats'][0][0]
+    centroids = np.zeros(rprops.shape[0],3)
+    for i in range(rprops.shape[0]):
+        centroids[i,:] = rprops[i]['Centroid'][0]
+except:
+    centroids = []
 
 
 try:
@@ -106,7 +116,7 @@ expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
 
 np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, 
-            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states) 
+            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, centroids=centroids) 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
 
 # io.savemat(saveHandle+'_raw.mat',{
