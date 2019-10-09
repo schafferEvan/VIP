@@ -326,7 +326,7 @@ class scape:
         self.goodIds = self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.redIsGood
         # self.activeIds = self.maxIsGood
         #& self.minIsGood
-        pdb.set_trace()
+        # pdb.set_trace()
 
         self.dOO = self.dOO[self.goodIds,:]
         self.dYY = self.dYY[self.goodIds,:]
