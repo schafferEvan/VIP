@@ -402,7 +402,7 @@ class scape:
                 'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood,
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
                 })
-            io.savemat(self.baseFolder+filename+'_Agood.mat',{'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims})
+            io.savemat(self.baseFolder+filename+'_Agood.mat',{'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims, 'centroids':self.raw.centroids})
 
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
                 dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
@@ -438,6 +438,10 @@ class scape:
             self.raw.dims_in_um = d['tot_um_x'], d['tot_um_y'], d['tot_um_z']
             self.raw.im=d['im']
             self.raw.scanRate=d['scanRate']
+            try:
+                self.raw.centroids=d['centroids']
+            except:
+                self.raw.centroids=d['centroids']
             self.raw.A = sparse.load_npz( inputFile[:-7]+'A_raw.npz' )
 
         self.trialFlagUnique = np.unique(self.raw.trialFlag)
