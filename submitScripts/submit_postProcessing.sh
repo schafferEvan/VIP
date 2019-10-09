@@ -57,7 +57,7 @@ fromGreen='False'
 python3 ../compilation/compileRaw.py $traceFolder $expID $traceFolder $fromGreen
 
 # # python smooths imaging, behavior, computes dFF and clustering
-# # optional: specify redTh and grnTh as 3rd and 4th args
+# # optional: specify redTh and grnTh as 3rd and 4th args (defaults are 250 & 25, respectively)
 python3 ../imaging/postProcessing/postProcessOne.py $traceFolder $expID 
 
 fullDatasharePath="$datasharePath"_main/"$expDate"_"$flyNum"/""

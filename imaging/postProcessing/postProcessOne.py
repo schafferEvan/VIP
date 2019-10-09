@@ -26,7 +26,7 @@ if __name__ == '__main__':
         if (len(mynargs)>3):
             redTh=mynargs[3]
         else:
-            redTh=350
+            redTh=250
         if (len(mynargs)>4):
             grnTh=mynargs[4]
         else:
