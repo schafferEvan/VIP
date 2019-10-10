@@ -7,7 +7,8 @@ addpath(genpath('..'))
 % Set parameters
 landmarkParams.s1 = 0.8;    % sigma of smaller Gaussian
 landmarkParams.s2 = 2.0;    % sigma of larger Gaussian
-minObjSize=8;               % bound on min bump size to pass mask
+minObjSize=27;              % bound on min bump size to pass mask
+minObjDims=[4,4,4];         % bound on min extent of a cell in x,y,z
 
 % DoG filter to enhance contrast
 [~,im_DoG] = findLandmarkPointDoG(im,landmarkParams);
@@ -24,7 +25,7 @@ s(2) = std( M( P(:,1) < P(:,2) ) );             % std of voxels in dist 2
 if s(1)<s(2);   noise_id = [true,false];
 else;           noise_id = [false,true];
 end
-is_brain_thresh = GMModel.mu(noise_id) + 3*s(noise_id);   % thresh is 3 sigma above noise mean
+is_brain_thresh = GMModel.mu(noise_id) + 5*s(noise_id);   % thresh is 5 sigma above noise mean
 
 
 % create mask to evaluate Hessian where F is large, ignoring small maxima
@@ -39,8 +40,11 @@ watershed_mask=watershed(-im_DoG,6);            % choose connectivity of basins 
 watershed_im = (im_DoG>0).*double(watershed_mask).*mask_bw;
 im_bw = watershed_im>0;
 
-%remove small objects
+%remove small objects by volume
 im_bw_out=AreaFilter(im_bw,minObjSize,[],6);
+
+%remove small objects by extent in x,y,z
+im_bw_out=extentFilter(im_bw_out,minObjDims);
 
 %compile results of all sub images into final segmented mask.
 regionProps = getRegionProps(im_bw_out);
@@ -52,6 +56,22 @@ cc=regionProps.cc;
 
 
 
+function Imout=extentFilter(Imin,minObjDims)
+% generate image without ROIs that fail any minObjDims
+regionProps = getRegionProps(Imin);
+cc=bwconncomp(Imin,6);
+
+xok = zeros(length(regionProps.blobStats),1);
+yok = zeros(length(regionProps.blobStats),1);
+zok = zeros(length(regionProps.blobStats),1);
+for j=1:length(regionProps.blobStats)
+    xok(j) = regionProps.blobStats(j).BoundingBox(4)>=minObjDims(1);
+    yok(j) = regionProps.blobStats(j).BoundingBox(5)>=minObjDims(2);
+    zok(j) = regionProps.blobStats(j).BoundingBox(6)>=minObjDims(3);
+end
+cc.PixelIdxList(~xok | ~yok | ~zok)=[];
+Imout=zeros(size(Imin));
+Imout(cell2mat(cc.PixelIdxList'))=1;
 
 
 
