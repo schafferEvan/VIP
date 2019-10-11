@@ -1,42 +1,46 @@
+function make_rawScaled_movies_twoColor(codePath, experimentFolder, savePath)
+% skips frames to quickly make movie containing sample frames from entire
+% experiment (primarily to check motion correction)
 
-clear
+addpath(genpath(codePath))
+infoFile = dir([experimentFolder,'info/f*.mat']);
 %pause(60*150)
 
-if ismac
-    addpath(genpath('~/Dropbox/_AxelLab/matlab/calcium-signal-extraction/'))
-    addpath(genpath( '~/Dropbox/_code/pipeline/'))
-    experimentFolder = '/Volumes/dataFast2/2019_05_14_57C10_NLS6f_CrzDh44_red_Su_walk/';%'/Volumes/SCAPEdata1/finalData/2019_03_12_Nsyb_NLS6s_Su/fly2/';%'/Volumes/dataFast/habaRegistered/2019_02_14_Nsyb_NLS6s_Su/';
-    infoFile = dir([experimentFolder,'info/*.mat']);%'/Volumes/dataFast/habaRegistered/2018_08_24_odor/mats/new/fly3run2/'; %'/Users/evan/Desktop/hungerRaw/';%'/Volumes/SCAPEdata1/scratchData/2018_08_01_IRtest/matfiles/registered/';%'/Volumes/data/_scape/data/_outMats/'; %
-    if length(infoFile)>1; infoFile=infoFile(end); end
-    savePath = '~/Dropbox/_AxelLab/_data/_scape/movies/';
-elseif isunix
-    addpath(genpath('/home/analysis-pc/00_Analysis/motion_correction/'))
-    addpath(genpath('/home/analysis-pc/00_Analysis/calcium-signal-extraction/'))
-    experimentFolder = '/home/analysis-pc/rawData/20171025_nSyb_fly2_reg/registered/reregistered/';
-    savePath = '/home/analysis-pc/rawData/movies/';
-else
-    addpath(genpath('E:\Dropbox\GitHub\calcium-signal-extraction'))
-    addpath(genpath('E:\Dropbox\GitHub\eftyMotionCorr'))
-    experimentFolder = 'D:\SCAPEdataworkingfolder\_outMats\';
-    savePath = 'D:\SCAPEdataworkingfolder\movies\';
-end
+% if ismac
+%     addpath(genpath('~/Dropbox/_AxelLab/matlab/calcium-signal-extraction/'))
+%     addpath(genpath( '~/Dropbox/_code/pipeline/'))
+%     experimentFolder = '/Volumes/dataFast2/2019_05_14_57C10_NLS6f_CrzDh44_red_Su_walk/';%'/Volumes/SCAPEdata1/finalData/2019_03_12_Nsyb_NLS6s_Su/fly2/';%'/Volumes/dataFast/habaRegistered/2019_02_14_Nsyb_NLS6s_Su/';
+%     infoFile = dir([experimentFolder,'info/*.mat']);%'/Volumes/dataFast/habaRegistered/2018_08_24_odor/mats/new/fly3run2/'; %'/Users/evan/Desktop/hungerRaw/';%'/Volumes/SCAPEdata1/scratchData/2018_08_01_IRtest/matfiles/registered/';%'/Volumes/data/_scape/data/_outMats/'; %
+%     if length(infoFile)>1; infoFile=infoFile(end); end
+%     savePath = '~/Dropbox/_AxelLab/_data/_scape/movies/';
+% elseif isunix
+%     addpath(genpath('/home/analysis-pc/00_Analysis/motion_correction/'))
+%     addpath(genpath('/home/analysis-pc/00_Analysis/calcium-signal-extraction/'))
+%     experimentFolder = '/home/analysis-pc/rawData/20171025_nSyb_fly2_reg/registered/reregistered/';
+%     savePath = '/home/analysis-pc/rawData/movies/';
+% else
+%     addpath(genpath('E:\Dropbox\GitHub\calcium-signal-extraction'))
+%     addpath(genpath('E:\Dropbox\GitHub\eftyMotionCorr'))
+%     experimentFolder = 'D:\SCAPEdataworkingfolder\_outMats\';
+%     savePath = 'D:\SCAPEdataworkingfolder\movies\';
+% end
 
 % if isfolder([experimentFolder,'Yproj/']); load([experimentFolder,'Yproj/YprojFit.mat'],'YprojFit');scaling=YprojFit/max(YprojFit);
 % else; scaling = [];
 % end
 scaling = [];
-[trials, trialOrder] = sortExperimentDirectory(experimentFolder);
+[trials,~, ~, runNum] = sortExperimentDirectory(experimentFolder,'reg');
 
 params.trialName = [trials(end).name(1:end-4),'all.avi']; %[trials(end).name(1:runLoc-1),'all.avi'];
 params.savePath = savePath;
 params.concatenate = true;
-load([experimentFolder,'info/',infoFile.name]);
+load([experimentFolder,'info/',infoFile(1).name]);
 params.Ttot = 0;
 params.acqRate = round(info.daq.scanRate); %10; % volumes per second
 chunkSize = 101;
 
 % select maxY to set color scale
-m = matfile([experimentFolder,trials(trialOrder(2)).name]);
+m = matfile([experimentFolder,trials(1).name]);
 try
     sz = size(m,'Ysmall');
     Y = single( m.Ysmall(:,:,:,sz(4)-50:sz(4) ) );
@@ -78,8 +82,8 @@ params.kTot=0;
 for i=1:length(trials)
     if i>1; if runNum(i)~=runNum(i-1); params.Ttot = 0; end; end
     
-    trialPath = [experimentFolder,trials(trialOrder(i)).name];
-    display(['file ',num2str(i),': ',trials(trialOrder(i)).name])
+    trialPath = [experimentFolder,trials(i).name];
+    display(['file ',num2str(i),': ',trials(i).name])
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %     x = h5info(trialPath,'/mov');
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %     %sz = x.Dataspace.Size;
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %     Y = bigread2(trialPath);
@@ -129,3 +133,4 @@ for i=1:length(trials)
     end
 end
 close(params.vid)
+end
