@@ -67,3 +67,8 @@ cp "$traceFolder"*.npz"" $fullDatasharePath
 mkdir $fullDatasharePath"raw/"
 mv "$fullDatasharePath"*raw.npz"" "$fullDatasharePath"raw/""
 
+# generate point set aligned to common reference (824 fly2)
+movieFolder="/Volumes/data1/figsAndMovies/movies/"$expName$flyNum"/"
+$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_toCommonCoords $parentdir $traceFolder $movieFolder; exit"
+
+
