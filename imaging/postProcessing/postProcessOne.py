@@ -26,11 +26,11 @@ if __name__ == '__main__':
         if (len(mynargs)>3):
             redTh=mynargs[3]
         else:
-            redTh=250
+            redTh=100
         if (len(mynargs)>4):
             grnTh=mynargs[4]
         else:
-            grnTh=25
+            grnTh=0
     else:
         rootFolder = "/Users/evan/Dropbox/_sandbox/sourceExtraction/good/"
         expID = 'F_fromRed.mat'

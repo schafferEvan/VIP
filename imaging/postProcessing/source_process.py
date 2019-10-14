@@ -292,7 +292,7 @@ class scape:
         self.cc = np.matmul(X, np.transpose(X))/np.shape(X)[1]
 
 
-    def getGoodComponentsFull(self, redTh=250, grnTh=25):
+    def getGoodComponentsFull(self, redTh=100, grnTh=0):
         
         # grnTh = 25  # discard if max of trace is below this (not a cell). By design, this is a weak threshold to allow for inactive cells
         # redTh = 200 # discard if max of trace is below this (not a cell). This is the main threshold for accepting ROIs as cells
@@ -458,7 +458,7 @@ class scape:
 
 
   
-    def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False, redTh=250, grnTh=25):
+    def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False, redTh=100, grnTh=0):
         self.importdata(self.baseFolder+inputFile)
         self.trimTrialStart(secsToTrim)
 
