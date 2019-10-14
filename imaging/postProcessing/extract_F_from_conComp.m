@@ -83,29 +83,27 @@ for j=1:length(runListTmp)
 end
 
 % parsing from green -----------------------------------------------------
-A = sparse(prod(Ycc.ImageSize), Ycc.NumObjects);
+A_from_G = sparse(prod(Ycc.ImageSize), Ycc.NumObjects);
 for j=1:Ycc.NumObjects
-    disp(j)
-    A(Ycc.PixelIdxList{j},j)=1;
+    A_from_G(Ycc.PixelIdxList{j},j)=1;
 end
 
-F = zeros(Ycc.NumObjects, (length(trials)-length(runListTmp))*tStepsReg + tStepsEnd );
-FR = zeros(Ycc.NumObjects, (length(trials)-length(runListTmp))*tStepsReg + tStepsEnd );
+F_G_from_G = zeros(Ycc.NumObjects, (length(trials)-length(runListTmp))*tStepsReg + tStepsEnd );
+F_R_from_G = zeros(Ycc.NumObjects, (length(trials)-length(runListTmp))*tStepsReg + tStepsEnd );
 
 % parsing from red -------------------------------------------------------
 
 if ~isempty(Rcc)
-    Ar = sparse(prod(Rcc.ImageSize), Rcc.NumObjects);
+    A_from_R = sparse(prod(Rcc.ImageSize), Rcc.NumObjects);
     for j=1:Rcc.NumObjects
-        disp(j)
-        Ar(Rcc.PixelIdxList{j},j)=1;
+        A_from_R(Rcc.PixelIdxList{j},j)=1;
     end
-    Fr = zeros(Rcc.NumObjects, (length(trials)-length(runListTmp))*tStepsReg + tStepsEnd );
-    FRr = zeros(Rcc.NumObjects, (length(trials)-length(runListTmp))*tStepsReg + tStepsEnd );
+    F_G_from_R = zeros(Rcc.NumObjects, (length(trials)-length(runListTmp))*tStepsReg + tStepsEnd );
+    F_R_from_R = zeros(Rcc.NumObjects, (length(trials)-length(runListTmp))*tStepsReg + tStepsEnd );
 else
-    Ar = [];
-    Fr = [];
-    FRr = [];
+    A_from_R = [];
+    F_G_from_R = [];
+    F_R_from_R = [];
 end
 
 trialFlag = zeros((length(trials)-length(runListTmp))*tStepsReg + tStepsEnd, 1);
@@ -124,29 +122,32 @@ for ii=start:length(trials)
     
     T = size(Y,4);
     Y = reshape(Y,prod(Ycc.ImageSize),T);
-    F(:,t+(1:T)) = A'*Y;
-    if ~isempty(Ar)
-        Fr(:,t+(1:T)) = Ar'*Y;
+    F_G_from_G(:,t+(1:T)) = A_from_G'*Y;
+    if ~isempty(A_from_R)
+        F_G_from_R(:,t+(1:T)) = A_from_R'*Y;
     end
     trialFlag(t+(1:T))=runNumConvert(ii);
     clear Y
     
-    if ~isempty(Ar)
+    if ~isempty(A_from_R)
         R = m.R;
         R = reshape(R,prod(Ycc.ImageSize),T);
-        FR(:,t+(1:T)) = A'*R;
-        FRr(:,t+(1:T)) = Ar'*R;
+        F_R_from_G(:,t+(1:T)) = A_from_G'*R;
+        F_R_from_R(:,t+(1:T)) = A_from_R'*R;
     end
     clear R
     
     t = t+T;
     
+    A = A_from_G;
+    F = F_G_from_G;
+    FR = F_R_from_G;
     save([experimentFolder,'Yproj/iterReport/iter.mat'],'ii')
     save([experimentFolder,'Yproj/F.mat'],'F','A','FR','trialFlag')
     
-    A = Ar;
-    F = Fr;
-    FR = FRr;
+    A = A_from_R;
+    F = F_G_from_R;
+    FR = F_R_from_R;
     save([experimentFolder,'Yproj/F_fromRed.mat'],'F','A','FR','trialFlag')
     
 end
