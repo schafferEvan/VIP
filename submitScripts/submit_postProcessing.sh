@@ -17,8 +17,11 @@ traceFolder="$imagingDataDir"Yproj/""
 expID="$expName$flyNum"
 expDate=$(echo $expName | cut -c1-10)
 
-# matlab parses ROIs using watershed
+# compile sumImage (time-averaged volume) to use for segmentation
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); compile_sumImage $parentdir $imagingDataDir; exit"
+
+# matlab parses ROIs using watershed
+$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); run_watershed_segmentation $parentdir $imagingDataDir; exit"
 
 # matlab extracts time series
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extract_F_from_conComp $parentdir $imagingDataDir; exit"
