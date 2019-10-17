@@ -25,6 +25,7 @@ if __name__ == '__main__':
         expID = mynargs[2]
         if (len(mynargs)>3):
             redTh=mynargs[3]
+            redTh=float(redTh)
         else:
             redTh=100
         if (len(mynargs)>4):
