@@ -399,14 +399,14 @@ class scape:
                 'Ygoodsc':self.Ygoodsc,'Rgoodsc':self.Rgoodsc,
                 'Y0sc':self.Y0sc,'R0sc':self.R0sc,'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
                 'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
-                'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood,
+                'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood, 'redTh':self.redTh, 'grnTh':self.grnTh,
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
                 })
             io.savemat(self.baseFolder+filename+'_Agood.mat',{'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims, 'centroids':self.raw.centroids})
 
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
                 dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
-                scanRate=self.raw.scanRate) 
+                scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
 
@@ -459,6 +459,8 @@ class scape:
 
   
     def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False, redTh=100, grnTh=0):
+        self.redTh = redTh
+        self.grnTh = grnTh
         self.importdata(self.baseFolder+inputFile)
         self.trimTrialStart(secsToTrim)
 
