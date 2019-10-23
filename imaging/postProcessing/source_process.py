@@ -332,6 +332,7 @@ class scape:
         self.dYY = self.dYY[self.goodIds,:]
         self.dRR = self.dRR[self.goodIds,:]
         self.good.A  = self.raw.A[:,self.goodIds]
+        self.good.aligned_centroids=self.good.aligned_centroids[self.goodIds,:]
 
     def hierCluster_fixedN(self,nClust):
         # version with prespecified cluster number
@@ -401,12 +402,12 @@ class scape:
                 'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
                 'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood,
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
-                })
+                'aligned_centroids':self.good.aligned_centroids})
             io.savemat(self.baseFolder+filename+'_Agood.mat',{'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims, 'centroids':self.raw.centroids})
 
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
                 dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
-                scanRate=self.raw.scanRate) 
+                scanRate=self.raw.scanRate, aligned_centroids=self.good.aligned_centroids) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
 
@@ -438,10 +439,9 @@ class scape:
             self.raw.dims_in_um = d['tot_um_x'], d['tot_um_y'], d['tot_um_z']
             self.raw.im=d['im']
             self.raw.scanRate=d['scanRate']
-            try:
-                self.raw.centroids=d['centroids']
-            except:
-                self.raw.centroids=d['centroids']
+            self.raw.original_centroids=d['original_centroids']
+            self.raw.aligned_centroids=d['aligned_centroids']
+
             self.raw.A = sparse.load_npz( inputFile[:-7]+'A_raw.npz' )
 
         self.trialFlagUnique = np.unique(self.raw.trialFlag)
