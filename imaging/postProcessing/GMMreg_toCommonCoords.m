@@ -33,15 +33,6 @@ interval = 10; %2;      % size of TPS grid
 [~, aligned] =  gmmreg_L2(config);
 
 
-
-% -------- STOPPED HERE ----------
-% 2 - point saving to correct place
-% 3 - fix color & point style in plot
-% 4 - fix orientation of points D/V
-% 5 - point movie to fig folder
-
-
-
 save([experimentFolder,'registered_pointset.mat'],'aligned','raw')
 
 % visualize results

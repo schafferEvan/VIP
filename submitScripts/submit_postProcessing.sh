@@ -65,6 +65,13 @@ R_th=100
 # # optional: specify redTh and grnTh as 3rd and 4th args (defaults are 100 & 0, respectively)
 python3 ../imaging/postProcessing/postProcessOne.py $traceFolder $expID $R_th
 
+# generate point set aligned to common reference (824 fly2)
+movieFolder="/Volumes/data1/figsAndMovies/movies/"$expName$flyNum"/"
+$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_toCommonCoords $parentdir $traceFolder $movieFolder; exit"
+python3 ../imaging/postProcessing/append_aligned_centroids.py $traceFolder $expID $traceFolder $fromGreen
+
+
+
 fullDatasharePath="$datasharePath"_main/"$expDate"_"$flyNum"/""
 echo $fullDatasharePath
 mkdir $fullDatasharePath
@@ -72,6 +79,3 @@ cp "$traceFolder"*.npz"" $fullDatasharePath
 mkdir $fullDatasharePath"raw/"
 mv "$fullDatasharePath"*raw.npz"" "$fullDatasharePath"raw/""
 
-# # generate point set aligned to common reference (824 fly2)
-# movieFolder="/Volumes/data1/figsAndMovies/movies/"$expName$flyNum"/"
-# $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_toCommonCoords $parentdir $traceFolder $movieFolder; exit"
