@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 """ Suite of functions to process scape data after source extraction
-
 @author evan schaffer
 """
 # Created Jan 3 2019
@@ -399,14 +398,14 @@ class scape:
                 'Ygoodsc':self.Ygoodsc,'Rgoodsc':self.Rgoodsc,
                 'Y0sc':self.Y0sc,'R0sc':self.R0sc,'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
                 'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
-                'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood,
+                'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood, 'redTh':self.redTh, 'grnTh':self.grnTh,
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
                 })
             io.savemat(self.baseFolder+filename+'_Agood.mat',{'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims, 'centroids':self.raw.centroids})
 
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
                 dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
-                scanRate=self.raw.scanRate) 
+                scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
 
@@ -438,10 +437,7 @@ class scape:
             self.raw.dims_in_um = d['tot_um_x'], d['tot_um_y'], d['tot_um_z']
             self.raw.im=d['im']
             self.raw.scanRate=d['scanRate']
-            try:
-                self.raw.centroids=d['centroids']
-            except:
-                self.raw.centroids=d['centroids']
+            self.raw.centroids=d['centroids']
             self.raw.A = sparse.load_npz( inputFile[:-7]+'A_raw.npz' )
 
         self.trialFlagUnique = np.unique(self.raw.trialFlag)
@@ -459,6 +455,8 @@ class scape:
 
   
     def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False, redTh=100, grnTh=0):
+        self.redTh = redTh
+        self.grnTh = grnTh
         self.importdata(self.baseFolder+inputFile)
         self.trimTrialStart(secsToTrim)
 
@@ -614,6 +612,7 @@ if __name__ == '__main__':
     obj = scape(baseFolder)
     # obj.postProcess('F_fromRed.mat', 'post_fromRcc.mat')
     obj.process('2019_06_26_Nsyb_NLS6s_walk_fly2_raw.npz', '2019_06_26_Nsyb_NLS6s_walk_fly2.npz',secsToTrim, savematfile)
+
 
 
 

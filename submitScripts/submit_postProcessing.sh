@@ -26,11 +26,11 @@ $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); run_wate
 # matlab extracts time series
 $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); extract_F_from_conComp $parentdir $imagingDataDir; exit"
 
-#make behavior traces
-ballthresh=0.7      # pixel threshold for ball vs not ball (quantile of blurred image)
-indicatorHeight=10  # number of rows at top of image from which to measure indicator signal
-indicatorStart=1
-$matlabPath -nodisplay -nodesktop -r "cd('../behavior/'); extractBehaviorAuto $behaviorDataDir $ballthresh $indicatorHeight $indicatorStart; exit"
+# #make behavior traces
+# ballthresh=0.7      # pixel threshold for ball vs not ball (quantile of blurred image)
+# indicatorHeight=10  # number of rows at top of image from which to measure indicator signal
+# indicatorStart=1
+# $matlabPath -nodisplay -nodesktop -r "cd('../behavior/'); extractBehaviorAuto $behaviorDataDir $ballthresh $indicatorHeight $indicatorStart; exit"
 
 
 # copy behavior traces into subdirectory of imaging to aggregate final output
@@ -38,16 +38,16 @@ cp -r "$imagingDataDir"info"" $traceFolder
 behavTraceFolder="$traceFolder"behavior/""
 mkdir $behavTraceFolder
 cp "$behaviorDataDir$flyNum"*.mat"" $behavTraceFolder
-dlcFolder="$behaviorDataDir"dlc/""
-cp "$dlcFolder$flyNum"*.csv"" $behavTraceFolder
+# dlcFolder="$behaviorDataDir"dlc/""
+# cp "$dlcFolder$flyNum"*.csv"" $behavTraceFolder
 
 
 
-# matlab realigns behavior traces to match imaging (use this version for single behav file and version below for multiple)
-$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder; exit"
+# # matlab realigns behavior traces to match imaging (use this version for single behav file and version below for multiple)
+# $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiImSingleBeh $parentdir $traceFolder; exit"
 
-# # for experiments with multiple behavior files, align as follows instead of above
-# $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiTrial $parentdir $traceFolder; exit"
+# for experiments with multiple behavior files, align as follows instead of above
+$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBehaviorMultiTrial $parentdir $traceFolder; exit"
 
 
 # # IF NECESSARY, throw away trials from processed files (i.e. if early data from a fly is good but late isn't)
@@ -59,9 +59,11 @@ $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBeha
 fromGreen='False'
 python3 ../compilation/compileRaw.py $traceFolder $expID $traceFolder $fromGreen
 
+R_th=100
+
 # # python smooths imaging, behavior, computes dFF and clustering
-# # optional: specify redTh and grnTh as 3rd and 4th args (defaults are 250 & 25, respectively)
-python3 ../imaging/postProcessing/postProcessOne.py $traceFolder $expID 
+# # optional: specify redTh and grnTh as 3rd and 4th args (defaults are 100 & 0, respectively)
+python3 ../imaging/postProcessing/postProcessOne.py $traceFolder $expID $R_th
 
 fullDatasharePath="$datasharePath"_main/"$expDate"_"$flyNum"/""
 echo $fullDatasharePath
@@ -70,8 +72,6 @@ cp "$traceFolder"*.npz"" $fullDatasharePath
 mkdir $fullDatasharePath"raw/"
 mv "$fullDatasharePath"*raw.npz"" "$fullDatasharePath"raw/""
 
-# generate point set aligned to common reference (824 fly2)
-movieFolder="/Volumes/data1/figsAndMovies/movies/"$expName$flyNum"/"
-$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_toCommonCoords $parentdir $traceFolder $movieFolder; exit"
-
-
+# # generate point set aligned to common reference (824 fly2)
+# movieFolder="/Volumes/data1/figsAndMovies/movies/"$expName$flyNum"/"
+# $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_toCommonCoords $parentdir $traceFolder $movieFolder; exit"
