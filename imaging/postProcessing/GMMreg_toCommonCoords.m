@@ -33,11 +33,20 @@ interval = 10; %2;      % size of TPS grid
 [~, aligned] =  gmmreg_L2(config);
 
 
+
+% -------- STOPPED HERE ----------
+% 2 - point saving to correct place
+% 3 - fix color & point style in plot
+% 4 - fix orientation of points D/V
+% 5 - point movie to fig folder
+
+
+
 save([experimentFolder,'registered_pointset.mat'],'aligned','raw')
 
 % visualize results
-raw(:,3)=-raw(:,3);	% flip z-coordinates so dorsal is on top in visualization
-ref(:,3)=-ref(:,3); % flip z-coordinates so dorsal is on top in visualization
+raw(:,3)=-raw(:,3);
+ref(:,3)=-ref(:,3);
 aligned(:,3)=-aligned(:,3);
 DisplayPoints3DPretty(raw, ref, aligned);
 

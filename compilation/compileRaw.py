@@ -48,15 +48,15 @@ A=matRaw['A']
 Ysum=matSum['Ysum']
 dims=np.shape(Ysum)
 
-# # get regionProps
-# matcc = io.loadmat(expDir+'/cc.mat')
-# try:
-#     rprops = matcc['regionProps']['blobStats'][0][0]
-#     centroids = np.zeros(rprops.shape[0],3)
-#     for i in range(rprops.shape[0]):
-#         centroids[i,:] = rprops[i]['Centroid'][0]
-# except:
-#     centroids = []
+# get regionProps
+matcc = io.loadmat(expDir+'/cc.mat')
+try:
+    rprops = matcc['regionProps']['blobStats'][0][0]
+    centroids = np.zeros(rprops.shape[0],3)
+    for i in range(rprops.shape[0]):
+        centroids[i,:] = rprops[i]['Centroid'][0]
+except:
+    centroids = []
 
 
 try:
@@ -80,23 +80,6 @@ try:
 except:
     states = []
     print('no behavior labels')
-
-# check if registered pointset file exists
-try:
-    point_file = io.loadmat(expDir + 'registered_pointset.mat')
-    raw = point_file['raw']
-    aligned = point_file['aligned']
-    print('found registered pointset')
-except:
-    try:
-        point_file = h5py.File(expDir + 'registered_pointset.mat')
-        raw = point_file['raw']
-        aligned = point_file['aligned']
-        print('found registered pointset')
-    except:
-        raw = []
-        aligned = []
-        print('no registered pointset')
 
 # compress Ysum
 M = np.max(Ysum)
@@ -133,8 +116,7 @@ expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
 
 np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, 
-            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, 
-            original_centroids=raw, aligned_centroids=aligned) 
+            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, centroids=centroids) 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
 
 # io.savemat(saveHandle+'_raw.mat',{

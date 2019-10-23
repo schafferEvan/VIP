@@ -55,11 +55,6 @@ $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); alignImagingAndBeha
 # $matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); retroactivelyIgnoreTrials $traceFolder $trialsToSkip; exit"
 
 
-# generate point set aligned to common reference (824 fly2)
-movieFolder="/Volumes/data1/figsAndMovies/movies/"$expName$flyNum"/"
-$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_toCommonCoords $parentdir $traceFolder $movieFolder; exit"
-
-
 # generate aggregated RAW mat files to share with collaborators
 fromGreen='False'
 python3 ../compilation/compileRaw.py $traceFolder $expID $traceFolder $fromGreen
@@ -74,5 +69,9 @@ mkdir $fullDatasharePath
 cp "$traceFolder"*.npz"" $fullDatasharePath
 mkdir $fullDatasharePath"raw/"
 mv "$fullDatasharePath"*raw.npz"" "$fullDatasharePath"raw/""
+
+# generate point set aligned to common reference (824 fly2)
+movieFolder="/Volumes/data1/figsAndMovies/movies/"$expName$flyNum"/"
+$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_toCommonCoords $parentdir $traceFolder $movieFolder; exit"
 
 
