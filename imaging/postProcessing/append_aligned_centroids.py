@@ -33,7 +33,7 @@ fileHandle = savePath+expNameHandle+'.npz'
 
 f = np.load( fileHandle )
 ptf = io.loadmat( savePath+'registered_pointset.mat')
-pdb.set_trace()
+# pdb.set_trace()
 
 np.savez( fileHandle, time=f['time'], trialFlag=f['trialFlag'],
         dFF=f['dFF'], ball=f['ball'], dlc=f['dlc'], 
