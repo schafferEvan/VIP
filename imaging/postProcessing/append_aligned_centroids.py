@@ -33,10 +33,11 @@ fileHandle = savePath+expNameHandle+'.npz'
 
 f = np.load( fileHandle )
 ptf = io.loadmat( savePath+'registered_pointset.mat')
-
+pdb.set_trace()
 
 np.savez( fileHandle, time=f['time'], trialFlag=f['trialFlag'],
-        dFF=f['dFF'], ball=f['ball'], dlc=f['dlc'], beh_labels=f['beh_labels'], 
+        dFF=f['dFF'], ball=f['ball'], dlc=f['dlc'], 
+        beh_labels=f['beh_labels'], stim=f['stim'], drink=f['drink'],
         dims=f['dims'], dims_in_um=f['dims_in_um'], im=f['im'], 
         scanRate=f['scanRate'], redTh=f['redTh'], grnTh=f['grnTh'],
         aligned_centroids=ptf['aligned']) 
