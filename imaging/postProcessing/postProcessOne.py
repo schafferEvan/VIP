@@ -29,14 +29,17 @@ if __name__ == '__main__':
         else:
             redTh=100
         if (len(mynargs)>4):
-            grnTh=mynargs[4]
+            grnTh=float(mynargs[4])
         else:
             grnTh=0
+        if (len(mynargs)>5):
+            secsToTrim=float(mynargs[5])
+        else:
+            secsToTrim=20.
     else:
         rootFolder = "/Users/evan/Dropbox/_sandbox/sourceExtraction/good/"
         expID = 'F_fromRed.mat'
     
     expNameHandle=expID.replace('/','_')
     savematfile=True
-    secsToTrim=20.
     postProcessOne(rootFolder, expNameHandle, secsToTrim, savematfile, redTh, grnTh)

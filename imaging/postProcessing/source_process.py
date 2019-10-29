@@ -34,7 +34,9 @@ class dataObj:
         self.R = np.ndarray(shape=(1,1))
         self.trialFlag = np.ndarray(shape=(1,1))  
         self.time = np.ndarray(shape=(1,1))    
-        self.ball = np.ndarray(shape=(1,1))     
+        self.ball = np.ndarray(shape=(1,1))  
+        self.stim = np.ndarray(shape=(1,1))  
+        self.drink = np.ndarray(shape=(1,1))     
         self.dlc = np.ndarray(shape=(1,1))  
         self.beh_labels = np.ndarray(shape=(1,1))   
         self.dims = np.ndarray(shape=(1,1))  
@@ -377,6 +379,12 @@ class scape:
         self.good.trialFlag = self.raw.trialFlag[isAkeeper[:,0]>0]
         self.good.time = self.raw.time[isAkeeper[:,0]>0]
         self.good.ball = self.raw.ball[isAkeeper[:,0]>0]
+        if(self.raw.stim.shape[0]>2):
+            self.good.stim = self.raw.stim[isAkeeper[:,0]>0]
+            self.good.drink = self.raw.drink[isAkeeper[:,0]>0]
+        else:
+            self.good.stim = self.raw.stim
+            self.good.drink = self.raw.drink
         if(self.raw.dlc.shape[0]>2):
             self.good.dlc = self.raw.dlc[:,isAkeeper[:,0]>0]
         else:
@@ -404,7 +412,9 @@ class scape:
             io.savemat(self.baseFolder+filename+'_Agood.mat',{'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims, 'centroids':self.raw.centroids})
 
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
-                dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
+                dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, 
+                stim=self.good.stim, drink=self.good.drink,
+                dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
                 scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh, aligned_centroids=[]) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
@@ -432,6 +442,8 @@ class scape:
             self.raw.time=d['time']
             self.raw.ball=d['ball']
             self.raw.dlc=d['dlc']
+            self.raw.stim=d['stim']
+            self.raw.drink=d['drink']
             self.raw.beh_labels=d['states']
             self.raw.dims=d['dims']
             self.raw.dims_in_um = d['tot_um_x'], d['tot_um_y'], d['tot_um_z']

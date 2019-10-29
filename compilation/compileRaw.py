@@ -64,6 +64,8 @@ try:
     time = matbeh['time'].T
     ball = matbeh['alignedBehavior']['legVar'][0][0].T
     dlc = matbeh['alignedBehavior']['dlcData'][0][0].T
+    stim = matbeh['alignedBehavior']['stim'][0][0].T
+    drink = matbeh['alignedBehavior']['drink'][0][0].T
     print('v7')
 except:
     print('v7.3')
@@ -71,6 +73,8 @@ except:
     time = matbeh['time']
     ball = matbeh['alignedBehavior']['legVar']
     dlc = matbeh['alignedBehavior']['dlcData']
+    stim = matbeh['alignedBehavior']['stim']
+    drink = matbeh['alignedBehavior']['drink']
 
 # check if behavior label file exists
 try:
@@ -115,7 +119,7 @@ tot_um_z = dims[2]*z_umPerPix
 expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
 
-np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, 
+np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, stim=stim, drink=drink,
             dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, centroids=centroids) 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
 

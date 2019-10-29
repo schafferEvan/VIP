@@ -63,6 +63,7 @@ R_th=100
 
 # # python smooths imaging, behavior, computes dFF and clustering
 # # optional: specify redTh and grnTh as 3rd and 4th args (defaults are 100 & 0, respectively)
+# # optional: specify secsToTrim as 5th arg (3rd and 4th are required in this case). Default = 20. Set to 0 for old expts already trimmed.
 python3 ../imaging/postProcessing/postProcessOne.py $traceFolder $expID $R_th
 
 # generate point set aligned to common reference (824 fly2)
