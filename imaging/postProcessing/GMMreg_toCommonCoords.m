@@ -28,10 +28,14 @@ motion = 'tps';         % motion model ('tps','affine3d')
 scale = 50;             % variance around each point
 interval = 10; %2;      % size of TPS grid
 
-% align point sets using TPS GMMreg
-[config] = initialize_config_extended(raw, ref, motion, scale, raw, ref, interval);
-[~, aligned] =  gmmreg_L2(config);
-
+if contains(experimentFolder, '2018_08_24_NsybNLS_odors/fly2')
+    % skip alignment for template dataset
+    aligned = ref;
+else
+    % align point sets using TPS GMMreg
+    [config] = initialize_config_extended(raw, ref, motion, scale, raw, ref, interval);
+    [~, aligned] =  gmmreg_L2(config);
+end
 
 save([experimentFolder,'registered_pointset.mat'],'aligned','raw')
 
