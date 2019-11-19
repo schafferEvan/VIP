@@ -2,6 +2,18 @@ function [trials, trialOrder, runNum, runNumConvert, frameNum] = sortExperimentD
 % File sorting in experimental directory.
 
 trials = dir([experimentFolder,'*.mat']); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%dir([experimentFolder,'*.h5']);
+
+pos = [];
+for i =1:numel(trials)
+    trialName = trials(i).name;
+    if trialName(1) == '.'
+        pos = [pos, i];
+    end
+end 
+
+trials(pos) = [];
+
+
 frameNum = zeros(size(trials));
 runNum = cell(size(trials));
 runNumConvert = zeros(size(trials));
