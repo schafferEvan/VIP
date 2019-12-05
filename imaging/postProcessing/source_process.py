@@ -377,6 +377,7 @@ class scape:
         self.good.Y = self.raw.Y[:,isAkeeper[:,0]>0]
         self.good.R = self.raw.R[:,isAkeeper[:,0]>0]
         self.good.trialFlag = self.raw.trialFlag[isAkeeper[:,0]>0]
+        # pdb.set_trace()
         self.good.time = self.raw.time[isAkeeper[:,0]>0]
         self.good.ball = self.raw.ball[isAkeeper[:,0]>0]
         if(self.raw.stim.shape[0]>2):
