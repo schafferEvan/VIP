@@ -110,14 +110,14 @@ legFrame(:,1) = frame(ballROI);
 indicatorMat(1) = mean(reshape( frame(indicatorStart:indicatorHeight+indicatorStart-1,:,1), aviobj.Width*indicatorHeight, 1 ));
 
 
-% make reference image
-refImB = frame;
-refImB(ballROI) = .9*2^16;
-refImI = frame;
-refImI(indicatorStart:indicatorHeight+indicatorStart-1,:) = .9*2^16;
-refIm = cat(3,refImI,frame,refImB);
-f=figure; imshow(refIm);
-saveas(f, [movfile(1:end-4),'_refIm.png'],'png')
+% % make reference image
+% refImB = frame;
+% refImB(ballROI) = .9*2^16;
+% refImI = frame;
+% refImI(indicatorStart:indicatorHeight+indicatorStart-1,:) = .9*2^16;
+% refIm = cat(3,refImI,frame,refImB);
+% f=figure; imshow(refIm);
+% saveas(f, [movfile(1:end-4),'_refIm.png'],'png')
 
 
 % extract ball and indicator timeseries
