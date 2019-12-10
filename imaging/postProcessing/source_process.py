@@ -26,6 +26,7 @@ from sklearn.decomposition import FastICA
 from numpy.polynomial.polynomial import Polynomial as poly
 from scipy.ndimage.filters import gaussian_filter1d as gsm
 import pdb
+import struct
 
 
 class dataObj:
@@ -52,11 +53,38 @@ class scape:
     def __init__(self, baseFolder):
         self.baseFolder = baseFolder
         self.raw = dataObj()
-        self.good = dataObj()
+        self.good = dataObj()    
 
     def loadMat(self, file, varname):
         self.mat=io.loadmat(self.baseFolder+file) 
         self.matVar=self.mat[varname]
+
+    def readPID(self, odorRun):
+        self.PIDdata = {}
+        self.PIDdata['data'] = []
+        self.PIDdata['time'] = []
+        self.PIDdata['odor_seq'] = []
+        self.PIDdata['odor_initdelay'] = []
+        self.PIDdata['odor_dur'] = []
+        self.PIDdata['odor_isi'] = []
+        self.PIDdata['odor_rep'] = []
+        if os.path.isdir(self.baseFolder+'bin/'):
+            infofile = glob.glob(self.baseFolder+'info/*run'+str(odorRun)+'*info.mat')[0]
+            binfile = glob.glob(self.baseFolder+'bin/*run'+str(odorRun)+'*.bin')[0] 
+            f = open(self.baseFolder+binfile, "rb")
+            f_contents = f.read()
+            stringd = "d" * int(len(f_contents)/8)
+            stimData = struct.unpack(stringd, f_contents)
+            stimDataArray = np.array(stimData).reshape(8,int(len(stringd)/8),order='F')
+            self.PIDdata['data'] = stimDataArray[5,:]
+            self.PIDdata['time'] = stimDataArray[0,:]
+            
+            self.infodata=io.loadmat(infofile)
+            self.PIDdata['odor_seq']=self.infodata['odor_seq']
+            self.PIDdata['odor_initdelay'] = self.infodata['odor_inidelay']
+            self.PIDdata['odor_dur'] = self.infodata['odor_duration']
+            self.PIDdata['odor_isi'] = self.infodata['odor_isi']
+            self.PIDdata['odor_rep'] = self.infodata['odor_rep']       
 
     def totVarSmoothData(self, data, weight):
         self.smoothData = np.zeros(np.shape(data))
@@ -416,7 +444,7 @@ class scape:
                 dFF=self.dOO, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, 
                 stim=self.good.stim, drink=self.good.drink,
                 dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
-                scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh, aligned_centroids=[]) 
+                scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh, aligned_centroids=[], PIDdata=self.PIDdata) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
 
@@ -467,11 +495,12 @@ class scape:
 
 
   
-    def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False, redTh=100, grnTh=0):
+    def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False, redTh=100, grnTh=0, odorRun=None):
         self.redTh = redTh
         self.grnTh = grnTh
         self.importdata(self.baseFolder+inputFile)
         self.trimTrialStart(secsToTrim)
+        self.readPID(odorRun)
 
         print('\n normalizing red')
         self.normalizeRawF(self.good.R)
