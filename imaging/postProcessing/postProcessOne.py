@@ -9,12 +9,12 @@ from scipy import io
 # import smoothBehavior as beh
 import source_process as sc
 
-def postProcessOne(baseFolder, expNameHandle, secsToTrim, savematfile, redTh, grnTh):
+def postProcessOne(baseFolder, expNameHandle, secsToTrim, savematfile, redTh, grnTh, odorNum):
     
     # obj = sc.scape(baseFolder)
     # obj.postProcess('F.mat', 'post_fromYcc', savematfile)
     obj = sc.scape(baseFolder)
-    obj.process(expNameHandle+'_raw.npz', expNameHandle, secsToTrim, savematfile, redTh, grnTh)
+    obj.process(expNameHandle+'_raw.npz', expNameHandle, secsToTrim, savematfile, redTh, grnTh, odorNum)
        
 
 if __name__ == '__main__':
@@ -36,10 +36,14 @@ if __name__ == '__main__':
             secsToTrim=float(mynargs[5])
         else:
             secsToTrim=20.
+        if (len(mynargs)>6):
+            odorNum=float(mynargs[6])
+        else:
+            odorNum=None
     else:
         rootFolder = "/Users/evan/Dropbox/_sandbox/sourceExtraction/good/"
         expID = 'F_fromRed.mat'
     
     expNameHandle=expID.replace('/','_')
     savematfile=True
-    postProcessOne(rootFolder, expNameHandle, secsToTrim, savematfile, redTh, grnTh)
+    postProcessOne(rootFolder, expNameHandle, secsToTrim, savematfile, redTh, grnTh, odorNum)
