@@ -59,22 +59,30 @@ except:
     centroids = []
 
 
-try:
-    matbeh = io.loadmat(expDir+'alignedBehavAndStim.mat')
-    time = matbeh['time'].T
-    ball = matbeh['alignedBehavior']['legVar'][0][0].T
-    dlc = matbeh['alignedBehavior']['dlcData'][0][0].T
-    stim = matbeh['alignedBehavior']['stim'][0][0].T
-    drink = matbeh['alignedBehavior']['drink'][0][0].T
-    print('v7')
-except:
-    print('v7.3')
-    matbeh = h5py.File(expDir+'alignedBehavAndStim.mat')
-    time = matbeh['time']
-    ball = matbeh['alignedBehavior']['legVar']
-    dlc = matbeh['alignedBehavior']['dlcData']
-    stim = matbeh['alignedBehavior']['stim']
-    drink = matbeh['alignedBehavior']['drink']
+if os.path.isfile(expDir+'alignedBehavAndStim.mat'):           
+    try:
+        matbeh = io.loadmat(expDir+'alignedBehavAndStim.mat')
+        time = matbeh['time'].T
+        ball = matbeh['alignedBehavior']['legVar'][0][0].T
+        dlc = matbeh['alignedBehavior']['dlcData'][0][0].T
+        stim = matbeh['alignedBehavior']['stim'][0][0].T
+        drink = matbeh['alignedBehavior']['drink'][0][0].T
+        print('v7')
+    except:
+        print('v7.3')
+        matbeh = h5py.File(expDir+'alignedBehavAndStim.mat')
+        time = matbeh['time']
+        ball = matbeh['alignedBehavior']['legVar']
+        dlc = matbeh['alignedBehavior']['dlcData']
+        stim = matbeh['alignedBehavior']['stim']
+        drink = matbeh['alignedBehavior']['drink']
+else:
+    print('no aligned behavior found')
+    time = []
+    ball = []
+    dlc = []
+    stim = []
+    drink = []         
 
 # check if behavior label file exists
 try:
