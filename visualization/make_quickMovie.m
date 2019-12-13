@@ -4,7 +4,16 @@ function make_quickMovie(codePath, experimentFolder, savePath)
 % experiment (primarily to check motion correction)
 
 addpath(genpath(codePath))
-infoFile = dir([experimentFolder,'info/*.mat']);
+infoFile = dir([experimentFolder,'info/f*.mat']);
+pos = [];
+for i =1:numel(infoFile)
+    infoName = infoFile(i).name;
+    if infoName(1) == '.'
+        pos = [pos, i];
+    end
+end 
+
+infoFile(pos) = [];
 
 trials = sortExperimentDirectory(experimentFolder,'reg');
 params.trialName = [trials(end).name(1:end-4),'_small.avi']; %[trials(end).name(1:runLoc-1),'all.avi'];
