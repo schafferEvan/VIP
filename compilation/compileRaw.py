@@ -101,8 +101,10 @@ im = np.uint16(2**16*(Ysum-m)/(M-m))
 
 # get scanrate
 infodir = expDir+'info/'
-infols=os.listdir(infodir)
-info = io.loadmat(infodir+infols[0])
+infols=glob.glob(infodir+'f*.mat')
+
+
+info = io.loadmat(infols[0])
 scanRate = info['info']['daq'][0][0]['scanRate'][0][0][0][0]
 #pdb.set_trace()
 
