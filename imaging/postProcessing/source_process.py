@@ -61,8 +61,8 @@ class scape:
 
     def readPID(self, odorRun):
         self.PIDdata = {}
-        self.PIDdata['data'] = []
-        self.PIDdata['time'] = []
+        # self.PIDdata['data'] = []
+        # self.PIDdata['time'] = []
         self.PIDdata['odor_seq'] = []
         self.PIDdata['odor_initdelay'] = []
         self.PIDdata['odor_dur'] = []
@@ -70,21 +70,21 @@ class scape:
         self.PIDdata['odor_rep'] = []
         if os.path.isdir(self.baseFolder+'bin/'):
             infofile = glob.glob(self.baseFolder+'info/*run'+str(odorRun)+'*info.mat')[0]
-            binfile = glob.glob(self.baseFolder+'bin/*run'+str(odorRun)+'*.bin')[0] 
-            f = open(self.baseFolder+binfile, "rb")
-            f_contents = f.read()
-            stringd = "d" * int(len(f_contents)/8)
-            stimData = struct.unpack(stringd, f_contents)
-            stimDataArray = np.array(stimData).reshape(8,int(len(stringd)/8),order='F')
-            self.PIDdata['data'] = stimDataArray[5,:]
-            self.PIDdata['time'] = stimDataArray[0,:]
-            
             self.infodata=io.loadmat(infofile)
             self.PIDdata['odor_seq']=self.infodata['odor_seq']
             self.PIDdata['odor_initdelay'] = self.infodata['odor_inidelay']
             self.PIDdata['odor_dur'] = self.infodata['odor_duration']
             self.PIDdata['odor_isi'] = self.infodata['odor_isi']
-            self.PIDdata['odor_rep'] = self.infodata['odor_rep']       
+            self.PIDdata['odor_rep'] = self.infodata['odor_rep']  
+
+    def organizePIDRun(self):
+        self.PIDdata['data'] = []
+        self.PIDdata['time'] = []
+        self.PIDdata['odorNum'] = []
+        if self.raw.PIDAligned:
+            self.PIDdata['odorNum'] = self.raw.PIDAligned['odorNum']
+            self.PIDdata['data'] = self.raw.PIDAligned['data']
+            self.PIDdata['time'] = self.raw.PIDAligned['time']
 
     def totVarSmoothData(self, data, weight):
         self.smoothData = np.zeros(np.shape(data))
@@ -479,6 +479,7 @@ class scape:
             self.raw.im=d['im']
             self.raw.scanRate=d['scanRate']
             self.raw.centroids=d['centroids']
+            self.raw.PIDAligned = d['PIDAligned']
             self.raw.A = sparse.load_npz( inputFile[:-7]+'A_raw.npz' )
 
         self.trialFlagUnique = np.unique(self.raw.trialFlag)
