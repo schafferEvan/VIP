@@ -93,6 +93,15 @@ except:
     states = []
     print('no behavior labels')
 
+# check if PID timing file exists
+try:
+    PID_file = h5py.File(expDir + 'alignedPID.mat')
+    PIDAligned = PID_file['PIDAligned']
+    print('found aligned PID trace')
+except:
+    PIDAligned = []
+    print('no PID trace found')    
+
 # compress Ysum
 M = np.max(Ysum)
 m = np.min(Ysum)
@@ -130,7 +139,7 @@ expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
 
 np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, stim=stim, drink=drink,
-            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, centroids=centroids) 
+            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, PIDAligned=PIDAligned, centroids=centroids) 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
 
 # io.savemat(saveHandle+'_raw.mat',{
