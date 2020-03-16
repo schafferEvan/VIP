@@ -370,9 +370,11 @@ class scape:
 
     def hierCluster(self):
         # version using sklearn with variable cluster number
+        # cluster = AgglomerativeClustering(
+        #     n_clusters=None, affinity='cosine', 
+        #     linkage='complete', distance_threshold=0.8)  #1.
         cluster = AgglomerativeClustering(
-            n_clusters=None, affinity='cosine', 
-            linkage='complete', distance_threshold=0.8)  #1.
+            n_clusters=None, affinity='euclidean', linkage='ward',distance_threshold=7)
         cluster.fit_predict(self.dOO)  
         # idx_new = np.argsort(cluster.labels_)
         self.cluster_labels = cluster.labels_
