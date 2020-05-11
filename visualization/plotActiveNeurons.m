@@ -44,7 +44,7 @@ load([expDir,'/alignedBehavAndStim.mat'])
 %load([expDir,'/alignedBehavSmooth.mat'])
 
 fd = struct('expID',expID,'savePath',savePath,'time',time,'alignedBehavior',alignedBehavior,...
-    'ccFlag',ccFlag,'A',A,'Ysum',Ysum,'showBallVar',showBallVar,'showDrink',showDrink,'showDLC',showDLC);
+    'ccFlag',ccFlag,'A',A(:,goodIds),'Ysum',Ysum,'showBallVar',showBallVar,'showDrink',showDrink,'showDLC',showDLC);
 [fd.d1,fd.d2,fd.d3] = size(Ysum);
 
 beh = alignedBehavior.legVar; %behSmooth; %
