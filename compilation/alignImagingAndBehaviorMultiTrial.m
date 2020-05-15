@@ -45,7 +45,20 @@ for i=1:length(behaviorDirectory)
     disp({'# scans: ',num2str(info.daq.numberOfScans);...
         'bleachBuffer: ',num2str(bleachBuffer);...
         'imRunLength: ',num2str(imRunLength)})
-    if info.daq.numberOfScans-bleachBuffer~=imRunLength; error('length of traces does not match expected'); end
+    if info.daq.numberOfScans-bleachBuffer~=imRunLength
+        s=strfind(traceFolder,'/');
+        exp_folder = traceFolder(1:s(end-1));
+        [~, trialOrder, ~, ~, frameNum] = sortExperimentDirectory(exp_folder,'reg');
+        bleachBuffer = (frameNum(trialOrder(1)))-1; %str2double
+        disp({'# scans: ',num2str(info.daq.numberOfScans);...
+        'bleachBuffer_adjusted: ',num2str(bleachBuffer);...
+        'imRunLength: ',num2str(imRunLength)})
+        if (info.daq.numberOfScans-bleachBuffer==imRunLength)
+            warning('bleach buffer inferred from matfile name');
+        else
+            error('length of traces does not match expected'); 
+        end
+    end
     
     % populate imaging time vector
     timeTot = (1:info.daq.numberOfScans)/info.daq.scanRate;
