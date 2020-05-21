@@ -20,8 +20,9 @@ templates = templates(:,:,:,[1,end]);
 % templateG = m.templateG;
 
 % ntemplates = size(templateG,4); %size(m,'templates'); ntemplates = ntemplates(4);
-save([savepath,filename(1:end-4),'reg.mat'],'R','Y','templates','-v7.3'); %,'shiftStruct'
-mfile = matfile([savepath,filename(1:end-4),'reg.mat'],'Writable',true);
+% save([savepath,filename(1:end-4),'reg.mat'],'R','Y','templates','-v7.3'); %,'shiftStruct'
+save([savepath,filename],'R','Y','templates','-v7.3'); %,'shiftStruct'
+mfile = matfile([savepath,filename],'Writable',true);
 
 try
     movefile([filepath,filename],[filepath,'done/',filename])
