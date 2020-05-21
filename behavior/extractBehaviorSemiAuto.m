@@ -1,8 +1,14 @@
-%baseDir = '/Volumes/RASPIUSB/092818_looming/';%'/Volumes/dataFast/habaRegistered/'; %'/Volumes/SCAPEdata1/scapeBehavior/';
-%date = 'fly4_CS'; %'2018_08_24_odor'; %'blue_mp4s';
 
 function extractBehaviorSemiAuto(date,behaviorFolder)
-% loops through videos, checks ROI location, and extracts light/shock timeseries
+% loops through videos, checks ROI location, and extracts timeseries
+% this version asks for two hand-drawn ROIs.  The first is the window to
+% load for the manual stage.  The second is the window from which to
+% automatically extract leg motion. 
+
+% after extraction is complete, in the manual phase, stim and drink can be
+% manually logged, and the red circle needs to be positioned over a point
+% that clearly shows the IR indicator LED.
+
 global lsf editROI waitForPress vidNum videoFolder files tStep
 global shapeInserterBubble shapeInserterLegs viewROI legs RGB J isavi
 global playFobj playRobj imagObj stimObj drinkObj editObj ffRobj ffFobj

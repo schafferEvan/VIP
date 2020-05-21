@@ -49,7 +49,12 @@ aviobj = VideoReader(movfile);
 
 ballAvg = zeros(aviobj.Height,aviobj.Width);
 for t=1:nframes
-    frame = rgb2gray(im2uint16(readFrame(aviobj))); 
+    raw_frame = readFrame(aviobj);
+    if length(size(raw_frame))==3
+        frame = rgb2gray(im2uint16(raw_frame)); 
+    elseif length(size(raw_frame))==2
+        frame = mat2gray(raw_frame); 
+    end
     ballAvg = ballAvg+double(frame)/nframes; 
 end
 
