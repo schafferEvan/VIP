@@ -3,6 +3,7 @@ function extractBehaviorAuto(videoFolder, ballthresh, indicatorHeight, indicator
 % loops through videos, checks ROI location, and extracts light/shock timeseries
 
 addpath(genpath('..'))
+global isavi
 
 % if ~exist('date','var')
 %     date = '0828_f2r3/';%'2019_02_14_Nsyb_NLS6s_Su/'; %'2018_10_24_MCFO_IRtest/';%'2018_11_1_looming/';%'2018_08_24_odorAndRun/';
@@ -32,9 +33,11 @@ if ~isempty(avifiles)
         error('directory contains both avi and mp4 files')
     else
         files = avifiles;
+        isavi = true;
     end
 else
     files = mp4files;
+    isavi = false;
 end
 
 for j=1:length(files)
@@ -107,7 +110,13 @@ indicatorMat = zeros(1, nframe);
 legFrame = zeros(length(ballROI),2);
 
 if isavi
-    frame = im2uint16(readFrame(aviobj));
+    %frame = im2uint16(readFrame(aviobj));
+    raw_frame = readFrame(aviobj);
+    if length(size(raw_frame))==3
+        frame = rgb2gray(im2uint16(raw_frame)); 
+    elseif length(size(raw_frame))==2
+        frame = mat2gray(raw_frame); 
+    end
 else
     frame = rgb2gray(im2uint16(readFrame(aviobj)));
 end
