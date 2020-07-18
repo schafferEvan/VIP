@@ -1,14 +1,26 @@
-function [im_bw_out,cc,regionProps] = cell_segment_watershed(im)
+function [im_bw_out,cc,regionProps] = cell_segment_watershed(im, confocal_40x)
 % this function takes as an input an image with bright blobs and segments
 % it using a watershed filter.
 
 addpath(genpath('..'))
 
 % Set parameters
-landmarkParams.s1 = 0.8;    % sigma of smaller Gaussian
-landmarkParams.s2 = 2.0;    % sigma of larger Gaussian
-minObjSize=27;              % bound on min bump size to pass mask
-minObjDims=[4,4,4];         % bound on min extent of a cell in x,y,z
+if nargin<2
+    confocal_40x = false;
+end
+if confocal_40x
+    % parameters for high-res confocal
+    landmarkParams.s1 = 1.5; %3.0;    %0.8;    % sigma of smaller Gaussian
+    landmarkParams.s2 = 10; %16;     %2.0;    % sigma of larger Gaussian
+    minObjSize=100; %750;             % 27;              % bound on min bump size to pass mask
+    minObjDims=[6,6,4];       % [4,4,4];         % bound on min extent of a cell in x,y,z
+else
+    % standard parameters for scape experiment
+    landmarkParams.s1 = 0.8;    % sigma of smaller Gaussian
+    landmarkParams.s2 = 2.0;    % sigma of larger Gaussian
+    minObjSize= 27;              % bound on min bump size to pass mask
+    minObjDims= [4,4,4];         % bound on min extent of a cell in x,y,z
+end
 
 % DoG filter to enhance contrast
 [~,im_DoG] = findLandmarkPointDoG(im,landmarkParams);
@@ -46,6 +58,12 @@ im_bw_out=AreaFilter(im_bw,minObjSize,[],6);
 %remove small objects by extent in x,y,z
 im_bw_out=extentFilter(im_bw_out,minObjDims);
 
+%for confocal (high res), remove non-spherical objects
+if confocal_40x
+    im_bw_out=sphericityFilter(im_bw_out);
+    im_bw_out=maxFilter(im_bw_out, im_DoG);
+end
+
 %compile results of all sub images into final segmented mask.
 regionProps = getRegionProps(im_bw_out);
 % figure; imagesc(squeeze(sum(im_bw_out,3)))
@@ -54,6 +72,33 @@ cc=regionProps.cc;
 
 
 
+
+function Imout=sphericityFilter(Imin)
+% generate image without ROIs that fail any minObjDims
+sphericity_th = 0.4;
+regionProps = getRegionProps(Imin);
+cc=bwconncomp(Imin,6);
+sok = zeros(length(regionProps.blobStats),1);
+for j=1:length(regionProps.blobStats)
+    sok(j) = regionProps.sphericity(j)>sphericity_th;
+end
+cc.PixelIdxList(~sok)=[];
+Imout=zeros(size(Imin));
+Imout(cell2mat(cc.PixelIdxList'))=1;
+
+
+function Imout=maxFilter(Imin, analog_im)
+% generate image without ROIs that fail any minObjDims
+max_th = 0.05*max(analog_im(:));
+regionProps = getRegionProps(Imin);
+cc=bwconncomp(Imin,6);
+sok = zeros(length(regionProps.blobStats),1);
+for j=1:length(regionProps.blobStats)
+    sok(j) = mean(analog_im(cc.PixelIdxList{j}))>max_th;
+end
+cc.PixelIdxList(~sok)=[];
+Imout=zeros(size(Imin));
+Imout(cell2mat(cc.PixelIdxList'))=1;
 
 
 function Imout=extentFilter(Imin,minObjDims)
