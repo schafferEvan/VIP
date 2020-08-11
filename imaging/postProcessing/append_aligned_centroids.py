@@ -30,9 +30,13 @@ else:
 expNameHandle=expID.replace('/','_')
 fileHandle = savePath+expNameHandle+'.npz'
 
-
-f = np.load( fileHandle )
-ptf = io.loadmat( savePath+'registered_pointset.mat')
+f = np.load( fileHandle , allow_pickle=True)
+try:
+    ptf = io.loadmat( savePath+'registered_pointset.mat')
+    print('v7')
+except:
+    ptf = h5py.File(savePath+'registered_pointset.mat')
+    print('v7.3')
 # pdb.set_trace()
 
 np.savez( fileHandle, time=f['time'], trialFlag=f['trialFlag'],
