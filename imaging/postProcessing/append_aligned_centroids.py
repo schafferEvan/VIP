@@ -44,7 +44,8 @@ np.savez( fileHandle, time=f['time'], trialFlag=f['trialFlag'],
         beh_labels=f['beh_labels'], stim=f['stim'], drink=f['drink'],
         dims=f['dims'], dims_in_um=f['dims_in_um'], im=f['im'], 
         scanRate=f['scanRate'], redTh=f['redTh'], grnTh=f['grnTh'],
-        aligned_centroids=ptf['aligned'], goodIds=f['goodIds'], PIDdata=f['PIDdata']) 
+        goodIds=f['goodIds'], oIsGood=f['oIsGood'], PIDdata=f['PIDdata'],
+        aligned_centroids=ptf['aligned'] ) 
 
 
 
