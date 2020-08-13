@@ -328,12 +328,12 @@ class scape:
         # magTh = 50 #2 #1  #discard if mean of dOO is greater than this (motion)
         # minTh = 2 #1 # discard if min is greater than this (motion)
         # maxTh = 0.1 #0.2 # discard if max is smaller than this (just noise)
-        rgccTh = 0.95 #0.9 # discard units in which red and green are very correlated
-        motionTh = 10 # signal this large is probably motion artifact
+        # rgccTh = 0.95 #0.9 # discard units in which red and green are very correlated
+        # motionTh = 10 # signal this large is probably motion artifact
         
-        My = np.max(self.good.Y, axis=1)
-        Mr = np.max(self.good.R, axis=1)
-        Mo = np.max(self.dOO, axis=1)
+        # My = np.max(self.good.Y, axis=1)
+        # Mr = np.max(self.good.R, axis=1)
+        # Mo = np.max(self.dOO, axis=1)
 
         # self.getDatacorr(self.dOO, self.good.Y)
         # ogCorr = self.dataCorr
@@ -342,25 +342,25 @@ class scape:
         # oMoreGreen = np.array(abs(orCorr)<abs(ogCorr))
         # self.oMoreGreen = oMoreGreen.flatten()
 
-        self.isNotMotion = np.array(Mo<motionTh)
-        self.ampIsGood = np.array(My>grnTh)
-        self.redIsGood = np.array(Mr>redTh)
-        rgccIsGood = np.array(self.rgCorr<rgccTh)
+        self.isNotMotion = np.ones(self.good.Y.shape[0]) #np.array(Mo<motionTh)
+        self.ampIsGood = np.ones(self.good.Y.shape[0]) #np.array(My>grnTh)
+        self.redIsGood = np.ones(self.good.Y.shape[0]) #np.array(Mr>redTh)
+        rgccIsGood = np.ones(self.good.Y.shape[0]) #np.array(self.rgCorr<rgccTh)
         self.rgccIsGood = rgccIsGood.flatten()
         # self.minIsGood = np.array(np.min(self.dOO, axis=1)<minTh)
         # self.maxIsGood = np.array(np.max(self.dOO, axis=1)>maxTh)
         # self.magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
         oIsGood = np.array(self.oIsGood>0)
         self.oIsGood = oIsGood.flatten()
-        self.goodIds = self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.redIsGood
+        self.goodIds = np.array(len(oIsGood)*[True]) #self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.redIsGood
         # self.activeIds = self.maxIsGood
         #& self.minIsGood
         # pdb.set_trace()
 
-        self.dOO = self.dOO[self.goodIds,:]
-        self.dYY = self.dYY[self.goodIds,:]
-        self.dRR = self.dRR[self.goodIds,:]
-        self.good.A  = self.raw.A[:,self.goodIds]
+        # self.dOO = self.dOO[self.goodIds,:]
+        # self.dYY = self.dYY[self.goodIds,:]
+        # self.dRR = self.dRR[self.goodIds,:]
+        self.good.A  = self.raw.A # self.good.A  = self.raw.A[:,self.goodIds]
 
     def hierCluster_fixedN(self,nClust):
         # version with prespecified cluster number
@@ -444,7 +444,7 @@ class scape:
 
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
                 dFF=self.dOO, dYY=self.dYY, dRR=self.dRR, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, 
-                stim=self.good.stim, drink=self.good.drink, goodIds=self.goodIds,
+                stim=self.good.stim, drink=self.good.drink, goodIds=self.goodIds, oIsGood=self.oIsGood,
                 dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
                 scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh, aligned_centroids=[], PIDdata=self.PIDdata) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
