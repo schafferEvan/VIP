@@ -133,28 +133,48 @@ class scape:
 
     def make_O_and_dOO(self):
         # compute ratio (O) and dO/O
-        self.O = np.zeros(np.shape(self.YsmoothData))
-        self.dOO = np.zeros(np.shape(self.YsmoothData))
-        self.oIsGood = np.zeros((np.shape(self.YsmoothData)[0],1))
+        self.O = np.zeros(np.shape(self.Ygoodsc)) # YsmoothData
+        self.dOO = np.zeros(np.shape(self.Ygoodsc))
+        self.oIsGood = np.zeros((np.shape(self.Ygoodsc)[0],1))
         nC = np.shape(self.O)[0]
         printFreq = int(nC/10)
         for i in range(0, nC):
             self.showProgress(i,printFreq)
-            y = self.Ybl[i,:]
-            r = self.Rbl[i,:]
+            y = self.Ygoodsc[i,:]
+            r = self.Rgoodsc[i,:]
             otmp = np.divide(y,r)
             otmp[np.flatnonzero(np.isinf(otmp))]=0
             otmp[np.flatnonzero(np.isnan(otmp))]=0
             self.O[i,:] = otmp
 
-        self.Omax = np.amax(self.O, axis=1)
-        self.Omin = np.amin(self.O, axis=1)
+        print('\n normalize O')
+        self.normalizeRawF(self.O)
+        self.Oscaled = self.scaled
+        self.Omax = self.max
+        self.Omin = self.min
 
-        for i in range(0, np.shape(self.O)[0]):
-            dotmp = (self.O[i,:] - np.percentile(self.O[i,:], 10)) / np.percentile(self.O[i,:], 10)
-            dotmp[np.flatnonzero(np.isinf(dotmp))]=0
-            dotmp[np.flatnonzero(np.isnan(dotmp))]=0
-            self.dOO[i,:] = dotmp
+        print('\n compute O0')
+        popt = []
+        bnds = ((0, 1), (0.2, 2))
+        self.makeQuantileDF0(self.Oscaled, bnds, popt)
+        self.O0 = self.F0
+        self.Opopt = self.popt
+
+        # rescale O0
+        self.rescaleData(self.O0, self.Omin, self.Omax)
+        self.O0sc = self.rescaled
+        #compute dO/O
+        self.dOO = np.divide(self.O-self.O0sc, self.O0sc)
+
+        # pdb.set_trace()
+        # below is legacy.  is any of it still needed?
+        # self.Omax = np.amax(self.O, axis=1)
+        # self.Omin = np.amin(self.O, axis=1)
+        for i in range(self.O.shape[0]):
+            # dotmp = (self.O[i,:] - np.percentile(self.O[i,:], 10)) / np.percentile(self.O[i,:], 10)
+            # dotmp[np.flatnonzero(np.isinf(dotmp))]=0
+            # dotmp[np.flatnonzero(np.isnan(dotmp))]=0
+            # self.dOO[i,:] = dotmp
             if ((sum(self.O[i,:])>0) and (sum(self.dOO[i,:])>0)):
                 self.oIsGood[i]=1
     
@@ -352,15 +372,15 @@ class scape:
         # self.magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
         oIsGood = np.array(self.oIsGood>0)
         self.oIsGood = oIsGood.flatten()
-        self.goodIds = np.array(len(oIsGood)*[True]) #self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.redIsGood
+        self.goodIds = self.oIsGood #np.array(len(oIsGood)*[True]) #self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.redIsGood
         # self.activeIds = self.maxIsGood
         #& self.minIsGood
         # pdb.set_trace()
 
-        # self.dOO = self.dOO[self.goodIds,:]
-        # self.dYY = self.dYY[self.goodIds,:]
-        # self.dRR = self.dRR[self.goodIds,:]
-        self.good.A  = self.raw.A # self.good.A  = self.raw.A[:,self.goodIds]
+        self.dOO = self.dOO[self.goodIds,:]
+        self.dYY = self.dYY[self.goodIds,:]
+        self.dRR = self.dRR[self.goodIds,:]
+        self.good.A  = self.raw.A[:,self.goodIds] #self.good.A  = self.raw.A # 
 
     def hierCluster_fixedN(self,nClust):
         # version with prespecified cluster number
@@ -433,9 +453,10 @@ class scape:
             io.savemat(self.baseFolder+filename+'.mat',{'Fsc':self.Yscaled,'Rsc':self.Rscaled,
                 'F_max':self.Ymax,'F_min':self.Ymin,'R_max':self.Rmax,'R_min':self.Rmin,
                 'Fsm':self.YsmoothData,'Rsm':self.RsmoothData,
-                'dYY':self.dYY,'dRR':self.dRR,'dOO':self.dOO,'Ybl':self.Ybl,'Rbl':self.Rbl,
+                'dYY':self.dYY,'dRR':self.dRR,'dOO':self.dOO,
                 'Ygoodsc':self.Ygoodsc,'Rgoodsc':self.Rgoodsc,
-                'Y0sc':self.Y0sc,'R0sc':self.R0sc,'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
+                'Y0sc':self.Y0sc,'R0sc':self.R0sc,'O0sc':self.O0sc,
+                'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
                 'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
                 'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood, 'redTh':self.redTh, 'grnTh':self.grnTh,
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
@@ -517,6 +538,7 @@ class scape:
         self.Ymax = self.max
         self.Ymin = self.min
 
+        pdb.set_trace()
         self.getDatacorr(self.good.R, self.good.Y)
         self.rgCorr = self.dataCorr
 
@@ -571,8 +593,8 @@ class scape:
         self.dYY = np.divide(self.Ygoodsc-self.Y0sc, self.Y0sc)
         self.dRR = np.divide(self.Rgoodsc-self.R0sc, self.R0sc)
 
-        self.Ybl = np.transpose( np.transpose(self.Ygoodsc-self.Y0sc) + np.amin(self.Y0sc, axis=1) ) # bleach corrected but scaled like raw data
-        self.Rbl = np.transpose( np.transpose(self.Rgoodsc-self.R0sc) + np.amin(self.R0sc, axis=1) )
+        # self.Ybl = np.transpose( np.transpose(self.Ygoodsc-self.Y0sc) + np.amin(self.Y0sc, axis=1) ) # bleach corrected but scaled like raw data
+        # self.Rbl = np.transpose( np.transpose(self.Rgoodsc-self.R0sc) + np.amin(self.R0sc, axis=1) )
 
         
         #self.dOO = np.divide(self.Ogoodsc-self.O0sc, self.O0sc)
