@@ -72,6 +72,11 @@ $matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_t
 python3 ../imaging/postProcessing/append_aligned_centroids.py $traceFolder $expID $traceFolder $fromGreen
 
 
+#added retrofit steps for feeding data only: append sucrose touch timestamp (first need to run extractBehavior_feedTouch.m manually)
+$matlabPath -nodisplay -nodesktop -r "cd('../compilation/'); retroactively_align_sucrose_touch $parentdir $traceFolder; exit"
+python3 ../imaging/postProcessing/append_first_touch.py $traceFolder $expID $traceFolder
+
+
 
 fullDatasharePath="$datasharePath"_main/"$expDate"_"$flyNum"/""
 echo $fullDatasharePath
