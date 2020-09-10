@@ -1,4 +1,4 @@
-function vid = plot4Dproj_ES(Y, maskY, sizY, params, stimOn, A, C, b, f)
+function vid = plot4Dproj_ES(Y, maskY, sizY, params, stimOn, A, C, scale_rois)
 % plot4Dproj(Y, maskY, sizY, params)
 % Displays XY, YZ and XZ projections of Y over time.
 % inputs:
@@ -80,8 +80,9 @@ pi.range = [0 1];
 if nargin<6
     A = [];
     C = []; 
-    b = [];
-    f = [];
+    scale_rois = False;
+elseif nargin<8
+    scale_rois = False;
 end
 
 %convert to indices to estimate Z mean and calculate index correspondence
@@ -91,7 +92,7 @@ end
 %3rd dimension 
 
 
-cnmfx = struct('A',A,'C',C,'b',b,'f',f);
+cnmfx = struct('A',A,'C',C,'scale_rois',scale_rois);
 if ~isempty(A)
     %[Ax1,Ax2,Ax3] = ind2sub([params.options.d1,params.options.d2,params.options.d3],A);
     %cnmfx.Ax1 = Ax1;
@@ -100,7 +101,7 @@ if ~isempty(A)
     % the above is wrong. the right way to do this is to use find to get
     % the indices corresponding to nonzero values of A for each ROI, and
     % work with that.
-    cnmfx.br = reshape(cnmfx.b,params.options.d1,params.options.d2,params.options.d3);
+    %cnmfx.br = reshape(cnmfx.b,params.options.d1,params.options.d2,params.options.d3);
     cnmfx.imMax = -inf;
     cnmfx.imMin = inf;
     if isfield(params,'maxY')
@@ -114,7 +115,7 @@ if ~isempty(A)
     end
     pi.range = [cnmfx.imMin cnmfx.imMax];
 end
-clear A C b f
+clear A C
 
 vid = plotmultiproj(Y, maskY, sizY, stimOn, cnmfx, params);
 end
@@ -232,6 +233,18 @@ end
 v = squeeze(v); l = squeeze(l);
 imhsv = cat(3,zeros(size(v,1),size(v,2)),zeros(size(v,1),size(v,2)),v/max(max(v)));
 rois = reshape(cnmfx.A*cnmfx.C(:,ti),size(cnmfx.br,1),size(cnmfx.br,2),size(cnmfx.br,3));
+if cnmfx.scale_rois
+    % constrain ROI maps by background image (make it pretty)
+    sc = cnmfx.br; %-min(cnmfx.br(:));
+    q=quantile(sc(:),.01);
+    sc(sc<q)=q;
+    sc = sc/quantile(sc(:),0.99);
+    sc(sc>1)=1;
+    logsc = sc; %log(sc);
+    logsc = logsc-min(logsc(:));
+    logsc = logsc/max(logsc(:));
+    rois = rois.*logsc;
+end
 if isfield(pi,'cropy'); rois = rois(:,1:pi.cropy,:); end
 if isfield(pi,'cropx'); rois = rois(1:pi.cropx,:,:); end
 [rv,rl] = max(rois, [], pi.d2proj(hi));
