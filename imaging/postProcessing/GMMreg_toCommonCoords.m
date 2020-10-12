@@ -14,19 +14,22 @@ for k=1:size(raw,1)
 end
 
 % hardcoded refFile is constant for all datasets
-disp('-- aligning to 2018/08/24 NsybNLS fly2 --')
-refFile = load('/Volumes/SCAPEdata1/finalData/2018_08_24_NsybNLS_odors/fly2/Yproj/cc.mat');
-goodIds_ref = load('/Volumes/SCAPEdata1/finalData/2018_08_24_NsybNLS_odors/fly2/Yproj/2018_08_24_NsybNLS_odors_fly2_Agood.mat','goodIds');
-goodIds_ref = find(goodIds_ref.goodIds);
-ref = zeros(length(goodIds_ref),3);
-for k=1:size(ref,1)
-    ref(k,:) = refFile.regionProps.blobStats(goodIds_ref(k)).Centroid;
-end
+disp('-- aligning to dorsoposterior template --')
+load('/Volumes/SCAPEdata1/finalData/_templates/dorsopost_25deg_template.mat','ref');
+
+% disp('-- aligning to 2018/08/24 NsybNLS fly2 --')
+% refFile = load('/Volumes/SCAPEdata1/finalData/2018_08_24_NsybNLS_odors/fly2/Yproj/cc.mat');
+% goodIds_ref = load('/Volumes/SCAPEdata1/finalData/2018_08_24_NsybNLS_odors/fly2/Yproj/2018_08_24_NsybNLS_odors_fly2_Agood.mat','goodIds');
+% goodIds_ref = find(goodIds_ref.goodIds);
+% ref = zeros(length(goodIds_ref),3);
+% for k=1:size(ref,1)
+%     ref(k,:) = refFile.regionProps.blobStats(goodIds_ref(k)).Centroid;
+% end
         
 % parameters
 motion = 'tps';         % motion model ('tps','affine3d')
 scale = 50;             % variance around each point
-interval = 10; %2;      % size of TPS grid
+interval = 5; %10;      % size of TPS grid
 
 if contains(experimentFolder, '2018_08_24_NsybNLS_odors/fly2')
     % skip alignment for template dataset
