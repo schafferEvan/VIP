@@ -5,7 +5,9 @@ addpath(genpath(codePath))
 rawFile = load([experimentFolder,'cc.mat']);
 
 if nargin<4
-    align_on_green=False;
+    align_on_green=0;
+else
+    align_on_green = eval(align_on_green);
 end
 
 % raw pointset to be aligned
