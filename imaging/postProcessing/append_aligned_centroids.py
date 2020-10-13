@@ -39,13 +39,19 @@ except:
     print('v7.3')
 # pdb.set_trace()
 
+# sparse red datasets (registered on pan green) have flag for green/red centroid ID
+if 'is_red' in ptf:
+    centroid_is_red = ptf['is_red']
+else:
+    centroid_is_red = []
+
 np.savez( fileHandle, time=f['time'], trialFlag=f['trialFlag'],
         dFF=f['dFF'], dYY=f['dYY'], dRR=f['dRR'], ball=f['ball'], dlc=f['dlc'], 
         beh_labels=f['beh_labels'], stim=f['stim'], drink=f['drink'],
         dims=f['dims'], dims_in_um=f['dims_in_um'], im=f['im'], 
         scanRate=f['scanRate'], redTh=f['redTh'], grnTh=f['grnTh'],
         goodIds=f['goodIds'], oIsGood=f['oIsGood'], PIDdata=f['PIDdata'],
-        aligned_centroids=ptf['aligned'] ) 
+        aligned_centroids=ptf['aligned'], centroid_is_red=centroid_is_red ) 
 
 
 

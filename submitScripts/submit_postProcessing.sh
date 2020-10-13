@@ -66,9 +66,10 @@ R_th=100
 # # optional: specify secsToTrim as 5th arg (3rd and 4th are required in this case). Default = 20. Set to 0 for old expts already trimmed.
 python3 ../imaging/postProcessing/postProcessOne.py $traceFolder $expID $R_th
 
-# generate point set aligned to common reference (824 fly2)
+# generate point set aligned to common reference
+align_on_green=False #set to True for sparse lines
 movieFolder="/Volumes/data1/figsAndMovies/movies/"$expName$flyNum"/"
-$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_toCommonCoords $parentdir $traceFolder $movieFolder; exit"
+$matlabPath -nodisplay -nodesktop -r "cd('../imaging/postProcessing/'); GMMreg_toCommonCoords $parentdir $traceFolder $movieFolder $align_on_green; exit"
 python3 ../imaging/postProcessing/append_aligned_centroids.py $traceFolder $expID $traceFolder $fromGreen
 
 

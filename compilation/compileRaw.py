@@ -27,23 +27,22 @@ else:
     expID = '2019_06_26_Nsyb_NLS6s_walk/fly2'
     expDir = '/Volumes/SCAPEdata1/finalData/'+expID+'/Yproj/'
     savePath = expDir #'/Users/evan/Downloads/' #'/Users/evan/Dropbox/_AxelLab/_flygenvectors_dataShare/'
-    fromGreenCC = False    # use ROIs parsed from green image (false -> use red)
+    fromGreenCC = False    # use ROIs parsed from green image (false -> use red) # DEPRECATED. ALWAYS DO BOTH NOW
 
 
 # load stuff --------------------------------------
-
-if fromGreenCC:
-    matRaw=io.loadmat(expDir+'/F.mat') 
-else:
-    matRaw=io.loadmat(expDir+'/F_fromRed.mat') 
+# matRaw_fromGreen=io.loadmat(expDir+'/F.mat') 
+matRaw_fromRed=io.loadmat(expDir+'/F_fromRed.mat') 
 
 matSum = io.loadmat(expDir+'/Ysum.mat') 
 
-Y=matRaw['F']
-R=matRaw['FR']
+Y=matRaw_fromRed['F']
+R=matRaw_fromRed['FR']
+# YfY=matRaw_fromGreen['F']
 
-trialFlag=matRaw['trialFlag']
-A=matRaw['A']
+trialFlag=matRaw_fromRed['trialFlag']
+A=matRaw_fromRed['A']
+# AfY=matRaw_fromGreen['A']
 
 Ysum=matSum['Ysum']
 dims=np.shape(Ysum)
@@ -56,7 +55,17 @@ try:
     for i in range(rprops.shape[0]):
         centroids[i,:] = rprops[i]['Centroid'][0]
 except:
+    print('Warning: No centroids from Red')
     centroids = []
+
+try:
+    rprops_g = matcc['regionProps_green']['blobStats'][0][0]
+    centroids_fromGreen = np.zeros(rprops_g.shape[0],3)
+    for i in range(rprops_g.shape[0]):
+        centroids_fromGreen[i,:] = rprops_g[i]['Centroid'][0]
+except:
+    print('Warning: No centroids from Green')
+    centroids_fromGreen = []
 
 
 if os.path.isfile(expDir+'alignedBehavAndStim.mat'):           
@@ -139,7 +148,8 @@ expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
 
 np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, stim=stim, drink=drink,
-            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, PIDAligned=PIDAligned, centroids=centroids) 
+            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, PIDAligned=PIDAligned, 
+            centroids=centroids, centroids_fromGreen=centroids_fromGreen) 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
 
 # io.savemat(saveHandle+'_raw.mat',{

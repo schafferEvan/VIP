@@ -461,7 +461,8 @@ class scape:
                 'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood, 'redTh':self.redTh, 'grnTh':self.grnTh,
                 'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
                 })
-            io.savemat(self.baseFolder+filename+'_Agood.mat',{'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims, 'centroids':self.raw.centroids})
+            io.savemat(self.baseFolder+filename+'_Agood.mat',
+                {'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims, 'centroids':self.raw.centroids, 'centroids_fromGreen':self.raw.centroids_fromGreen})
 
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
                 dFF=self.dOO, dYY=self.dYY, dRR=self.dRR, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, 
@@ -502,6 +503,7 @@ class scape:
             self.raw.im=d['im']
             self.raw.scanRate=d['scanRate']
             self.raw.centroids=d['centroids']
+            self.raw.centroids_fromGreen=d['centroids_fromGreen']
             self.raw.PIDAligned = d['PIDAligned']
             self.raw.A = sparse.load_npz( inputFile[:-7]+'A_raw.npz' )
 
