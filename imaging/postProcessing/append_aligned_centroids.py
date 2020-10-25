@@ -45,10 +45,15 @@ if 'is_red' in ptf:
 else:
     centroid_is_red = []
 
+# log volume dims to match template (see make_template.m)
+range_buffer = 1.02
+template_file = io.loadmat( '/Volumes/SCAPEdata1/finalData/_templates/dorsopost_template.mat' )
+dims_in_um_adj = range_buffer*template_file['ref'].max(axis=0)[[1,0,2]]
+
 np.savez( fileHandle, time=f['time'], trialFlag=f['trialFlag'],
         dFF=f['dFF'], dYY=f['dYY'], dRR=f['dRR'], ball=f['ball'], dlc=f['dlc'], 
         beh_labels=f['beh_labels'], stim=f['stim'], drink=f['drink'],
-        dims=f['dims'], dims_in_um=f['dims_in_um'], im=f['im'], 
+        dims=f['dims'], dims_in_um=dims_in_um_adj, dims_in_um_orig=f['dims_in_um'], im=f['im'], 
         scanRate=f['scanRate'], redTh=f['redTh'], grnTh=f['grnTh'],
         goodIds=f['goodIds'], oIsGood=f['oIsGood'], PIDdata=f['PIDdata'],
         aligned_centroids=ptf['aligned'], centroid_is_red=centroid_is_red ) 
