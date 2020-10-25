@@ -2,7 +2,8 @@
 function GMMreg_toCommonCoords(codePath, experimentFolder, figureFolder, align_on_green)
 
 addpath(genpath(codePath))
-rawFile = load([experimentFolder,'cc.mat']);
+% rawFile = load([experimentFolder,'cc.mat']);
+rawFile = load([experimentFolder,'centroids.mat']);
 
 if nargin<4
     align_on_green=0;
@@ -13,35 +14,38 @@ end
 % raw pointset to be aligned
 if align_on_green
     % align green centroids (for sparse red pan green datasets)
-    raw = zeros(length(rawFile.regionProps_green.blobStats),3);
-    for k=1:size(raw,1)
-        raw(k,:) = rawFile.regionProps_green.blobStats(k).Centroid;
-    end
+    %     raw = zeros(length(rawFile.regionProps_green.blobStats),3);
+    %     for k=1:size(raw,1)
+    %         raw(k,:) = rawFile.regionProps_green.blobStats(k).Centroid;
+    %     end
+    raw = rawFile.centroids_fromGreen;
     
     % append red centroids
     d = dir([experimentFolder,'*Agood.mat']);
     goodIds_raw = load([experimentFolder,d.name],'goodIds');
-    goodIds_raw = find(goodIds_raw.goodIds);
-    raw_red = zeros(length(goodIds_raw),3);
-    for k=1:size(raw_red,1)
-        raw_red(k,:) = rawFile.regionProps.blobStats(goodIds_raw(k)).Centroid;
-    end
+    %     goodIds_raw = find(goodIds_raw.goodIds);
+    %     raw_red = zeros(length(goodIds_raw),3);
+    %     for k=1:size(raw_red,1)
+    %         raw_red(k,:) = rawFile.regionProps.blobStats(goodIds_raw(k)).Centroid;
+    %     end
+    raw_red = rawFile.centroids(goodIds_raw.goodIds,:);
     is_red = [zeros(size(raw,1),1);ones(size(raw_red,1),1)];
     raw = [raw;raw_red];
 else
     % default: align red centroids
     d = dir([experimentFolder,'*Agood.mat']);
     goodIds_raw = load([experimentFolder,d.name],'goodIds');
-    goodIds_raw = find(goodIds_raw.goodIds);
-    raw = zeros(length(goodIds_raw),3);
-    for k=1:size(raw,1)
-        raw(k,:) = rawFile.regionProps.blobStats(goodIds_raw(k)).Centroid;
-    end
+    %     goodIds_raw = find(goodIds_raw.goodIds);
+    %     raw = zeros(length(goodIds_raw),3);
+    %     for k=1:size(raw,1)
+    %         raw(k,:) = rawFile.regionProps.blobStats(goodIds_raw(k)).Centroid;
+    %     end
+    raw = rawFile.centroids(goodIds_raw.goodIds,:);
 end
 
 % hardcoded refFile is constant for all datasets
 disp('-- aligning to dorsoposterior template --')
-load('/Volumes/SCAPEdata1/finalData/_templates/dorsopost_25deg_template.mat','ref');
+load('/Volumes/SCAPEdata1/finalData/_templates/dorsopost_template.mat','ref');
 
 % disp('-- aligning to 2018/08/24 NsybNLS fly2 --')
 % refFile = load('/Volumes/SCAPEdata1/finalData/2018_08_24_NsybNLS_odors/fly2/Yproj/cc.mat');
@@ -55,16 +59,17 @@ load('/Volumes/SCAPEdata1/finalData/_templates/dorsopost_25deg_template.mat','re
 % parameters
 motion = 'tps';         % motion model ('tps','affine3d')
 scale = 50;             % variance around each point
-interval = 5; %10;      % size of TPS grid
+interval = 10; %5;      % size of TPS grid
 
-if contains(experimentFolder, '2018_08_24_NsybNLS_odors/fly2')
-    % skip alignment for template dataset
-    aligned = ref;
-else
-    % align point sets using TPS GMMreg
-    [config] = initialize_config_extended(raw, ref, motion, scale, raw, ref, interval);
-    [~, aligned] =  gmmreg_L2(config);
-end
+% if contains(experimentFolder, '2018_08_24_NsybNLS_odors/fly2')
+%     % skip alignment for template dataset
+%     aligned = ref;
+% else
+
+% align point sets using TPS GMMreg
+[config] = initialize_config_extended(raw, ref, motion, scale, raw, ref, interval);
+[~, aligned] =  gmmreg_L2(config);
+% end
 
 if align_on_green
     save([experimentFolder,'registered_pointset.mat'],'aligned','raw','is_red')
