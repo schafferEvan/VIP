@@ -540,7 +540,6 @@ class scape:
         self.Ymax = self.max
         self.Ymin = self.min
 
-        pdb.set_trace()
         self.getDatacorr(self.good.R, self.good.Y)
         self.rgCorr = self.dataCorr
 
