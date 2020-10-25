@@ -51,7 +51,7 @@ dims=np.shape(Ysum)
 matcc = io.loadmat(expDir+'/cc.mat')
 try:
     rprops = matcc['regionProps']['blobStats'][0][0]
-    centroids = np.zeros(rprops.shape[0],3)
+    centroids = np.zeros((rprops.shape[0],3))
     for i in range(rprops.shape[0]):
         centroids[i,:] = rprops[i]['Centroid'][0]
 except:
@@ -60,7 +60,7 @@ except:
 
 try:
     rprops_g = matcc['regionProps_green']['blobStats'][0][0]
-    centroids_fromGreen = np.zeros(rprops_g.shape[0],3)
+    centroids_fromGreen = np.zeros((rprops_g.shape[0],3))
     for i in range(rprops_g.shape[0]):
         centroids_fromGreen[i,:] = rprops_g[i]['Centroid'][0]
 except:
@@ -135,17 +135,31 @@ except:
     xK_umPerVolt = info['info']['GUIcalFactors'][0][0]['xK_umPerVolt'][0][0][0][0]
     scanAngle = info['info']['daq'][0][0]['scanAngle'][0][0][0][0]
     pixelsPerLine = info['info']['daq'][0][0]['pixelsPerLine'][0][0][0][0]
-    tot_um_x = dims[0]*xK_umPerVolt*scanAngle/(pixelsPerLine-1);
+    x_umPerPix = xK_umPerVolt*scanAngle/(pixelsPerLine-1)
+    tot_um_x = dims[0]*x_umPerPix
+
 
 y_umPerPix = info['info']['GUIcalFactors'][0][0]['y_umPerPix'][0][0][0][0]
 tot_um_y = dims[1]*y_umPerPix
 z_umPerPix = info['info']['GUIcalFactors'][0][0]['z_umPerPix'][0][0][0][0]
 tot_um_z = dims[2]*z_umPerPix
 
+# convert centroid coordinates from px to um
+if len(centroids)>0:
+    centroids[:,0] *= y_umPerPix
+    centroids[:,1] *= x_umPerPix
+    centroids[:,2] *= z_umPerPix
+if len(centroids_fromGreen)>0:
+    centroids_fromGreen[:,0] *= y_umPerPix
+    centroids_fromGreen[:,1] *= x_umPerPix
+    centroids_fromGreen[:,2] *= z_umPerPix
+
 # save stuff --------------------------------------
 
 expNameHandle=expID.replace('/','_')
 saveHandle = savePath+expNameHandle
+
+io.savemat(expDir+'/centroids.mat', {'centroids':centroids, 'centroids_fromGreen':centroids_fromGreen})
 
 np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, stim=stim, drink=drink,
             dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, PIDAligned=PIDAligned, 
