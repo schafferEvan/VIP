@@ -5,8 +5,6 @@
 #SBATCH -c 12
 #SBATCH -o nrun.out -e nrun.err
 #SBATCH --mem-per-cpu=8gb
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=nm2786@columbia.edu
 
 module load matlab/2018b
 matlab -nosplash -nodisplay -nodesktop -r run_watershed_segmentation
