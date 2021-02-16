@@ -45,7 +45,14 @@ end
 
 % hardcoded refFile is constant for all datasets
 disp('-- aligning to dorsoposterior template --')
-load('/Volumes/SCAPEdata1/finalData/_templates/dorsopost_template.mat','ref');
+try
+    load('/Volumes/SCAPEdata1/finalData/_templates/dorsopost_template.mat','ref');
+catch
+    disp('referencing experiment folder')
+    s=strfind(experimentFolder,'/');
+    templatePath=experimentFolder(1:s(end-3));
+    load([templatePath,'_templates/dorsopost_template.mat'],'ref');
+end
 
 % disp('-- aligning to 2018/08/24 NsybNLS fly2 --')
 % refFile = load('/Volumes/SCAPEdata1/finalData/2018_08_24_NsybNLS_odors/fly2/Yproj/cc.mat');
@@ -59,7 +66,7 @@ load('/Volumes/SCAPEdata1/finalData/_templates/dorsopost_template.mat','ref');
 % parameters
 motion = 'tps';         % motion model ('tps','affine3d')
 scale = 50;             % variance around each point
-interval = 10; %5;      % size of TPS grid
+interval = 5; %10; %5;      % size of TPS grid
 
 % if contains(experimentFolder, '2018_08_24_NsybNLS_odors/fly2')
 %     % skip alignment for template dataset
