@@ -67,7 +67,7 @@ else
 end
 
 
-
+% trials = trials(1:4);
 for j=1:length(trials)
     
     % load info file

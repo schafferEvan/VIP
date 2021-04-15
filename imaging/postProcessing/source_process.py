@@ -445,6 +445,7 @@ class scape:
             self.good.beh_labels = self.raw.beh_labels[isAkeeper[:,0]>0]
         else:
             self.good.beh_labels = self.raw.beh_labels
+        self.good.isAkeeper = isAkeeper
 
 
 
@@ -465,10 +466,11 @@ class scape:
                 {'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims, 'centroids':self.raw.centroids, 'centroids_fromGreen':self.raw.centroids_fromGreen})
 
         np.savez( self.baseFolder+filename+'.npz', time=self.good.time, trialFlag=self.good.trialFlag,
-                dFF=self.dOO, dYY=self.dYY, dRR=self.dRR, ball=self.good.ball, dlc=self.good.dlc, beh_labels=self.good.beh_labels, 
-                stim=self.good.stim, drink=self.good.drink, goodIds=self.goodIds, oIsGood=self.oIsGood,
-                dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, im=self.raw.im, 
-                scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh, aligned_centroids=[], PIDdata=self.PIDdata) 
+                dFF=self.dOO, dYY=self.dYY, dRR=self.dRR, ball=self.good.ball, dlc=self.good.dlc, 
+                beh_labels=self.good.beh_labels, stim=self.good.stim, drink=self.good.drink, 
+                goodIds=self.goodIds, oIsGood=self.oIsGood, dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, 
+                im=self.raw.im, scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh, 
+                aligned_centroids=[], PIDdata=self.PIDdata, isAkeeper=self.good.isAkeeper) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
 

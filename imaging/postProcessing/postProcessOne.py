@@ -35,7 +35,7 @@ if __name__ == '__main__':
         if (len(mynargs)>5):
             secsToTrim=float(mynargs[5])
         else:
-            secsToTrim=20.
+            secsToTrim=10.
         if (len(mynargs)>6):
             odorNum=float(mynargs[6])
         else:
