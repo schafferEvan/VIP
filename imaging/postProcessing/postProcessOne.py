@@ -47,3 +47,4 @@ if __name__ == '__main__':
     expNameHandle=expID.replace('/','_')
     savematfile=True
     postProcessOne(rootFolder, expNameHandle, secsToTrim, savematfile, redTh, grnTh, odorNum)
+    print('--- COMPLETED PROCESSING OF dF/F etc ---')

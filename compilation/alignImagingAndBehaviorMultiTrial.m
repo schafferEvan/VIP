@@ -99,6 +99,7 @@ end
 bmat = matfile([traceFolder,'alignedBehavAndStim.mat'],'Writable',true);
 bmat.alignedBehavior = alignedBehaviorTot;
 bmat.time = alignedBehaviorTot.timeTot;
+disp('--- COMPLETED ALIGNMENT OF BEHAVIOR AND IMAGING ---')
 
 
 

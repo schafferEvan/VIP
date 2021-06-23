@@ -57,6 +57,6 @@ np.savez( fileHandle, time=f['time'], trialFlag=f['trialFlag'],
         scanRate=f['scanRate'], redTh=f['redTh'], grnTh=f['grnTh'],
         goodIds=f['goodIds'], oIsGood=f['oIsGood'], PIDdata=f['PIDdata'],
         aligned_centroids=ptf['aligned'], centroid_is_red=centroid_is_red ) 
-
+print('--- COMPLETED APPENDING ALIGNED CENTROIDS ---')
 
 

@@ -93,6 +93,6 @@ DisplayPoints3DPretty(raw, ref, aligned);
 if ~exist(figureFolder,'dir'); mkdir(figureFolder); end
 OptionZ.FrameRate=15;OptionZ.Duration=5.5;OptionZ.Periodic=true;
 CaptureFigVid_multiAxis([-20,40;-110,40;-190,89;-290,40;-380,40], [figureFolder,'registered_pointset.mp4'],OptionZ)
-
+disp('--- COMPLETED ALIGNMENT OF POINT SET TO REFERENCE IMAGE ---')
 
 
