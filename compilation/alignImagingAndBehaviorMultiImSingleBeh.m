@@ -67,7 +67,7 @@ else
 end
 
 
-% trials = trials(1:4);
+% trials = trials(1:5);
 for j=1:length(trials)
     
     % load info file
@@ -78,8 +78,11 @@ for j=1:length(trials)
     imRunLength = sum(trialFlag==runIds(j));
     
     % ignore first 30s of beginning of experiment, but not subsequent runs
-    if j==1; bleachBuffer = 30*round(info.daq.scanRate);
-    else;    bleachBuffer = repeatedBleachBuffer*round(info.daq.scanRate);
+    if j==1
+        bleachBuffer = 30*round(info.daq.scanRate); % 30*info.daq.scanRate; % use float version for true time
+        %bleachBufferTrunc = 30*round(info.daq.scanRate); % use approx version for sync check
+    else    
+        bleachBuffer = repeatedBleachBuffer*round(info.daq.scanRate);
     end
     
     % check that extracted imaging data has correct number of frames
@@ -149,13 +152,15 @@ behAligned.drink = beh.traces.drinkSmoothAligned(behaviorOpts.bleachBuffer+1:end
 beh.dlcAligned.tmp.smooth = zeros(length(beh.time.trueTime), beh.nDLCpts*3);
 beh.dlcAligned.tmp.aligned = zeros(length(behaviorOpts.timeTot), beh.nDLCpts*3);
 beh.dlcAligned.data = zeros(length(behaviorOpts.timeTot)-behaviorOpts.bleachBuffer, beh.nDLCpts*3);
-nms = beh.dlcData.Properties.VariableNames;
-
-for j=1:beh.nDLCpts*3 % factor of 3 for x, y, and likelihood   
-    dataChunk = beh.dlcData.(nms{j})(beh.time.imOn:beh.time.imOff);
-    beh.dlcAligned.tmp.smooth(:,j) = smooth(dataChunk, beh.smoothing)';
-    beh.dlcAligned.tmp.aligned(:,j) = interp1(beh.time.trueTime, beh.dlcAligned.tmp.smooth(:,j), behaviorOpts.timeTot,'nearest','extrap');    % interpolate to align time
-    beh.dlcAligned.data(:,j) = beh.dlcAligned.tmp.aligned(behaviorOpts.bleachBuffer+1:end,j);
+if ~isempty(beh.dlcData)
+    nms = beh.dlcData.Properties.VariableNames;
+    
+    for j=1:beh.nDLCpts*3 % factor of 3 for x, y, and likelihood
+        dataChunk = beh.dlcData.(nms{j})(beh.time.imOn:beh.time.imOff);
+        beh.dlcAligned.tmp.smooth(:,j) = smooth(dataChunk, beh.smoothing)';
+        beh.dlcAligned.tmp.aligned(:,j) = interp1(beh.time.trueTime, beh.dlcAligned.tmp.smooth(:,j), behaviorOpts.timeTot,'nearest','extrap');    % interpolate to align time
+        beh.dlcAligned.data(:,j) = beh.dlcAligned.tmp.aligned(behaviorOpts.bleachBuffer+1:end,j);
+    end
 end
 behAligned.dlcAligned.data = beh.dlcAligned.data;
 

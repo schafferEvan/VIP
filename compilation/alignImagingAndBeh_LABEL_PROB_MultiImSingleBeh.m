@@ -1,8 +1,7 @@
 
-function alignImagingAndBeh_LABELS_MultiImSingleBeh(codePath, traceFolder) %, repeatedBleachBuffer)
+function alignImagingAndBeh_LABEL_PROB_MultiImSingleBeh(codePath, traceFolder) %, repeatedBleachBuffer)
 
-% -------- DEPRECATED. THIS ALIGNS ARGMAX OF arHMM OUTPUT. NEWER VERSION
-% (_PROB) ALIGNS *RAW* arHMM OUTPUT
+% ALIGNS *RAW* arHMM OUTPUT
 
 % this is similar to alignImagingAndBehaviorMultiTrial.m, but whereas
 % alignImagingAndBehaviorMultiTrial expects a directory of behavior files,
@@ -26,7 +25,7 @@ repeatedBleachBuffer = 0; % this is now handled in postprocessing
 imagingFile = [traceFolder,'F.mat']; %[traceFolder,'all.mat'];
 load(imagingFile,'trialFlag');
 behaviorDirectory = dir([traceFolder,'behavior/fly*']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
-labelDirectory = dir([traceFolder,'beh_labels/*heuristic.mat']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
+labelDirectory = dir([traceFolder,'beh_labels/*labels.mat']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
 %infoDirectory = dir([traceFolder,'info/fly*']); %dir([baseFolder,'scapeBehavior/',experiment,'*.mat']);
     
 % get file order
@@ -66,7 +65,7 @@ else
     behaviorOpts.parseStruct = parseStruct;
 end
 
-% trials = trials(1:3);
+% trials = trials(1:2);
 for j=1:length(trials)
     
     % load info file
@@ -112,7 +111,7 @@ for j=1:length(trials)
     if j==1
         labelsAligned = beh.labels;
     else
-        labelsAligned = [labelsAligned, beh.labels];
+        labelsAligned = [labelsAligned; beh.labels];
     end
 end
 
@@ -132,25 +131,26 @@ beh.time.imOff = behaviorOpts.parseStruct.stops(iter);
 % beh.smoothing = max(round( ((beh.time.imOff-beh.time.imOn)/behaviorOpts.info.daq.scanLength)/behaviorOpts.info.daq.scanRate ),1);    % smooth by behavior frames per imaging frame
 beh.time.trueTime = (1:(beh.time.imOff-beh.time.imOn+1))/(beh.time.imOff-beh.time.imOn+1)*behaviorOpts.info.daq.scanLength;            % fixed?
 
-% align labels using windowed mode of original
-labelsWindowed = labels.states(beh.time.imOn:beh.time.imOff);
+% align labels using windowed mean of original
+labelsWindowed = labels.states(beh.time.imOn:beh.time.imOff,:);
 
-beh.traces.fullLabels = zeros(size(behaviorOpts.timeTot));
+NB = size(labels.states,2);
+beh.traces.fullLabels = zeros(length(behaviorOpts.timeTot), NB);
 [~,strt] = find(beh.time.trueTime<.5*behaviorOpts.timeTot(1),1,'last');
 [~,stp] = find(beh.time.trueTime<.5*sum(behaviorOpts.timeTot(1:2)),1,'last');
-beh.traces.fullLabels(1) = mode(labelsWindowed(strt:stp));
+beh.traces.fullLabels(1,:) = mean(labelsWindowed(strt:stp,:),1);
 
 for j=2:length(behaviorOpts.timeTot)-1
     strt = stp+1;
     [~,stp] = find(beh.time.trueTime<.5*sum(behaviorOpts.timeTot(j:j+1)),1,'last');
-    beh.traces.fullLabels(j) = mode(labelsWindowed(strt:stp));
+    beh.traces.fullLabels(j,:) = mean(labelsWindowed(strt:stp,:),1);
 end
 
 strt = stp+1;
 [~,stp] = find(beh.time.trueTime<behaviorOpts.timeTot(end),1,'last');
-beh.traces.fullLabels(j) = mode(labelsWindowed(strt:stp));
+beh.traces.fullLabels(j,:) = mean(labelsWindowed(strt:stp,:),1);
 
-behAligned.labels = beh.traces.fullLabels(behaviorOpts.bleachBuffer+1:end);
+behAligned.labels = beh.traces.fullLabels(behaviorOpts.bleachBuffer+1:end,:);
 
 
 
