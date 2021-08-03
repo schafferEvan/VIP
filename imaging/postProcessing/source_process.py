@@ -201,7 +201,7 @@ class scape:
         printFreq = int(nC/10)
         for i in range(0, nC):
             self.showProgress(i,printFreq)
-            pdb.set_trace()
+            # pdb.set_trace()
             betaR,rnorm = nnls(X,np.log(data[i,:]))
             alphas = -np.cumsum(betaR[:-1])
             self.F0[i,:] = multiExpFun(ftime, np.exp(alphas), 0, self.trList, 1/betaR[-1])
@@ -442,6 +442,9 @@ class scape:
             self.good.dlc = self.raw.dlc
         self.good.dlc = self.good.dlc.T
         if(len(self.raw.beh_labels)>2):
+            if self.raw.beh_labels.shape[1]>self.raw.beh_labels.shape[0]:
+                self.raw.beh_labels = self.raw.beh_labels.T # in some datasets, saved raw labels were transposed
+
             self.good.beh_labels = self.raw.beh_labels[isAkeeper[:,0]>0]
         else:
             self.good.beh_labels = self.raw.beh_labels
@@ -499,7 +502,7 @@ class scape:
             self.raw.dlc=d['dlc']
             self.raw.stim=d['stim']
             self.raw.drink=d['drink']
-            self.raw.beh_labels=d['states']
+            self.raw.beh_labels=d['states'].T
             self.raw.dims=d['dims']
             self.raw.dims_in_um = d['tot_um_x'], d['tot_um_y'], d['tot_um_z']
             self.raw.im=d['im']
