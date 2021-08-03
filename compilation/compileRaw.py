@@ -95,12 +95,17 @@ else:
 
 # check if behavior label file exists
 try:
-    label_file = h5py.File(expDir + 'alignedLabels.mat')
+    label_file = io.loadmat(expDir + 'alignedLabels.mat')
     states = label_file['labelsAligned']
-    print('found behavior labels')
+    print('found behavior labels, v7')
 except:
-    states = []
-    print('no behavior labels')
+    try:
+        label_file = h5py.File(expDir + 'alignedLabels.mat')
+        states = label_file['labelsAligned']
+        print('found behavior labels, v7.3')
+    except:
+        states = []
+        print('no behavior labels')
 
 # check if PID timing file exists
 try:
@@ -165,7 +170,7 @@ np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFl
             dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, PIDAligned=PIDAligned, 
             centroids=centroids, centroids_fromGreen=centroids_fromGreen) 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
-
+print('--- COMPLETED COMPILING RAW NPZ ---')
 # io.savemat(saveHandle+'_raw.mat',{
 #     'time':time, 'trialFlag':trialFlag, 'Y':Y, 'R':R, 'ball':ball, 'dlc':dlc, 'dims':dims, 'A':A, 'im':im})
 
