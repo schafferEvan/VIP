@@ -75,3 +75,14 @@ alignedBehavior.timeTot = alignedBehavior.timeTot(toKeep);
 alignedBehavior.dlcData = alignedBehavior.dlcData(toKeep,:);
 save([traceFolder,file],'alignedBehavior','time');
 
+
+% -------- aligned labels ----------------
+file = 'alignedLabels.mat';
+disp(['Trimming ',file])
+
+copyfile([traceFolder,file],[traceFolder,'untrimmedTraces/allRuns/',file])
+load([traceFolder,file]);
+
+labelsAligned = labelsAligned(toKeep, :);
+save([traceFolder,file],'labelsAligned');
+
