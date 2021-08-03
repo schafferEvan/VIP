@@ -46,6 +46,7 @@ params.zum = sz(3)*info.GUIcalFactors.z_umPerPix;
 disp(['making quick movie of ',num2str(length(trials)),' trials'])
 params.kTot=0;
 %% load in registered data and find ROIs
+
 for i=1:length(trials)
     params.Ttot = 0;
     
@@ -68,6 +69,6 @@ for i=1:length(trials)
     params.vid = plot4Dproj_ES(Y, [], [szy(1),szy(2),szy(3)],params,stimOn);
     params.Ttot = params.Ttot + .1*round(10*szy(4)/params.acqRate);
     params.kTot=params.kTot+szy(4);
-    
+    close all
 end
 close(params.vid)
