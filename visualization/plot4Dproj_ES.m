@@ -80,9 +80,9 @@ pi.range = [0 1];
 if nargin<6
     A = [];
     C = []; 
-    scale_rois = False;
+    scale_rois = false;
 elseif nargin<8
-    scale_rois = False;
+    scale_rois = false;
 end
 
 %convert to indices to estimate Z mean and calculate index correspondence
