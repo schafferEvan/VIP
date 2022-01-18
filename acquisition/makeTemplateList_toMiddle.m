@@ -1,6 +1,6 @@
 
 %experimentFolder = '/Volumes/SCAPEdata1/scratchData/2018_11_01_looming/tiff_stacks/_matfiles_pt1/'; %'/Volumes/data/toRegister/_matfiles/';
-experimentFolder = '/Volumes/RASPIUSB/_scapeTemp/2019_06_26_Nsyb_NLS6s_walk/_matfiles/'; %'D:\2019_06_21_Nsyb_NLS6s_walk\tiff_stacks\_matfiles_new\'; %'/Volumes/SCAPEdata1/scratchData/2018_11_28_looming/_matfiles_new/'; %'/Volumes/dataFast/toRegister/tmp/'; %2018_11_01_looming/'; %'/Volumes/data/toRegister/_matfiles/';
+experimentFolder = 'D:\2022_01_08_oviDN_NLS6s\tiff_stacks\_matfiles_new\'; %'D:\2019_06_21_Nsyb_NLS6s_walk\tiff_stacks\_matfiles_new\'; %'/Volumes/SCAPEdata1/scratchData/2018_11_28_looming/_matfiles_new/'; %'/Volumes/dataFast/toRegister/tmp/'; %2018_11_01_looming/'; %'/Volumes/data/toRegister/_matfiles/';
 
 trials = dir([experimentFolder,'*.mat']);
 frameNum = zeros(size(trials));

@@ -9,7 +9,7 @@ flyNum = '1';
 chunkSize = 300;%201; %871;%677;%751;                                                    % number of time steps per matfile % make it bigger (around 300)
 zeroThreshold = 0; %120;                                                % threshold for re-zeroing data % don't change
 cropping.x = 124:526;%38:125;%30:87;%35:116;%33:120;%37:113;%30:106;%28:108; %26:118; %28:119; %32:129;%32:129;%41:124;%35:117;%23:104;%28:114;%24:117;%35:127;%24:113;%45:124;%25:117;%38:120;%36:128;%39:132;%32:164;%25:180;%40:195; %25:145; %43:115;%36:119;%39:167;
-cropping.y = 0:198;%45:336;%49:342;%70:330;%51:336;%50:334;%77:339;%82:349; %57:323; %78:351; %42:321;%42:321;%15:298;%57:309;%77:362;%36:319; %50:322;%53:357;%44:357;%32:326;%54:354;%60:330;%39:304;%63:346;%58:339;%25:360;%75:350; %60:333; %590:862;%12:290;%[];
+cropping.y = 1:198;%45:336;%49:342;%70:330;%51:336;%50:334;%77:339;%82:349; %57:323; %78:351; %42:321;%42:321;%15:298;%57:309;%77:362;%36:319; %50:322;%53:357;%44:357;%32:326;%54:354;%60:330;%39:304;%63:346;%58:339;%25:360;%75:350; %60:333; %590:862;%12:290;%[];
 cropping.z = 57:172;%13:159;%27:165;%20:182;%13:157;%32:166;%45:176;%23:138; %10:139; %19:158; %10:186; %10:186; %17:152;%22:159;%12:147;%18:152;%7:144;%37:182;%12:127;%20:216;%16:141;%31:216;%10:186;%18:205;%42:246;%1:204;%12:190; %7:180; %13:149;%42:184;%29:149;
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -54,13 +54,13 @@ templateID = ones(size(d));                                           % specify 
 for j=1:length(d)
     if ismac
         trialfolder = [datafolder,d(j).name,'/'];
-    else
+        elses
         trialfolder = [datafolder,d(j).name,'\'];
     end
     template = [];
     if j == 1
-        makeManyMatfilesFromTiffStack_dualColor(trialfolder,savePath,experimentName,chunkSize,zeroThreshold,timeToExclude,cropping);
+        makeManyMatfilesFromTiffStack_dualColor_wenze(trialfolder,savePath,experimentName,chunkSize,zeroThreshold,timeToExclude,cropping);
     else
-        makeManyMatfilesFromTiffStack_dualColor(trialfolder,savePath,experimentName,chunkSize,zeroThreshold,0,cropping,template);
+        makeManyMatfilesFromTiffStack_dualColor_wenze(trialfolder,savePath,experimentName,chunkSize,zeroThreshold,0,cropping,template);
     end
 end
