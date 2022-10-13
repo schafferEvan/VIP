@@ -1,4 +1,4 @@
-function [axis_limits] = DisplayPoints3DPretty(Model, Scene, TransformedModel)
+function [axis_limits] = DisplayPoints3DPretty(Model, Scene, TransformedModel, is_red)
 %%=====================================================================
 %% $RCSfile: DisplayPoints3D.m,v $
 %% $Author: bing.jian $
@@ -20,8 +20,9 @@ subplot(1,2,1);
 axis_limits = determine_border(Model, Scene);
 set(gca,'FontSize',16,'FontName','Times','FontWeight','bold');
 
-plot3(Model(:,1),Model(:,2),Model(:,3),'r.', 'MarkerSize', 8, 'LineWidth',1.5);
+plot3(Model(~is_red,1),Model(~is_red,2),Model(~is_red,3),'.','Color',[.4,0,.1], 'MarkerSize', 8, 'LineWidth',1.5);
 hold on;
+plot3(Model(is_red,1),Model(is_red,2),Model(is_red,3),'r.', 'MarkerSize', 8, 'LineWidth',1.5);
 plot3(Scene(:,1),Scene(:,2),Scene(:,3),'.','Color',[0,.7,.7], 'MarkerSize', 8, 'LineWidth',1.5);
 axis_limits = determine_border(Model, Scene);
 xlim(axis_limits(1,:));
@@ -31,8 +32,9 @@ axis equal;
 axis off
 
 subplot(1,2,2);
-plot3(TransformedModel(:,1),TransformedModel(:,2),TransformedModel(:,3),'r.', 'MarkerSize', 8, 'LineWidth',1.5);
+plot3(TransformedModel(~is_red,1),TransformedModel(~is_red,2),TransformedModel(~is_red,3),'.','Color',[.4,0,.1], 'MarkerSize', 8, 'LineWidth',1.5);
 hold on;
+plot3(TransformedModel(is_red,1),TransformedModel(is_red,2),TransformedModel(is_red,3),'r.', 'MarkerSize', 8, 'LineWidth',1.5);
 plot3(Scene(:,1),Scene(:,2),Scene(:,3),'.','Color',[0,.7,.7], 'MarkerSize', 8, 'LineWidth',1.5);
 axis_limits = determine_border(TransformedModel, Scene);
 xlim(axis_limits(1,:));

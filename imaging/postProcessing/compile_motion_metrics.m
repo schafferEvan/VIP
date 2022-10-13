@@ -1,6 +1,8 @@
 
 
-function compile_motion_metrics(codePath, experimentFolder, isRegistered)
+function compile_motion_metrics(codePath, experimentFolder, isRegistered, color_quant, z_th)
+% color_quant = 0.95
+% z_th = 100
 
 addpath(genpath(codePath))
 
@@ -37,6 +39,7 @@ if triggerError
 end
 
 %% sum image calc
+cR=[];
 for ii=1:length(trials)
     
     trialPath = [experimentFolder,trials(trialOrder(ii)).name];
@@ -48,12 +51,23 @@ for ii=1:length(trials)
         R = m.Y;
     end
     
+    qtmp = quantile(R(:),color_quant);
     if ii==1
-        [cR,ref_img,~] = motion_metrics_on_static_ref(R);
+        q=qtmp;
+        ref_img = R(:,:,:,end);
+        ref_img(ref_img<q)=0;
+        ref_img(ref_img>=q)=1;
     else
-        [cRtmp,~,~] = motion_metrics_on_static_ref(R,ref_img);
-        cR = [cR,cRtmp];
+        q=(q+qtmp)/2;
     end
+    
+    R = R(:,:,1:z_th,:);
+    R(R<q)=0;
+    R(R>=q)=1;
+    
+    
+    [cRtmp,~,~] = motion_metrics_on_static_ref(R,ref_img);
+    cR = [cR;cRtmp];
      
 end
 

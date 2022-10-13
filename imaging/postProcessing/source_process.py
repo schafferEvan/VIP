@@ -341,7 +341,7 @@ class scape:
         self.cc = np.matmul(X, np.transpose(X))/np.shape(X)[1]
 
 
-    def getGoodComponentsFull(self, redTh=100, grnTh=0):
+    def getGoodComponentsFull(self, redTh=None, grnTh=0):
         
         # grnTh = 25  # discard if max of trace is below this (not a cell). By design, this is a weak threshold to allow for inactive cells
         # redTh = 200 # discard if max of trace is below this (not a cell). This is the main threshold for accepting ROIs as cells
@@ -352,7 +352,6 @@ class scape:
         # motionTh = 10 # signal this large is probably motion artifact
         
         # My = np.max(self.good.Y, axis=1)
-        # Mr = np.max(self.good.R, axis=1)
         # Mo = np.max(self.dOO, axis=1)
 
         # self.getDatacorr(self.dOO, self.good.Y)
@@ -362,9 +361,13 @@ class scape:
         # oMoreGreen = np.array(abs(orCorr)<abs(ogCorr))
         # self.oMoreGreen = oMoreGreen.flatten()
 
+        if redTh is None:
+            self.redIsGood = np.ones(self.good.Y.shape[0]) #np.array(Mr>redTh)
+        else:
+            Mr = np.max(self.good.R, axis=1)
+            self.redIsGood = np.array(Mr>redTh)
         self.isNotMotion = np.ones(self.good.Y.shape[0]) #np.array(Mo<motionTh)
         self.ampIsGood = np.ones(self.good.Y.shape[0]) #np.array(My>grnTh)
-        self.redIsGood = np.ones(self.good.Y.shape[0]) #np.array(Mr>redTh)
         rgccIsGood = np.ones(self.good.Y.shape[0]) #np.array(self.rgCorr<rgccTh)
         self.rgccIsGood = rgccIsGood.flatten()
         # self.minIsGood = np.array(np.min(self.dOO, axis=1)<minTh)
@@ -372,7 +375,7 @@ class scape:
         # self.magIsGood = np.array(np.mean(self.dOO, axis=1)<magTh)
         oIsGood = np.array(self.oIsGood>0)
         self.oIsGood = oIsGood.flatten()
-        self.goodIds = self.oIsGood #np.array(len(oIsGood)*[True]) #self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.redIsGood
+        self.goodIds = np.logical_and(self.oIsGood, self.redIsGood) #np.array(len(oIsGood)*[True]) #self.isNotMotion & self.ampIsGood & self.rgccIsGood & self.redIsGood
         # self.activeIds = self.maxIsGood
         #& self.minIsGood
         # pdb.set_trace()
@@ -381,6 +384,7 @@ class scape:
         self.dYY = self.dYY[self.goodIds,:]
         self.dRR = self.dRR[self.goodIds,:]
         self.good.A  = self.raw.A[:,self.goodIds] #self.good.A  = self.raw.A # 
+        print('# Good Ids = '+str(self.goodIds.sum()))
 
     def hierCluster_fixedN(self,nClust):
         # version with prespecified cluster number
@@ -444,7 +448,7 @@ class scape:
         if(len(self.raw.beh_labels)>2):
             if self.raw.beh_labels.shape[1]>self.raw.beh_labels.shape[0]:
                 self.raw.beh_labels = self.raw.beh_labels.T # in some datasets, saved raw labels were transposed
-
+            
             self.good.beh_labels = self.raw.beh_labels[isAkeeper[:,0]>0]
         else:
             self.good.beh_labels = self.raw.beh_labels
@@ -463,8 +467,8 @@ class scape:
                 'Fexp':self.Y0,'Rexp':self.R0,'O':self.O,
                 'rsq':self.rsq,'oIsGood':self.oIsGood,'goodIds':self.goodIds,
                 'ampIsGood':self.ampIsGood,'rgccIsGood':self.rgccIsGood, 'redTh':self.redTh, 'grnTh':self.grnTh,
-                'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt, 'cluster_labels':self.cluster_labels,
-                })
+                'redIsGood':self.redIsGood,'Ypopt':self.Ypopt,'Rpopt':self.Rpopt,
+                }) # 'cluster_labels':self.cluster_labels,
             io.savemat(self.baseFolder+filename+'_Agood.mat',
                 {'goodIds':self.goodIds, 'A':self.good.A, 'dims':self.raw.dims, 'centroids':self.raw.centroids, 'centroids_fromGreen':self.raw.centroids_fromGreen})
 
@@ -472,7 +476,7 @@ class scape:
                 dFF=self.dOO, dYY=self.dYY, dRR=self.dRR, ball=self.good.ball, dlc=self.good.dlc, 
                 beh_labels=self.good.beh_labels, stim=self.good.stim, drink=self.good.drink, 
                 goodIds=self.goodIds, oIsGood=self.oIsGood, dims=self.raw.dims, dims_in_um=self.raw.dims_in_um, 
-                im=self.raw.im, scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh, 
+                im=self.raw.im, im_R=self.raw.im_R, scanRate=self.raw.scanRate, redTh=self.redTh, grnTh=self.grnTh, 
                 aligned_centroids=[], PIDdata=self.PIDdata, isAkeeper=self.good.isAkeeper) 
         sparse.save_npz(self.baseFolder+filename+'_A.npz', self.good.A)
 
@@ -506,6 +510,10 @@ class scape:
             self.raw.dims=d['dims']
             self.raw.dims_in_um = d['tot_um_x'], d['tot_um_y'], d['tot_um_z']
             self.raw.im=d['im']
+            if 'im_R' in d:
+                self.raw.im_R=d['im_R']
+            else:
+                self.raw.im_R=None
             self.raw.scanRate=d['scanRate']
             self.raw.centroids=d['centroids']
             self.raw.centroids_fromGreen=d['centroids_fromGreen']
@@ -526,7 +534,7 @@ class scape:
 
 
   
-    def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False, redTh=100, grnTh=0, odorRun=None):
+    def process(self, inputFile, outputFile, secsToTrim=10., savematfile=False, redTh=None, grnTh=0, odorRun=None):
         self.redTh = redTh
         self.grnTh = grnTh
         self.importdata(self.baseFolder+inputFile)
@@ -612,9 +620,9 @@ class scape:
 
         # dataToCluster = self.dOO[np.flatnonzero(self.goodIds),:]
         # self.computeCorr(dataToCluster)
-        if savematfile:
-            print('clustering')
-            self.hierCluster() #_fixedN(20)
+        # if savematfile:
+        #     print('clustering')
+        #     self.hierCluster() #_fixedN(20)
         
         print('\n saving')
         self.saveSummary(outputFile, savematfile)

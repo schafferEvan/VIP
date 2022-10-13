@@ -40,7 +40,7 @@ labelDirectory = dir([traceFolder,'beh_labels/*labels.mat']); %dir([baseFolder,'
 if sum(isnan(runIds))>0; error('Invalid File Order'); end
 % [runIds,fileOrder] = sort(tmp,'ascend');
 
-alignedBehaviorTot = struct;
+labelsAligned = [];
 
 behaviorFilename = [behaviorDirectory(1).folder,'/',behaviorDirectory(1).name];
 behRaw = load(behaviorFilename);
@@ -65,8 +65,12 @@ else
     behaviorOpts.parseStruct = parseStruct;
 end
 
-% trials = trials(1:2);
+
+% trials = trials(1:6);
 for j=1:length(trials)
+    %     if (j==4) || (j==5)
+    %         continue
+    %     end
     
     % load info file
     infoFile = [trials(j).folder,'/',trials(j).name];

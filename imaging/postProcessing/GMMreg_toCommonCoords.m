@@ -29,7 +29,7 @@ if align_on_green
     %         raw_red(k,:) = rawFile.regionProps.blobStats(goodIds_raw(k)).Centroid;
     %     end
     raw_red = rawFile.centroids(goodIds_raw.goodIds,:);
-    is_red = [zeros(size(raw,1),1);ones(size(raw_red,1),1)];
+    is_red = logical([zeros(size(raw,1),1);ones(size(raw_red,1),1)]);
     raw = [raw;raw_red];
 else
     % default: align red centroids
@@ -40,6 +40,7 @@ else
     %     for k=1:size(raw,1)
     %         raw(k,:) = rawFile.regionProps.blobStats(goodIds_raw(k)).Centroid;
     %     end
+    is_red = true(sum(goodIds_raw.goodIds),1);
     raw = rawFile.centroids(goodIds_raw.goodIds,:);
 end
 
@@ -87,7 +88,7 @@ end
 raw(:,3)=-raw(:,3);
 ref(:,3)=-ref(:,3);
 aligned(:,3)=-aligned(:,3);
-DisplayPoints3DPretty(raw, ref, aligned);
+DisplayPoints3DPretty(raw, ref, aligned, is_red);
 
 % make movie
 if ~exist(figureFolder,'dir'); mkdir(figureFolder); end

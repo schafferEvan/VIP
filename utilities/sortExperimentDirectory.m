@@ -22,7 +22,7 @@ for j=1:length(trials)
     runLoc = strfind(trials(j).name,'run');
     underscoreLoc = strfind(trials(j).name,'_');
     typeLoc = strfind(trials(j).name, typeFile);
-    underscoreInType = strfind(typeFile,'_');
+    %underscoreInType = strfind(typeFile,'_');
     if isempty(typeLoc)
         typeLoc = strfind(trials(j).name,'.');
     end

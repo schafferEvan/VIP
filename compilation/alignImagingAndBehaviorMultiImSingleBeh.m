@@ -67,8 +67,11 @@ else
 end
 
 
-% trials = trials(1:5);
+% trials = trials(1:6);
 for j=1:length(trials)
+    %     if (j==4) || (j==5)
+    %         continue
+    %     end
     
     % load info file
     infoFile = [trials(j).folder,'/',trials(j).name];
@@ -204,17 +207,19 @@ dP = diff(parseVec);
 starts = find(dP>0);
 stops = find(dP<0);
 parseStruct = struct('starts',starts,'stops',stops);
-if (min(diff(starts))<100) || (min(diff(stops))<100)
-    error('INDICATOR MEASURE IS FLICKERING. PARSING FAILURE');
-elseif length(starts)~=length(stops)
-    mkdir([traceFolder, 'crashReport']);
-    crashMat = matfile([traceFolder, 'crashReport/','parseStruct.mat'],'Writable',true);
-    crashMat.parseStruct = parseStruct;
-    h = figure; 
-    plot(isImagingOn);
-    savefig(h, [traceFolder, 'crashReport/','isImagingOn.fig']);
-    % save parseStruct and trace as fig
-    error('NUMBER OF STARTS AND STOPS DO NOT MATCH. PARSING FAILURE');
+if (length(starts)>1) || (length(stops)>1)
+    if (min(diff(starts))<100) || (min(diff(stops))<100)
+        error('INDICATOR MEASURE IS FLICKERING. PARSING FAILURE');
+    elseif length(starts)~=length(stops)
+        mkdir([traceFolder, 'crashReport']);
+        crashMat = matfile([traceFolder, 'crashReport/','parseStruct.mat'],'Writable',true);
+        crashMat.parseStruct = parseStruct;
+        h = figure;
+        plot(isImagingOn);
+        savefig(h, [traceFolder, 'crashReport/','isImagingOn.fig']);
+        % save parseStruct and trace as fig
+        error('NUMBER OF STARTS AND STOPS DO NOT MATCH. PARSING FAILURE');
+    end
 end
 
 
