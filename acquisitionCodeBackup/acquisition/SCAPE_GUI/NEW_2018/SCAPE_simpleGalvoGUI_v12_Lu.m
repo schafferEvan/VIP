@@ -593,7 +593,7 @@ writeConfigFile(hObject, handles);
 if (startpreview && handles.paramset == 1) || handles.framerate_newFPS
     system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_stopPreview.ahk');
     system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_setParameters.ahk');
-    pause(1.2); % Needs this to give set parameters time to run (probably to update listener as well);
+    pause(1.5); % Needs this to give set parameters time to run (probably to update listener as well);
     if startpreview == 1
         system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_startPreview.ahk');
     end
@@ -622,9 +622,9 @@ scan_calculations(hObject,handles);
 
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_stopPreview.ahk'); %precautionary step
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_setParameters.ahk');
-pause(2);
+pause(2.5);
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_startAcquisition.ahk');
-pause(2)
+pause(2.5)
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\returnToGUI.ahk');
 clc
 cla(handles.stim_axes);
@@ -1638,9 +1638,9 @@ end
 
 %reset solis
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_stopPreview.ahk');
-pause(1)
+pause(1.5)
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_setParameters.ahk');
-pause(1.2)
+pause(1.5)
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\returnToGUI.ahk');
 
 % stop and restore normal function to motorized stage and update positions
@@ -3444,9 +3444,9 @@ for trial = 1:NumTrial
 
     system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_stopPreview.ahk'); %precautionary step
     system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_setParameters.ahk');
-    pause(2);
+    pause(2.5);
     system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_startAcquisition.ahk');
-    pause(2)
+    pause(2.5)
     system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\returnToGUI.ahk');
     clc
     cla(handles.stim_axes);
@@ -3724,9 +3724,9 @@ end
 
 %reset solis
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_stopPreview.ahk');
-pause(1)
+pause(1.5)
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\solis_setParameters.ahk');
-pause(1.2)
+pause(1.5)
 system('C:\Users\Axel-SCAPE\Documents\MATLAB\SCAPE_GUI\NEW_2018\returnToGUI.ahk');
 
 % stop and restore normal function to motorized stage and update positions
