@@ -45,6 +45,7 @@ A=matRaw_fromRed['A']
 # AfY=matRaw_fromGreen['A']
 
 Ysum=matSum['Ysum']
+Rsum=matSum['Rsum']
 dims=np.shape(Ysum)
 
 # get regionProps
@@ -117,6 +118,10 @@ except:
     print('no PID trace found')    
 
 # compress Ysum
+M = np.max(Rsum)
+m = np.min(Rsum)
+im_R = np.uint16(2**16*(Rsum-m)/(M-m))
+
 M = np.max(Ysum)
 m = np.min(Ysum)
 im = np.uint16(2**16*(Ysum-m)/(M-m))
@@ -129,7 +134,6 @@ infols=glob.glob(infodir+'f*.mat')
 
 info = io.loadmat(infols[0])
 scanRate = info['info']['daq'][0][0]['scanRate'][0][0][0][0]
-#pdb.set_trace()
 
 
 # get true dimensions of image in um
@@ -167,7 +171,7 @@ saveHandle = savePath+expNameHandle
 io.savemat(expDir+'/centroids.mat', {'centroids':centroids, 'centroids_fromGreen':centroids_fromGreen})
 
 np.savez( saveHandle+'_raw.npz', scanRate=scanRate, time=time, trialFlag=trialFlag, Y=Y, R=R, ball=ball, dlc=dlc, stim=stim, drink=drink,
-            dims=dims, im=im, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, PIDAligned=PIDAligned, 
+            dims=dims, im=im, im_R=im_R, tot_um_x=tot_um_x, tot_um_y=tot_um_y, tot_um_z=tot_um_z, states=states, PIDAligned=PIDAligned, 
             centroids=centroids, centroids_fromGreen=centroids_fromGreen) 
 sparse.save_npz(saveHandle+'_A_raw.npz', A)
 print('--- COMPLETED COMPILING RAW NPZ ---')
