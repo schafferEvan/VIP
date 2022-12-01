@@ -1,6 +1,6 @@
 
 
-function compile_motion_metrics(codePath, experimentFolder, isRegistered, color_quant, z_th)
+function compile_motion_metrics(codePath, experimentFolder, isRegistered, color_quants, z_th)
 % color_quant = 0.95
 % z_th = 100
 
@@ -37,6 +37,13 @@ end
 if triggerError
     error('Aborting due to corrupted files')
 end
+if nargin<4
+    color_quants = [.75,.999];
+end
+if nargin<5
+    disp('z_th unused')
+    %z_th = sr(3);
+end
 
 %% sum image calc
 cR=[];
@@ -51,19 +58,19 @@ for ii=1:length(trials)
         R = m.Y;
     end
     
-    qtmp = quantile(R(:),color_quant);
-    if ii==1
-        q=qtmp;
-        ref_img = R(:,:,:,end);
-        ref_img(ref_img<q)=0;
-        ref_img(ref_img>=q)=1;
-    else
-        q=(q+qtmp)/2;
-    end
-    
-    R = R(:,:,1:z_th,:);
-    R(R<q)=0;
-    R(R>=q)=1;
+    % ref
+    q = quantile(R(:),color_quants);
+    ref_img = mean(R,4);
+    ref_img(ref_img>q(2))=q(2);
+    ref_img = ref_img-q(1);
+    ref_img(ref_img<0)=0;
+
+    % sample
+    q = quantile(R(:),color_quants);
+    %R = R(:,:,1:z_th,:);
+    R(R>q(2))=q(2);
+    R = R-q(1);
+    R(R<0)=0;
     
     
     [cRtmp,~,~] = motion_metrics_on_static_ref(R,ref_img);
