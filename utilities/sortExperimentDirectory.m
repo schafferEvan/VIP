@@ -27,7 +27,8 @@ for j=1:length(trials)
         typeLoc = strfind(trials(j).name,'.');
     end
     if ~isempty(runLoc)
-        runNum{j} = trials(j).name(runLoc+3:underscoreLoc(end)-1);
+        tmp = find(underscoreLoc>runLoc,1);
+        runNum{j} = trials(j).name(runLoc+3:underscoreLoc(tmp)-1);
     else
         runNum{j} = '1';
     end
