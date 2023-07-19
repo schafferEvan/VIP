@@ -79,4 +79,8 @@ for ii=1:length(trials)
 end
 
 mkdir([experimentFolder,'Yproj'])
-save([experimentFolder,'Yproj/motion_metrics.mat'],'cR')
+if isRegistered
+    save([experimentFolder,'Yproj/motion_metrics.mat'],'cR')
+else
+    save([experimentFolder,'Yproj/motion_metrics_raw.mat'],'cR')
+end
