@@ -1,2 +1,0 @@
-WinActivate, SCAPE_simpleGalvoGUI_v13
-Return

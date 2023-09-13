@@ -1,3 +1,0 @@
-Start Date	End Date	Lateral (y), um/pix	Depth (z), um/pix	Scan (x), K value
-
-2/22/2016	1/21/2111	1.437	1.04	318.39
