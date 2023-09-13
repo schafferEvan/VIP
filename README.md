@@ -8,4 +8,3 @@ code for motion correction, source extraction, ratiometric dF/F, visualization, 
 	* compilation folder contains code to connect imaging and behavior data
 	* visualization folder contains code to make plots and movies
 	* submitScripts folder contains examples of wrapper scripts from which to execute everything else. These are meant to be personalized to an file organization on an individual computer.
-	* acquisitionCodeBackup folder contains a backup of our code from our acquisition computer
